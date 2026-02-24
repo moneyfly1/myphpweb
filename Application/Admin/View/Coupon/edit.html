@@ -1,0 +1,166 @@
+<extend name="Public:base" />
+<block name="title">编辑优惠券</block>
+<block name="css">
+    <style>
+        .breadcrumb { background:transparent; padding:0; margin-bottom:20px; display:flex; align-items:center; gap:8px; font-size:14px; }
+        .breadcrumb-item { display:flex; align-items:center; }
+        .breadcrumb-item a { color:#1677ff; text-decoration:none; display:flex; align-items:center; gap:6px; transition:color 0.3s ease; }
+        .breadcrumb-item a:hover { color:#0958d9; text-decoration:none; }
+        .breadcrumb-item.active { color:#8c8c8c; }
+        .breadcrumb-item:not(:last-child)::after { content:'/'; color:#d9d9d9; margin-left:8px; font-size:12px; }
+        .nav-tabs { border-bottom:none; margin-bottom:20px; background:transparent; display:flex; flex-direction:row; align-items:center; }
+        .nav-tabs .nav-item { margin-right:8px; }
+        .nav-tabs .nav-link { border:none; color:#595959; padding:12px 20px; border-radius:6px; background:#f5f5f5; font-weight:500; transition:all 0.3s ease; white-space:nowrap; }
+        .nav-tabs .nav-link.active { background:#1677ff; color:white; border:none; box-shadow:0 2px 8px rgba(22,119,255,0.3); }
+        .nav-tabs .nav-link:hover { background:#e6f7ff; color:#1677ff; transform:translateY(-1px); }
+        .page-navigation { background:#f8f9fa; border:1px solid #e9ecef; border-radius:8px; padding:12px 16px; margin-bottom:20px; display:flex; align-items:center; gap:8px; font-size:14px; }
+        .page-navigation .nav-item { display:flex; align-items:center; color:#6c757d; text-decoration:none; transition:color 0.3s ease; }
+        .page-navigation .nav-item:hover { color:#1677ff; text-decoration:none; }
+        .page-navigation .nav-item.active { color:#1677ff; font-weight:500; }
+        .page-navigation .nav-separator { color:#dee2e6; margin:0 4px; }
+        .card { border:none; border-radius:12px; box-shadow:0 4px 8px rgba(0,0,0,0.05); margin-bottom:20px; }
+        .card-header { background:#fafafa; border-bottom:1px solid #f0f0f0; padding:16px 20px; font-weight:500; }
+        .table { width:100%; border-collapse:collapse; margin-bottom:20px; background:white; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+        .table th { background:#f8f9fa; border:1px solid #dee2e6; padding:15px 20px; text-align:left; font-weight:600; color:#495057; width:150px; vertical-align:top; font-size:14px; }
+        .table td { border:1px solid #dee2e6; padding:15px 20px; vertical-align:top; background:white; }
+        .input-medium { width:100%; min-width:500px; padding:12px 15px; border:1px solid #ced4da; border-radius:6px; font-size:14px; line-height:1.5; transition:border-color 0.3s ease,box-shadow 0.3s ease; background:#fafafa; }
+        .input-medium:focus { outline:none; border-color:#1677ff; box-shadow:0 0 0 3px rgba(22,119,255,0.1); background:white; }
+        select.input-medium { appearance:auto; }
+        .inputword { font-size:14px; margin-right:10px; color:#495057; font-weight:500; }
+        .btn-success { padding:12px 24px; font-size:14px; font-weight:500; border-radius:6px; background:#28a745; border:1px solid #28a745; color:white; transition:all 0.3s ease; }
+        .btn-success:hover { background:#218838; border-color:#1e7e34; transform:translateY(-1px); box-shadow:0 4px 8px rgba(40,167,69,0.3); }
+        .form-hint { font-size:12px; color:#8c8c8c; margin-top:5px; }
+        @media (max-width:768px) {
+            .breadcrumb { display:none!important; }
+            .page-navigation { font-size:12px; padding:8px 12px; margin-bottom:15px; }
+            .input-medium { min-width:100%; font-size:16px; padding:12px; }
+            .btn-success { width:100%; padding:15px; font-size:16px; }
+            .table th { width:120px; padding:12px 15px; font-size:13px; }
+            .table td { padding:12px 15px; }
+        }
+        @media (min-width:769px) { .mobile-only { display:none!important; } }
+    </style>
+</block>
+<block name="content">
+    <!-- 面包屑导航 -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{:U('Admin/Index/index')}"><i class="fa fa-home"></i> 首页</a></li>
+            <li class="breadcrumb-item"><a href="{:U('Admin/Index/index')}">后台管理</a></li>
+            <li class="breadcrumb-item"><a href="{:U('Admin/Coupon/index')}">优惠券列表</a></li>
+            <li class="breadcrumb-item active">编辑优惠券</li>
+        </ol>
+    </nav>
+    <div class="page-navigation">
+        <a href="{:U('Admin/Index/index')}" class="nav-item"><i class="fa fa-home"></i> 首页</a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/Index/index')}" class="nav-item">后台管理</a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/Coupon/index')}" class="nav-item">优惠券列表</a>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">编辑优惠券</div>
+    </div>
+    <div class="page-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-start">
+                    <ul class="nav nav-tabs border-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{:U('Admin/Coupon/index')}">优惠券列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="javascript:;">编辑优惠券</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+            <div class="tab-content">
+                <form action="{:U('Admin/Coupon/edit')}" method="post">
+                    <input type="hidden" name="id" value="{$data['id']}" />
+                    <table class="table">
+                        <tr>
+                            <th>优惠码</th>
+                            <td>
+                                <input class="input-medium" type="text" name="code" value="{$data['code']}" readonly style="background:#eee;" />
+                                <div class="form-hint">优惠码创建后不可修改</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>名称</th>
+                            <td><input class="input-medium" type="text" name="name" value="{$data['name']}" required /></td>
+                        </tr>
+                        <tr>
+                            <th>类型</th>
+                            <td>
+                                <select class="input-medium" name="type">
+                                    <option value="1" <?php if($data['type']==1) echo "selected"; ?>>百分比折扣</option>
+                                    <option value="2" <?php if($data['type']==2) echo "selected"; ?>>固定金额</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>折扣值</th>
+                            <td>
+                                <input class="input-medium" type="number" name="discount_value" step="0.01" min="0" value="{$data['discount_value']}" required />
+                                <div class="form-hint">百分比类型填写折扣百分比(如10表示打9折), 固定金额类型填写减免金额</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>最低消费</th>
+                            <td>
+                                <input class="input-medium" type="number" name="min_amount" step="0.01" min="0" value="{$data['min_amount']}" />
+                                <div class="form-hint">订单金额需达到此值才可使用, 0表示无门槛</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>最大折扣金额</th>
+                            <td>
+                                <input class="input-medium" type="number" name="max_discount" step="0.01" min="0" value="{$data['max_discount']}" />
+                                <div class="form-hint">仅百分比类型有效, 0表示不限制最大折扣</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>有效开始</th>
+                            <td><input class="input-medium" type="datetime-local" name="valid_from" value="{$data['valid_from_str']}" required /></td>
+                        </tr>
+                        <tr>
+                            <th>有效结束</th>
+                            <td><input class="input-medium" type="datetime-local" name="valid_until" value="{$data['valid_until_str']}" required /></td>
+                        </tr>
+                        <tr>
+                            <th>总数量</th>
+                            <td>
+                                <input class="input-medium" type="number" name="total_quantity" min="0" value="{$data['total_quantity']}" />
+                                <div class="form-hint">0表示不限量</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>每人限用</th>
+                            <td><input class="input-medium" type="number" name="max_uses_per_user" min="1" value="{$data['max_uses_per_user']}" /></td>
+                        </tr>
+                        <tr>
+                            <th>适用套餐ID</th>
+                            <td>
+                                <input class="input-medium" type="text" name="applicable_packages" value="{$data['applicable_packages']}" placeholder="逗号分隔,留空=全部适用" />
+                                <div class="form-hint">多个套餐ID用逗号分隔, 留空表示全部套餐可用</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>状态</th>
+                            <td>
+                                <span class="inputword">启用</span> <input type="radio" name="is_active" value="1" <?php if($data['is_active']==1) echo "checked='checked'"; ?>> &emsp;
+                                <span class="inputword">禁用</span> <input type="radio" name="is_active" value="0" <?php if($data['is_active']==0) echo "checked='checked'"; ?>>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <td><input class="btn btn-success" type="submit" value="修改"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+</block>

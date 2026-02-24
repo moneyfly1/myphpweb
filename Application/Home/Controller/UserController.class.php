@@ -34,6 +34,7 @@ class UserController extends Controller {
     		);
     		$loginData['lasttime'] = time();
     		M('user')->where(['id'=>$user['id']])->save($loginData);
+    		D('LoginHistory')->addRecord($user['id'], get_client_ip(), $_SERVER['HTTP_USER_AGENT']);
     		$this->success('管理员代理登录成功','/',0);
     		return;
     	}
@@ -71,6 +72,7 @@ class UserController extends Controller {
 	                );
 	                $loginData['lasttime'] = time();
 	                M('user')->where(['id'=>$get['id']])->save($loginData);
+					D('LoginHistory')->addRecord($get['id'], get_client_ip(), $_SERVER['HTTP_USER_AGENT']);
 					$this->success('登录成功','/',0);
 				}else{
 					$this->error('恭喜注册成功，激活邮件已经发送到你QQ邮箱，请去邮箱点击链接激活账户','/login',10);
@@ -281,5 +283,33 @@ class UserController extends Controller {
 		send_email('3219904322@qq.com',$ltTitle,$content);
 
     }
-    
+
+    public function loginHistory() {
+        if (!check_user_login()) {
+            $this->error('请先登录', '/login');
+        }
+        $userId = session('users.id');
+        $list = D('LoginHistory')->getByUser($userId, 30);
+        foreach ($list as $k => $v) {
+            $list[$k]['login_time_fmt'] = date('Y-m-d H:i:s', $v['login_time']);
+        }
+        $this->assign('list', $list);
+        $this->display();
+    }
+
+    public function setTheme() {
+        if (!check_user_login()) {
+            $this->ajaxReturn(array('code' => 1, 'msg' => '请先登录'));
+        }
+        $theme = I('post.theme', 'default', 'trim');
+        $allowed = array('default', 'dark', 'green', 'purple');
+        if (!in_array($theme, $allowed)) {
+            $this->ajaxReturn(array('code' => 1, 'msg' => '无效主题'));
+        }
+        $userId = session('users.id');
+        M('user')->where(array('id' => $userId))->save(array('theme' => $theme));
+        session('users.theme', $theme);
+        $this->ajaxReturn(array('code' => 0, 'msg' => '主题已更新'));
+    }
+
 }

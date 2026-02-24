@@ -1,0 +1,30 @@
+/* ============================================
+   Theme Overrides - themes.css
+   Override CSS variables from design-tokens.css
+   ============================================ */
+
+/* Dark theme */
+.dark-theme {
+    --color-bg-page: #1a1a2e;
+    --color-bg: #16213e;
+    --color-text: #e0e0e0;
+    --color-text-secondary: #a0a0a0;
+    --color-border: #2a2a4a;
+    --color-primary: #4fc3f7;
+}
+
+/* Blue theme (default, no overrides needed) */
+
+/* Green theme */
+.green-theme {
+    --color-primary: #52c41a;
+    --color-primary-hover: #73d13d;
+    --color-primary-active: #389e0d;
+}
+
+/* Purple theme */
+.purple-theme {
+    --color-primary: #722ed1;
+    --color-primary-hover: #9254de;
+    --color-primary-active: #531dab;
+}

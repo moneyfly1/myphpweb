@@ -1,0 +1,187 @@
+<extend name="Public:base" />
+<block name="title">节点分配</block>
+<block name="content">
+    <style>
+        .assign-panel { display:flex; gap:20px; flex-wrap:wrap; }
+        .assign-box { flex:1; min-width:280px; }
+        .assign-box h4 { font-size:15px; font-weight:600; color:#495057; margin-bottom:10px; }
+        .assign-list { border:1px solid #dee2e6; border-radius:6px; max-height:350px; overflow-y:auto; background:#fff; }
+        .assign-list label { display:flex; align-items:center; padding:8px 12px; border-bottom:1px solid #f0f0f0; cursor:pointer; font-size:13px; gap:8px; }
+        .assign-list label:last-child { border-bottom:none; }
+        .assign-list label:hover { background:#f5f5f5; }
+        .assign-list input[type="checkbox"] { flex-shrink:0; }
+        .assign-result { margin-top:15px; }
+        .assign-table { width:100%; border-collapse:collapse; margin-top:15px; }
+        .assign-table th, .assign-table td { border:1px solid #dee2e6; padding:10px 12px; text-align:left; font-size:13px; }
+        .assign-table th { background:#f8f9fa; font-weight:600; }
+        .btn-unassign { padding:2px 8px; font-size:12px; cursor:pointer; }
+        .search-input { width:100%; padding:8px 12px; border:1px solid #ced4da; border-radius:6px 6px 0 0; font-size:13px; border-bottom:none; }
+        .search-input:focus { outline:none; border-color:#1677ff; }
+        .assign-stats { padding:10px 15px; background:#f6ffed; border:1px solid #b7eb8f; border-radius:6px; color:#389e0d; font-size:14px; margin-top:10px; display:none; }
+        @media (max-width:768px) {
+            .assign-panel { flex-direction:column; }
+            .assign-table { font-size:12px; }
+            .assign-table th, .assign-table td { padding:8px 6px; }
+        }
+    </style>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{:U('Admin/Index/index')}"><i class="fa fa-home"></i> 首页</a></li>
+            <li class="breadcrumb-item"><a href="{:U('Admin/NodeMgr/index')}">节点管理</a></li>
+            <li class="breadcrumb-item active">节点分配</li>
+        </ol>
+    </nav>
+    <div class="page-navigation">
+        <a href="{:U('Admin/Index/index')}" class="nav-item"><i class="fa fa-home"></i> 首页</a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/NodeMgr/index')}" class="nav-item">节点管理</a>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">节点分配</div>
+    </div>
+    <div class="page-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-start">
+                    <ul class="nav nav-tabs border-0">
+                        <li class="nav-item"><a class="nav-link" href="{:U('Admin/NodeMgr/index')}">节点列表</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{:U('Admin/NodeMgr/add')}">添加节点</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{:U('Admin/NodeMgr/collect')}">采集节点</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="javascript:;">节点分配</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+                <div style="margin-bottom:15px;color:#666;font-size:13px;">选择节点和用户，批量分配节点访问权限。</div>
+                <div class="assign-panel">
+                    <div class="assign-box">
+                        <h4>选择节点</h4>
+                        <input type="text" class="search-input" id="searchNode" placeholder="搜索节点..." oninput="filterList('node')">
+                        <div class="assign-list" id="nodeList">
+                            <foreach name="nodes" item="n">
+                            <label data-name="{$n['name']}" data-server="{$n['server']}">
+                                <input type="checkbox" class="node-cb" value="{$n['id']}">
+                                <span>{$n['name']} ({$n['server']}:{$n['port']})</span>
+                            </label>
+                            </foreach>
+                        </div>
+                    </div>
+                    <div class="assign-box">
+                        <h4>选择用户</h4>
+                        <input type="text" class="search-input" id="searchUser" placeholder="搜索用户..." oninput="filterList('user')">
+                        <div class="assign-list" id="userList">
+                            <foreach name="users" item="u">
+                            <label data-name="{$u['username']}">
+                                <input type="checkbox" class="user-cb" value="{$u['id']}">
+                                <span>#{$u['id']} - {$u['username']}</span>
+                            </label>
+                            </foreach>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top:15px;">
+                    <button class="btn btn-success" id="btnAssign" onclick="doAssign()">批量分配</button>
+                </div>
+                <div class="assign-stats" id="assignStats"></div>
+
+                <div class="assign-result">
+                    <h4 style="font-size:15px;font-weight:600;color:#495057;margin:20px 0 10px;">当前分配记录</h4>
+                    <table class="assign-table">
+                        <thead>
+                            <tr>
+                                <th width="5%">ID</th>
+                                <th>节点</th>
+                                <th>已分配用户</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <foreach name="nodes" item="n">
+                            <tr>
+                                <td>{$n['id']}</td>
+                                <td>{$n['name']}</td>
+                                <td id="assign-node-{$n['id']}">
+                                    <?php
+                                    if(isset($assignMap[$n['id']])){
+                                        foreach($assignMap[$n['id']] as $uid){
+                                            $uname = '';
+                                            foreach($users as $u){ if($u['id']==$uid){ $uname=$u['username']; break; } }
+                                            echo '<span class="badge" style="display:inline-flex;align-items:center;gap:4px;background:#e6f7ff;color:#1677ff;padding:3px 8px;border-radius:4px;margin:2px;font-size:12px;">';
+                                            echo htmlspecialchars($uname?:'#'.$uid);
+                                            echo ' <a href="javascript:;" onclick="doUnassign('.$n['id'].','.$uid.',this)" style="color:#ff4d4f;text-decoration:none;font-weight:bold;" title="取消分配">&times;</a>';
+                                            echo '</span>';
+                                        }
+                                    } else {
+                                        echo '<span style="color:#999;">未分配</span>';
+                                    }
+                                    ?>
+                                </td>
+                            </tr>
+                            </foreach>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- PLACEHOLDER_ASSIGN_SCRIPT -->
+    <script>
+    function filterList(type) {
+        var input, list, labels, i, text;
+        if (type === 'node') {
+            input = document.getElementById('searchNode').value.toLowerCase();
+            labels = document.querySelectorAll('#nodeList label');
+        } else {
+            input = document.getElementById('searchUser').value.toLowerCase();
+            labels = document.querySelectorAll('#userList label');
+        }
+        for (i = 0; i < labels.length; i++) {
+            text = labels[i].textContent.toLowerCase();
+            var dn = (labels[i].getAttribute('data-name') || '').toLowerCase();
+            var ds = (labels[i].getAttribute('data-server') || '').toLowerCase();
+            labels[i].style.display = (text.indexOf(input) > -1 || dn.indexOf(input) > -1 || ds.indexOf(input) > -1) ? '' : 'none';
+        }
+    }
+    function doAssign() {
+        var nodeCbs = document.querySelectorAll('.node-cb:checked');
+        var userCbs = document.querySelectorAll('.user-cb:checked');
+        if (nodeCbs.length == 0) { alert('请选择至少一个节点'); return; }
+        if (userCbs.length == 0) { alert('请选择至少一个用户'); return; }
+        var nodeIds = [], userIds = [];
+        for (var i = 0; i < nodeCbs.length; i++) nodeIds.push(nodeCbs[i].value);
+        for (var i = 0; i < userCbs.length; i++) userIds.push(userCbs[i].value);
+        var btn = document.getElementById('btnAssign');
+        btn.disabled = true; btn.textContent = '分配中...';
+        $.ajax({
+            url: "{:U('Admin/NodeMgr/doAssign')}",
+            type: 'post', dataType: 'json',
+            data: { node_ids: nodeIds, user_ids: userIds },
+            success: function(res) {
+                var el = document.getElementById('assignStats');
+                el.textContent = res.msg;
+                el.style.display = 'block';
+                if (res.code == 0) {
+                    setTimeout(function(){ location.reload(); }, 1500);
+                }
+            },
+            error: function() { alert('请求失败'); },
+            complete: function() { btn.disabled = false; btn.textContent = '批量分配'; }
+        });
+    }
+    function doUnassign(nodeId, userId, el) {
+        if (!confirm('确定取消该用户的节点分配？')) return;
+        $.ajax({
+            url: "{:U('Admin/NodeMgr/unassign')}",
+            type: 'post', dataType: 'json',
+            data: { node_id: nodeId, user_id: userId },
+            success: function(res) {
+                if (res.code == 0) {
+                    var badge = el.parentNode;
+                    badge.parentNode.removeChild(badge);
+                } else {
+                    alert(res.msg);
+                }
+            },
+            error: function() { alert('请求失败'); }
+        });
+    }
+    </script>
+</block>

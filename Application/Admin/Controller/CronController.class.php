@@ -16,37 +16,37 @@ class CronController extends AdminBaseController {
             'email_queue' => array(
                 'name'     => '处理邮件队列',
                 'desc'     => '发送待发邮件，支持重试和失败处理',
-                'cmd'      => $php . ' ' . $root . '/process_email_queue.php process',
+                'cmd'      => $php . ' ' . $root . '/shell/process_email_queue.php process',
                 'schedule' => '每5分钟',
             ),
             'clean_email' => array(
                 'name'     => '清理邮件队列',
                 'desc'     => '删除7天前已发送的邮件记录',
-                'cmd'      => $php . ' ' . $root . '/process_email_queue.php clean',
+                'cmd'      => $php . ' ' . $root . '/shell/process_email_queue.php clean',
                 'schedule' => '每天凌晨3点',
             ),
             'log_rotate' => array(
                 'name'     => '日志轮转',
                 'desc'     => '压缩超过10MB的日志文件',
-                'cmd'      => $php . ' ' . $root . '/log_manager.php rotate',
+                'cmd'      => $php . ' ' . $root . '/shell/log_manager.php rotate',
                 'schedule' => '每天凌晨2点',
             ),
             'log_clean' => array(
                 'name'     => '日志清理',
                 'desc'     => '删除30天前的旧日志',
-                'cmd'      => $php . ' ' . $root . '/log_manager.php clean',
+                'cmd'      => $php . ' ' . $root . '/shell/log_manager.php clean',
                 'schedule' => '每天凌晨2点',
             ),
             'expire_remind' => array(
                 'name'     => '到期提醒',
                 'desc'     => '为7天内到期的用户生成提醒邮件',
-                'cmd'      => $php . ' ' . $root . '/generate_expire_mail.php',
+                'cmd'      => $php . ' ' . $root . '/shell/generate_expire_mail.php',
                 'schedule' => '每天上午9点',
             ),
             'sync_user' => array(
                 'name'     => '用户同步',
                 'desc'     => '清理无订阅记录的孤立用户',
-                'cmd'      => $php . ' ' . $root . '/sync_user_with_short.php',
+                'cmd'      => $php . ' ' . $root . '/shell/sync_user_with_short.php',
                 'schedule' => '每周一凌晨4点',
             ),
         );
@@ -142,12 +142,12 @@ class CronController extends AdminBaseController {
         $php   = PHP_BINARY ?: '/usr/bin/php';
         $lines = array(
             "# === 订阅系统定时任务 ===",
-            "*/5 * * * * {$php} {$root}/process_email_queue.php process >> /dev/null 2>&1",
-            "0 3 * * * {$php} {$root}/process_email_queue.php clean >> /dev/null 2>&1",
-            "0 2 * * * {$php} {$root}/log_manager.php rotate >> /dev/null 2>&1",
-            "5 2 * * * {$php} {$root}/log_manager.php clean >> /dev/null 2>&1",
-            "0 9 * * * {$php} {$root}/generate_expire_mail.php >> /dev/null 2>&1",
-            "0 4 * * 1 {$php} {$root}/sync_user_with_short.php >> /dev/null 2>&1",
+            "*/5 * * * * {$php} {$root}/shell/process_email_queue.php process >> /dev/null 2>&1",
+            "0 3 * * * {$php} {$root}/shell/process_email_queue.php clean >> /dev/null 2>&1",
+            "0 2 * * * {$php} {$root}/shell/log_manager.php rotate >> /dev/null 2>&1",
+            "5 2 * * * {$php} {$root}/shell/log_manager.php clean >> /dev/null 2>&1",
+            "0 9 * * * {$php} {$root}/shell/generate_expire_mail.php >> /dev/null 2>&1",
+            "0 4 * * 1 {$php} {$root}/shell/sync_user_with_short.php >> /dev/null 2>&1",
         );
         $this->ajaxReturn(array('code' => 0, 'data' => implode("\n", $lines)));
     }

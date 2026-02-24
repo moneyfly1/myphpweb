@@ -406,6 +406,39 @@
     </foreach>
 </div>
 
+                <!-- 优惠券 -->
+                <div class="coupon-section" style="margin: 25px 0;">
+                    <div class="payment-title">
+                        <i class="fas fa-tag"></i>
+                        <span>优惠券</span>
+                    </div>
+                    <div style="display:flex;gap:10px;align-items:center;">
+                        <input type="text" id="couponCode" placeholder="请输入优惠码" style="flex:1;padding:12px 15px;border:2px solid #e0e6ed;border-radius:8px;font-size:1rem;outline:none;transition:border-color .3s;" onfocus="this.style.borderColor='var(--color-primary)'" onblur="this.style.borderColor='#e0e6ed'">
+                        <button type="button" id="verifyCouponBtn" onclick="verifyCoupon()" class="btn btn-primary" style="white-space:nowrap;padding:12px 24px;">验证</button>
+                    </div>
+                    <div id="couponResult" style="margin-top:10px;font-size:0.9rem;"></div>
+                </div>
+
+                <!-- 价格明细 -->
+                <div id="priceSummary" style="margin:20px 0;padding:15px 20px;background:#f8f9fa;border-radius:10px;display:none;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:8px;color:#666;">
+                        <span>套餐原价</span>
+                        <span id="summaryOriginal">¥0.00</span>
+                    </div>
+                    <div id="summaryVipRow" style="display:none;justify-content:space-between;margin-bottom:8px;color:#52c41a;">
+                        <span>VIP折扣 (<span id="summaryVipName"></span>)</span>
+                        <span id="summaryVipDiscount">-¥0.00</span>
+                    </div>
+                    <div id="summaryCouponRow" style="display:none;justify-content:space-between;margin-bottom:8px;color:#fa8c16;">
+                        <span>优惠券抵扣</span>
+                        <span id="summaryCouponDiscount">-¥0.00</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;padding-top:10px;border-top:1px solid #e0e6ed;font-weight:700;font-size:1.1rem;color:var(--color-primary);">
+                        <span>应付金额</span>
+                        <span id="summaryFinal">¥0.00</span>
+                    </div>
+                </div>
+
                 <!-- 支付方式 -->
                 <div class="payment-methods">
                     <div class="payment-title">
@@ -413,13 +446,22 @@
                         <span>选择支付方式</span>
                     </div>
                     <div class="payment-options">
-                        <div class="payment-option selected" onclick="selectPayment(this)">
+                        <div class="payment-option selected" data-method="alipay" onclick="selectPayment(this)">
                             <div class="payment-icon alipay-icon">
                                 <i class="fab fa-alipay"></i>
                             </div>
                             <div class="payment-info">
                                 <h4>支付宝</h4>
                                 <p>推荐使用，安全便捷</p>
+                            </div>
+                        </div>
+                        <div class="payment-option" data-method="balance" onclick="selectPayment(this)">
+                            <div class="payment-icon" style="background:rgba(250,140,22,0.1);color:#fa8c16;">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <div class="payment-info">
+                                <h4>余额支付</h4>
+                                <p>当前余额：¥<span id="userBalanceDisplay">{$userBalance|default=0}</span></p>
                             </div>
                         </div>
                     </div>
@@ -437,124 +479,216 @@
 
 <block name="footer">
     <script>
+        // 全局状态
+        var couponDiscount = 0;
+        var couponCodeVerified = '';
+        var vipDiscount = parseFloat('{$vipDiscount|default=1.00}'); // 1.00=原价, 0.80=8折
+        var vipLevelName = '{$vipLevelName|default=}';
+        var userBalance = parseFloat('{$userBalance|default=0}');
+
         // 套餐选择功能
         function selectPlan(element) {
-            const cards = document.querySelectorAll('.plan-card');
-            cards.forEach(card => card.classList.remove('selected'));
+            var cards = document.querySelectorAll('.plan-card');
+            cards.forEach(function(card) { card.classList.remove('selected'); });
             element.classList.add('selected');
+            // 重置优惠券
+            couponDiscount = 0;
+            couponCodeVerified = '';
+            document.getElementById('couponCode').value = '';
+            document.getElementById('couponResult').innerHTML = '';
+            updatePriceSummary();
         }
 
         // 支付方式选择
         function selectPayment(element) {
-            const payments = document.querySelectorAll('.payment-option');
-            payments.forEach(payment => payment.classList.remove('selected'));
+            var payments = document.querySelectorAll('.payment-option');
+            payments.forEach(function(p) { p.classList.remove('selected'); });
             element.classList.add('selected');
         }
 
+        // 获取选中套餐价格
+        function getSelectedPlanPrice() {
+            var selected = document.querySelector('.plan-card.selected');
+            if (!selected) return 0;
+            var priceText = selected.querySelector('.price').textContent;
+            var match = priceText.match(/[\d.]+/);
+            return match ? parseFloat(match[0]) : 0;
+        }
+
+        // 获取选中套餐ID
+        function getSelectedPlanId() {
+            var selected = document.querySelector('.plan-card.selected');
+            return selected ? selected.dataset.id : '';
+        }
+
+        // 更新价格明细
+        function updatePriceSummary() {
+            var originalPrice = getSelectedPlanPrice();
+            if (originalPrice <= 0) {
+                document.getElementById('priceSummary').style.display = 'none';
+                return;
+            }
+            document.getElementById('priceSummary').style.display = 'block';
+            document.getElementById('summaryOriginal').textContent = '¥' + originalPrice.toFixed(2);
+
+            var afterVip = originalPrice;
+            var vipSaved = 0;
+            if (vipDiscount > 0 && vipDiscount < 1.00) {
+                afterVip = Math.round(originalPrice * vipDiscount * 100) / 100;
+                vipSaved = originalPrice - afterVip;
+                document.getElementById('summaryVipRow').style.display = 'flex';
+                document.getElementById('summaryVipName').textContent = vipLevelName + ' ' + Math.round(vipDiscount * 100) + '%';
+                document.getElementById('summaryVipDiscount').textContent = '-¥' + vipSaved.toFixed(2);
+            } else {
+                document.getElementById('summaryVipRow').style.display = 'none';
+            }
+
+            var finalAmount = afterVip - couponDiscount;
+            if (couponDiscount > 0) {
+                document.getElementById('summaryCouponRow').style.display = 'flex';
+                document.getElementById('summaryCouponDiscount').textContent = '-¥' + couponDiscount.toFixed(2);
+            } else {
+                document.getElementById('summaryCouponRow').style.display = 'none';
+            }
+
+            if (finalAmount < 0.01) finalAmount = 0.01;
+            document.getElementById('summaryFinal').textContent = '¥' + finalAmount.toFixed(2);
+
+            // 更新按钮文字
+            document.getElementById('submitBtn').innerHTML =
+                '<i class="fas fa-paper-plane"></i> 确认支付 ¥' + finalAmount.toFixed(2);
+        }
+
+        // 验证优惠券
+        function verifyCoupon() {
+            var code = document.getElementById('couponCode').value.trim();
+            var planId = getSelectedPlanId();
+            var price = getSelectedPlanPrice();
+            var resultEl = document.getElementById('couponResult');
+
+            if (!code) { resultEl.innerHTML = '<span style="color:#ff4d4f;">请输入优惠码</span>'; return; }
+            if (!planId || price <= 0) { resultEl.innerHTML = '<span style="color:#ff4d4f;">请先选择套餐</span>'; return; }
+
+            // VIP折扣后的价格作为优惠券验证金额
+            var afterVip = price;
+            if (vipDiscount > 0 && vipDiscount < 1.00) {
+                afterVip = Math.round(price * vipDiscount * 100) / 100;
+            }
+
+            var btn = document.getElementById('verifyCouponBtn');
+            btn.disabled = true;
+            btn.textContent = '验证中...';
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/order/checkCoupon', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    btn.disabled = false;
+                    btn.textContent = '验证';
+                    try {
+                        var res = JSON.parse(xhr.responseText);
+                        if (res.code === 0) {
+                            couponDiscount = parseFloat(res.data.discount);
+                            couponCodeVerified = code;
+                            resultEl.innerHTML = '<span style="color:#52c41a;">优惠券可用，抵扣 ¥' + couponDiscount.toFixed(2) + '</span>';
+                        } else {
+                            couponDiscount = 0;
+                            couponCodeVerified = '';
+                            resultEl.innerHTML = '<span style="color:#ff4d4f;">' + res.msg + '</span>';
+                        }
+                    } catch(e) {
+                        couponDiscount = 0;
+                        couponCodeVerified = '';
+                        resultEl.innerHTML = '<span style="color:#ff4d4f;">验证失败，请重试</span>';
+                    }
+                    updatePriceSummary();
+                }
+            };
+            xhr.send('coupon_code=' + encodeURIComponent(code) + '&plan_id=' + planId + '&amount=' + afterVip.toFixed(2));
+        }
+
         function generateOrderNo() {
-            // 生成时间部分（YYYYMMDDHHMMSS）
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-
-            const timePart = `${year}${month}${day}${hours}${minutes}${seconds}`;
-
-            // 生成4位随机数
-            const randomNum = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
-
-            return timePart + randomNum;
+            var now = new Date();
+            var y = now.getFullYear();
+            var mo = String(now.getMonth() + 1).padStart(2, '0');
+            var d = String(now.getDate()).padStart(2, '0');
+            var h = String(now.getHours()).padStart(2, '0');
+            var mi = String(now.getMinutes()).padStart(2, '0');
+            var s = String(now.getSeconds()).padStart(2, '0');
+            var rand = String(Math.floor(Math.random() * 9999) + 1).padStart(4, '0');
+            return y + mo + d + h + mi + s + rand;
         }
 
         // 提交订单
         document.getElementById('submitBtn').addEventListener('click', function() {
-            const selectedPlan = document.querySelector('.plan-card.selected');
-            const selectedPayment = document.querySelector('.payment-option.selected');
+            var selectedPlan = document.querySelector('.plan-card.selected');
+            var selectedPayment = document.querySelector('.payment-option.selected');
 
-            if (!selectedPlan) {
-                alert('请选择一个套餐');
-                return;
+            if (!selectedPlan) { alert('请选择一个套餐'); return; }
+            if (!selectedPayment) { alert('请选择支付方式'); return; }
+
+            var planId = selectedPlan.dataset.id;
+            var method = selectedPayment.dataset.method || 'alipay';
+            var orderNo = generateOrderNo();
+
+            // 余额支付检查
+            if (method === 'balance') {
+                var finalText = document.getElementById('summaryFinal').textContent;
+                var finalMatch = finalText.match(/[\d.]+/);
+                var finalAmt = finalMatch ? parseFloat(finalMatch[0]) : 0;
+                if (userBalance < finalAmt) {
+                    alert('余额不足，请充值后再试或选择其他支付方式');
+                    return;
+                }
+                if (!confirm('确认使用余额支付 ¥' + finalAmt.toFixed(2) + '？')) return;
             }
 
-            if (!selectedPayment) {
-                alert('请选择支付方式');
-                return;
-            }
-
-            const planId = selectedPlan.dataset.id;
-            const planName = selectedPlan.querySelector('h3').textContent;
-            const paymentMethod = selectedPayment.querySelector('h4').textContent;
-            const orderNo = generateOrderNo();
-
-            // 显示加载状态
             this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 处理中...';
             this.disabled = true;
 
-            // 模拟API请求
-            setTimeout(() => {
-                window.location.href = `/pay?plan=${planId}&method=${paymentMethod}&order_no=${orderNo}`;
+            var url = '/pay?plan=' + planId + '&method=' + encodeURIComponent(method) + '&order_no=' + orderNo;
+            if (couponCodeVerified) {
+                url += '&coupon_code=' + encodeURIComponent(couponCodeVerified);
+            }
+
+            setTimeout(function() {
+                window.location.href = url;
             }, 500);
         });
 
-        // 页面加载动画
+        // 页面加载
         document.addEventListener('DOMContentLoaded', function() {
-            const elements = document.querySelectorAll('.fade-in');
-            elements.forEach((el, index) => {
-                setTimeout(() => {
+            var elements = document.querySelectorAll('.fade-in');
+            elements.forEach(function(el, index) {
+                setTimeout(function() {
                     el.style.opacity = '1';
                     el.style.transform = 'translateY(0)';
                 }, 150 * index);
             });
+            // 初始化价格明细
+            updatePriceSummary();
         });
 
         function calculateExpiryDate() {
-            const remainingDays = parseInt("{$data['endtime']}");
-            const today = new Date();
-            const expiryDate = new Date(today.setDate(today.getDate() + remainingDays));
-
-            const year = expiryDate.getFullYear();
-            const month = expiryDate.getMonth() + 1;
-            const day = expiryDate.getDate();
-
-            document.getElementById('expiryDate').innerHTML =
-                `${year}年${month}月${day}日`;
-
-            const warningEl = document.getElementById('expiryWarning');
-            if (remainingDays <= 7) {
-                warningEl.innerHTML = "⚠️ 您的服务即将到期，请及时续费！";
-                warningEl.style.color = "#ff4444";
-            } else if (remainingDays <= 30) {
-                warningEl.innerHTML = "提醒：建议提前续费以确保服务不中断";
+            var remainingDays = parseInt("{$data['endtime']}");
+            var today = new Date();
+            var expiryDate = new Date(today.setDate(today.getDate() + remainingDays));
+            var year = expiryDate.getFullYear();
+            var month = expiryDate.getMonth() + 1;
+            var day = expiryDate.getDate();
+            var el = document.getElementById('expiryDate');
+            if (el) el.innerHTML = year + '年' + month + '月' + day + '日';
+            var warningEl = document.getElementById('expiryWarning');
+            if (warningEl) {
+                if (remainingDays <= 7) {
+                    warningEl.innerHTML = "您的服务即将到期，请及时续费！";
+                    warningEl.style.color = "#ff4444";
+                } else if (remainingDays <= 30) {
+                    warningEl.innerHTML = "提醒：建议提前续费以确保服务不中断";
+                }
             }
         }
         window.addEventListener('load', calculateExpiryDate);
-
-        // 套餐选择交互
-        document.addEventListener('DOMContentLoaded', function() {
-            const planCards = document.querySelectorAll('.plan-card');
-            planCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    planCards.forEach(c => c.classList.remove('selected'));
-                    this.classList.add('selected');
-
-                    // 更新支付按钮金额
-                    const price = this.querySelector('.price').textContent.split(' ')[0];
-                    document.querySelector('.btn-block').innerHTML =
-                        `<i class="fas fa-shopping-cart"></i> 确认支付 ${price}`;
-                });
-            });
-
-            // 支付方式选择交互
-            const paymentOptions = document.querySelectorAll('.payment-option');
-            paymentOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    paymentOptions.forEach(o => o.classList.remove('selected'));
-                    this.classList.add('selected');
-                });
-            });
-        });
     </script>
 </block>

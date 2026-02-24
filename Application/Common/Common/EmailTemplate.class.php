@@ -178,6 +178,15 @@ class EmailTemplate {
      * 用户注册激活邮件模板
      */
     public static function getActivationTemplate($username, $activationLink) {
+        // 优先从数据库读取模板
+        $dbContent = self::loadDbTemplate('activation', array(
+            'username' => $username,
+            'activation_link' => $activationLink,
+        ));
+        if ($dbContent !== false) {
+            return $dbContent;
+        }
+        // fallback到硬编码模板
         $title = '账户激活';
         $content = '
             <h2>欢迎注册！</h2>
@@ -206,6 +215,17 @@ class EmailTemplate {
      * 订阅地址通知邮件模板
      */
     public static function getSubscriptionTemplate($username, $mobileUrl, $clashUrl, $expireDate = null) {
+        // 优先从数据库读取模板
+        $dbContent = self::loadDbTemplate('subscription_created', array(
+            'username' => $username,
+            'mobile_url' => $mobileUrl,
+            'clash_url' => $clashUrl,
+            'expire_date' => $expireDate ? date('Y年m月d日', $expireDate) : '',
+        ));
+        if ($dbContent !== false) {
+            return $dbContent;
+        }
+        // fallback到硬编码模板
         $title = '订阅地址通知';
         $expireInfo = $expireDate ? '<tr><th>到期时间</th><td style="color: #e74c3c; font-weight: bold;">' . date('Y年m月d日', $expireDate) . '</td></tr>' : '';
         
@@ -253,6 +273,25 @@ class EmailTemplate {
      * 订单通知邮件模板
      */
     public static function getOrderTemplate($orderNo, $planName, $price, $duration, $status = '已支付', $username = '', $mobileUrl = '', $clashUrl = '', $expireDate = '', $isAdmin = false) {
+        // 优先从数据库读取模板
+        $tplName = $isAdmin ? 'payment_success_admin' : 'payment_success';
+        $dbContent = self::loadDbTemplate($tplName, array(
+            'order_no' => $orderNo,
+            'plan_name' => $planName,
+            'price' => $price,
+            'duration' => $duration,
+            'status' => $status,
+            'username' => $username,
+            'mobile_url' => $mobileUrl,
+            'clash_url' => $clashUrl,
+            'expire_date' => $expireDate,
+            'site_domain' => self::getSiteDomain(),
+            'time' => date('Y年m月d日 H:i:s'),
+        ));
+        if ($dbContent !== false) {
+            return $dbContent;
+        }
+        // fallback到硬编码模板
         $title = '订单支付成功通知';
         $statusColor = $status === '已支付' ? '#28a745' : '#ffc107';
         $siteDomain = self::getSiteDomain();
@@ -427,11 +466,42 @@ class EmailTemplate {
         if (!empty($_SERVER['HTTP_HOST'])) return $_SERVER['HTTP_HOST'];
         return 'yourdomain.com';
     }
+
+    /**
+     * 从数据库读取模板并渲染变量
+     * @param string $templateName 模板名称
+     * @param array $variables 模板变量
+     * @return string|false 渲染后的内容，失败返回false
+     */
+    private static function loadDbTemplate($templateName, $variables = array()) {
+        try {
+            $result = D('EmailTemplateDb')->renderTemplate($templateName, $variables);
+            if ($result && !empty($result['content'])) {
+                return $result['content'];
+            }
+        } catch (\Exception $e) {
+            // 数据库表不存在或查询失败时fallback到硬编码模板
+        }
+        return false;
+    }
     
     /**
      * 到期提醒邮件模板
      */
     public static function getExpirationTemplate($username, $expireDate, $isExpired = false) {
+        // 优先从数据库读取模板
+        $tplName = $isExpired ? 'expiration_expired' : 'expiration_warning';
+        $daysLeft = $isExpired ? 0 : max(0, ceil(($expireDate - time()) / 86400));
+        $dbContent = self::loadDbTemplate($tplName, array(
+            'username' => $username,
+            'expire_date' => date('Y年m月d日', $expireDate),
+            'days_left' => $daysLeft,
+            'site_domain' => self::getSiteDomain(),
+        ));
+        if ($dbContent !== false) {
+            return $dbContent;
+        }
+        // fallback到硬编码模板
         $title = $isExpired ? '订阅已到期' : '订阅即将到期';
         $dateStr = date('Y年m月d日', $expireDate);
         $siteDomain = self::getSiteDomain();
@@ -493,6 +563,15 @@ class EmailTemplate {
      * 密码重置邮件模板
      */
     public static function getPasswordResetTemplate($username, $resetLink) {
+        // 优先从数据库读取模板
+        $dbContent = self::loadDbTemplate('password_reset', array(
+            'username' => $username,
+            'reset_link' => $resetLink,
+        ));
+        if ($dbContent !== false) {
+            return $dbContent;
+        }
+        // fallback到硬编码模板
         $title = '密码重置';
         $content = '
             <h2>🔐 密码重置请求</h2>

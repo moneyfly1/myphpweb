@@ -1,0 +1,72 @@
+<extend name="Public:base" />
+<block name="title">邮件模板管理</block>
+<block name="content">
+    <style>
+        @media (max-width:768px) {
+            .page-header h1 { font-size:1.2rem!important; padding:10px 0!important; }
+            .table { font-size:14px!important; }
+            .table th,.table td { padding:8px 6px!important; word-break:break-word!important; }
+            .btn { font-size:14px!important; padding:8px 12px!important; border-radius:6px!important; margin:2px!important; }
+            .nav-tabs { display:flex!important; overflow:hidden!important; }
+            .nav-tabs li { flex:1!important; }
+            .nav-tabs li a { font-size:14px!important; padding:12px 8px!important; text-align:center!important; }
+        }
+        @media (min-width:769px) { .mobile-only { display:none!important; } }
+        .var-list { font-size:12px; color:#888; font-family:monospace; word-break:break-all; }
+    </style>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{:U('Admin/Index/index')}"><i class="fa fa-home"></i> 首页</a></li>
+            <li class="breadcrumb-item"><a href="{:U('Admin/Index/index')}">后台管理</a></li>
+            <li class="breadcrumb-item active">邮件模板管理</li>
+        </ol>
+    </nav>
+    <div class="page-navigation">
+        <a href="{:U('Admin/Index/index')}" class="nav-item"><i class="fa fa-home"></i> 首页</a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/Index/index')}" class="nav-item">后台管理</a>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">邮件模板管理</div>
+    </div>
+    <div class="page-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-start">
+                    <ul class="nav nav-tabs border-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{:U('Admin/EmailTemplate/index')}">模板列表</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+            <div class="tab-content">
+                <table class="table table-striped table-bordered table-hover table-condensed">
+                    <tr>
+                        <th width="5%">ID</th>
+                        <th width="12%">模板标识</th>
+                        <th width="18%">邮件主题</th>
+                        <th width="25%">可用变量</th>
+                        <th width="6%">状态</th>
+                        <th width="14%">更新时间</th>
+                        <th width="10%">操作</th>
+                    </tr>
+                    <foreach name="list" item="v">
+                        <tr>
+                            <td>{$v['id']}</td>
+                            <td><code>{$v['name']}</code></td>
+                            <td>{$v['subject']}</td>
+                            <td><span class="var-list">{$v['variables']}</span></td>
+                            <td>{$v['status_text']}</td>
+                            <td>{$v['updated_fmt']}</td>
+                            <td>
+                                <a class="btn btn-xs btn-warning" href="{:U('Admin/EmailTemplate/edit',array('id'=>$v['id']))}">编辑</a>
+                            </td>
+                        </tr>
+                    </foreach>
+                </table>
+            </div>
+            </div>
+        </div>
+    </div>
+</block>

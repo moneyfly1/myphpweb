@@ -1,0 +1,137 @@
+<extend name="Public:base" />
+<block name="title">添加VIP等级</block>
+<block name="css">
+    <style>
+        .breadcrumb { background:transparent; padding:0; margin-bottom:20px; display:flex; align-items:center; gap:8px; font-size:14px; }
+        .breadcrumb-item { display:flex; align-items:center; }
+        .breadcrumb-item a { color:#1677ff; text-decoration:none; display:flex; align-items:center; gap:6px; transition:color 0.3s ease; }
+        .breadcrumb-item a:hover { color:#0958d9; text-decoration:none; }
+        .breadcrumb-item.active { color:#8c8c8c; }
+        .breadcrumb-item:not(:last-child)::after { content:'/'; color:#d9d9d9; margin-left:8px; font-size:12px; }
+        .page-navigation { background:#f8f9fa; border:1px solid #e9ecef; border-radius:8px; padding:12px 16px; margin-bottom:20px; display:flex; align-items:center; gap:8px; font-size:14px; }
+        .page-navigation .nav-item { display:flex; align-items:center; color:#6c757d; text-decoration:none; transition:color 0.3s ease; }
+        .page-navigation .nav-item:hover { color:#1677ff; text-decoration:none; }
+        .page-navigation .nav-item.active { color:#1677ff; font-weight:500; }
+        .page-navigation .nav-separator { color:#dee2e6; margin:0 4px; }
+        .card { border:none; border-radius:12px; box-shadow:0 4px 8px rgba(0,0,0,0.05); margin-bottom:20px; }
+        .card-header { background:#fafafa; border-bottom:1px solid #f0f0f0; padding:16px 20px; font-weight:500; }
+        .table { width:100%; border-collapse:collapse; margin-bottom:20px; background:white; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+        .table th { background:#f8f9fa; border:1px solid #dee2e6; padding:15px 20px; text-align:left; font-weight:600; color:#495057; width:150px; vertical-align:top; font-size:14px; }
+        .table td { border:1px solid #dee2e6; padding:15px 20px; vertical-align:top; background:white; }
+        .input-medium { width:100%; min-width:500px; padding:12px 15px; border:1px solid #ced4da; border-radius:6px; font-size:14px; line-height:1.5; transition:border-color 0.3s ease,box-shadow 0.3s ease; background:#fafafa; }
+        .input-medium:focus { outline:none; border-color:#1677ff; box-shadow:0 0 0 3px rgba(22,119,255,0.1); background:white; }
+        textarea.input-medium { min-height:120px; resize:vertical; }
+        .inputword { font-size:14px; margin-right:10px; color:#495057; font-weight:500; }
+        .btn-success { padding:12px 24px; font-size:14px; font-weight:500; border-radius:6px; background:#28a745; border:1px solid #28a745; color:white; transition:all 0.3s ease; }
+        .btn-success:hover { background:#218838; border-color:#1e7e34; transform:translateY(-1px); box-shadow:0 4px 8px rgba(40,167,69,0.3); }
+        .form-hint { font-size:12px; color:#999; margin-top:4px; }
+        @media (max-width:768px) {
+            .breadcrumb { display:none!important; }
+            .page-navigation { font-size:12px; padding:8px 12px; margin-bottom:15px; }
+            .input-medium { min-width:100%; font-size:16px; padding:12px; }
+            .btn-success { width:100%; padding:15px; font-size:16px; }
+            .table th { width:120px; padding:12px 15px; font-size:13px; }
+            .table td { padding:12px 15px; }
+        }
+        @media (min-width:769px) { .mobile-only { display:none!important; } }
+    </style>
+</block>
+<block name="content">
+    <!-- 面包屑导航 -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{:U('Admin/Index/index')}"><i class="fa fa-home"></i> 首页</a></li>
+            <li class="breadcrumb-item"><a href="{:U('Admin/Index/index')}">后台管理</a></li>
+            <li class="breadcrumb-item"><a href="{:U('Admin/UserLevel/index')}">等级列表</a></li>
+            <li class="breadcrumb-item active">添加等级</li>
+        </ol>
+    </nav>
+    <div class="page-navigation">
+        <a href="{:U('Admin/Index/index')}" class="nav-item"><i class="fa fa-home"></i> 首页</a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/Index/index')}" class="nav-item">后台管理</a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/UserLevel/index')}" class="nav-item">等级列表</a>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">添加等级</div>
+    </div>
+    <div class="page-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-start">
+                    <ul class="nav nav-tabs border-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{:U('Admin/UserLevel/index')}">等级列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{:U('Admin/UserLevel/add')}">添加等级</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+            <div class="tab-content">
+                <form action="{:U('Admin/UserLevel/add')}" method="post">
+                    <table class="table">
+                        <tr>
+                            <th>等级名称</th>
+                            <td><input class="input-medium" type="text" name="level_name" placeholder="如：普通会员、银牌VIP、金牌VIP" required></td>
+                        </tr>
+                        <tr>
+                            <th>排序</th>
+                            <td>
+                                <input class="input-medium" type="number" name="level_order" value="0" min="0">
+                                <div class="form-hint">数字越小排序越靠前</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>最低消费(元)</th>
+                            <td>
+                                <input class="input-medium" type="number" name="min_consumption" value="0" min="0" step="0.01">
+                                <div class="form-hint">用户累计消费达到此金额自动升级</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>折扣率</th>
+                            <td>
+                                <input class="input-medium" type="number" name="discount_rate" value="1.00" min="0.01" max="1.00" step="0.01">
+                                <div class="form-hint">0.01~1.00，1.00表示无折扣，0.80表示8折</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>额外设备数</th>
+                            <td>
+                                <input class="input-medium" type="number" name="device_limit_bonus" value="0" min="0">
+                                <div class="form-hint">该等级额外可用的设备数量</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>等级权益</th>
+                            <td><textarea class="input-medium" name="benefits" placeholder="描述该等级的权益说明"></textarea></td>
+                        </tr>
+                        <tr>
+                            <th>图标URL</th>
+                            <td><input class="input-medium" type="text" name="icon_url" placeholder="等级图标地址(可选)"></td>
+                        </tr>
+                        <tr>
+                            <th>颜色</th>
+                            <td><input type="color" name="color" value="#1677ff" style="width:60px;height:36px;border:1px solid #ced4da;border-radius:4px;cursor:pointer;"></td>
+                        </tr>
+                        <tr>
+                            <th>状态</th>
+                            <td>
+                                <span class="inputword">启用</span> <input type="radio" name="is_active" value="1" checked="checked"> &emsp;
+                                <span class="inputword">禁用</span> <input type="radio" name="is_active" value="0">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <td><input class="btn btn-success" type="submit" value="添加"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+</block>

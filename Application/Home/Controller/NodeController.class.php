@@ -25,7 +25,46 @@ class NodeController extends Controller {
         }else{
             $data['endtime'] = floor(($endtime - $nowtime) / 86400);
         }
-        
+
+        // ====== 从数据库获取分配给该用户的节点 ======
+        $dbNodes = array();
+        $assignedNodeIds = M('user_node')->where(array('user_id' => $userId))->getField('node_id', true);
+        if (!empty($assignedNodeIds)) {
+            $assignedList = M('node')->where(array('id' => array('in', $assignedNodeIds), 'is_visible' => 1))->order('sort_order asc, id asc')->select();
+            if ($assignedList) {
+                $nodeId = 1;
+                foreach ($assignedList as $row) {
+                    $node = array(
+                        'id'     => $nodeId++,
+                        'name'   => $row['name'],
+                        'type'   => $row['type'],
+                        'server' => $row['server'],
+                        'port'   => $row['port'],
+                        'source' => 'db',
+                    );
+                    // 根据节点类型生成协议链接
+                    switch($row['type']) {
+                        case 'vmess':
+                            $node['protocol_link'] = $this->generateVmessLink($node);
+                            break;
+                        case 'vless':
+                            $node['protocol_link'] = $this->generateVlessLink($node);
+                            break;
+                        case 'trojan':
+                            $node['protocol_link'] = $this->generateTrojanLink($node);
+                            break;
+                        case 'ss':
+                            $node['protocol_link'] = $this->generateSSLink($node);
+                            break;
+                        default:
+                            $node['protocol_link'] = $this->generateSSRLink($node);
+                            break;
+                    }
+                    $dbNodes[] = $node;
+                }
+            }
+        }
+
         // 读取clash.yaml文件
         $clashFile = './Upload/true/clash.yaml';
         if(file_exists($clashFile)){
@@ -181,6 +220,24 @@ class NodeController extends Controller {
             $data['nodes'] = [];
             $data['total_nodes'] = 0;
             $data['qq'] = $username;
+        }
+
+        // 合并：DB分配节点在前，文件解析节点在后
+        if (!empty($dbNodes)) {
+            // 重新编号：DB节点先排，然后文件节点接续
+            $merged = array();
+            $idx = 1;
+            foreach ($dbNodes as $dn) {
+                $dn['id'] = $idx++;
+                $merged[] = $dn;
+            }
+            foreach ($data['nodes'] as $fn) {
+                $fn['id'] = $idx++;
+                $fn['source'] = 'file';
+                $merged[] = $fn;
+            }
+            $data['nodes'] = $merged;
+            $data['total_nodes'] = count($merged);
         }
         
         $this->assign('data', $data);

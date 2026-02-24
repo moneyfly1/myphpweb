@@ -1,0 +1,77 @@
+<extend name="Public:layout" />
+<block name="title">提交工单</block>
+<block name="content">
+    <style>
+        .ticket-page { max-width: 700px; margin: 0 auto; padding: 30px 20px; }
+        .ticket-page h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 24px; }
+        .form-card {
+            background: var(--color-bg); border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.08); padding: 30px;
+            border: 1px solid rgba(0,0,0,.06);
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 8px; color: var(--color-text); }
+        .form-group label .required { color: var(--color-danger); margin-left: 2px; }
+        .form-control {
+            width: 100%; padding: 10px 14px; border: 1px solid var(--color-border); border-radius: 8px;
+            font-size: 14px; font-family: inherit; transition: border-color .2s; box-sizing: border-box;
+        }
+        .form-control:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(22,119,255,.1); }
+        select.form-control { appearance: auto; }
+        textarea.form-control { min-height: 160px; resize: vertical; line-height: 1.8; }
+        .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
+        .btn-submit {
+            padding: 12px 32px; background: var(--color-primary); color: #fff; border: none;
+            border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all .2s;
+        }
+        .btn-submit:hover { background: var(--color-primary-active); }
+        .btn-back {
+            padding: 12px 24px; background: var(--color-bg-page); color: var(--color-text-secondary); border: none;
+            border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer;
+            text-decoration: none; display: inline-flex; align-items: center; transition: all .2s;
+        }
+        .btn-back:hover { background: var(--color-border); }
+        @media (max-width: 767px) {
+            .ticket-page { padding: 16px 12px; }
+            .form-card { padding: 20px 16px; }
+            .form-control { padding: 12px 14px; min-height: 44px; }
+            .btn-submit, .btn-back { padding: 14px 24px; font-size: 15px; min-height: 44px; }
+        }
+    </style>
+    <div class="ticket-page">
+        <h2>提交工单</h2>
+        <div class="form-card">
+            <form action="{:U('Home/Ticket/create')}" method="post">
+                <div class="form-group">
+                    <label>标题 <span class="required">*</span></label>
+                    <input type="text" name="title" class="form-control" placeholder="请简要描述您的问题" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label>类型</label>
+                    <select name="type" class="form-control">
+                        <option value="0">咨询</option>
+                        <option value="1">故障</option>
+                        <option value="2">建议</option>
+                        <option value="3">其他</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>优先级</label>
+                    <select name="priority" class="form-control">
+                        <option value="0">低</option>
+                        <option value="1" selected>中</option>
+                        <option value="2">高</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>内容 <span class="required">*</span></label>
+                    <textarea name="content" class="form-control" placeholder="请详细描述您遇到的问题或需求..." required></textarea>
+                </div>
+                <div class="form-actions">
+                    <a href="{:U('Home/Ticket/index')}" class="btn-back">返回</a>
+                    <button type="submit" class="btn-submit">提交工单</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</block>

@@ -31,11 +31,8 @@ Thumbs.db
 .idea/
 .vscode/
 *.sublime-*
+.claude/
 
 # 日志
 *.log
 logs/
-
-# 诊断文档（非代码）
-架构与风格重构方案.md
-项目问题与修复方案报告.md

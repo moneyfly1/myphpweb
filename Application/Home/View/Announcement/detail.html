@@ -1,0 +1,44 @@
+<extend name="Public:layout" />
+<block name="title">{$data['title']}</block>
+<block name="content">
+    <style>
+        .announce-detail { max-width: 800px; margin: 0 auto; padding: 30px 20px; }
+        .announce-back { display: inline-flex; align-items: center; gap: 6px; color: var(--color-primary);
+            text-decoration: none; font-size: 14px; margin-bottom: 20px; transition: all .2s; }
+        .announce-back:hover { opacity: .7; transform: translateX(-2px); }
+        .announce-detail-card {
+            background: var(--color-bg); border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.08); padding: 30px;
+            border: 1px solid rgba(0,0,0,.06);
+        }
+        .announce-detail-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+        .type-tag { display: inline-block; padding: 3px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+        .type-通知 { background: rgba(66,153,225,.12); color: #4299e1; }
+        .type-维护 { background: rgba(237,137,54,.12); color: #ed8936; }
+        .type-促销 { background: rgba(72,187,120,.12); color: #48bb78; }
+        .type-紧急 { background: rgba(229,62,62,.12); color: #e53e3e; }
+        .announce-detail-date { font-size: 13px; color: var(--color-text-placeholder); }
+        .announce-detail-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 20px; color: var(--color-text); line-height: 1.4; }
+        .announce-detail-body { font-size: 15px; line-height: 1.8; color: var(--color-text-secondary); word-break: break-word; }
+        .announce-detail-body p { margin-bottom: 12px; }
+        .announce-detail-body img { max-width: 100%; border-radius: 8px; margin: 12px 0; }
+        .announce-detail-body a { color: var(--color-primary); }
+        @media (max-width: 767px) {
+            .announce-detail-page { padding: 16px 12px; }
+            .announce-detail-card { padding: 20px 16px; }
+        }
+    </style>
+    <div class="announce-detail">
+        <a href="{:U('Home/Announcement/index')}" class="announce-back">
+            <i class="fas fa-chevron-left"></i> 返回公告列表
+        </a>
+        <div class="announce-detail-card">
+            <div class="announce-detail-meta">
+                <span class="type-tag type-{$data.type_text}">{$data.type_text}</span>
+                <span class="announce-detail-date"><i class="fas fa-clock"></i> {$data.start_time_fmt}</span>
+            </div>
+            <h1 class="announce-detail-title">{$data.title}</h1>
+            <div class="announce-detail-body">{$data.content}</div>
+        </div>
+    </div>
+</block>

@@ -1,0 +1,195 @@
+<extend name="Public:base" />
+<block name="title">采集节点</block>
+<block name="content">
+    <style>
+        .collect-textarea { width:100%; min-height:120px; padding:12px 15px; border:1px solid #ced4da; border-radius:6px; font-size:14px; font-family:monospace; resize:vertical; background:#fafafa; }
+        .collect-textarea:focus { outline:none; border-color:#1677ff; box-shadow:0 0 0 3px rgba(22,119,255,0.1); background:#fff; }
+        .preview-table { width:100%; border-collapse:collapse; margin-top:15px; }
+        .preview-table th, .preview-table td { border:1px solid #dee2e6; padding:10px 12px; text-align:left; font-size:13px; }
+        .preview-table th { background:#f8f9fa; font-weight:600; color:#495057; }
+        .preview-table tr.exists td { color:#999; background:#fafafa; }
+        .badge-type { display:inline-block; padding:2px 10px; border-radius:4px; color:#fff; font-size:12px; }
+        .badge-vmess { background:#1677ff; }
+        .badge-vless { background:#722ed1; }
+        .badge-trojan { background:#eb2f96; }
+        .badge-ss { background:#13c2c2; }
+        .btn-group-collect { display:flex; gap:10px; margin-top:15px; flex-wrap:wrap; }
+        .collect-stats { margin-top:10px; padding:10px 15px; background:#f6ffed; border:1px solid #b7eb8f; border-radius:6px; color:#389e0d; font-size:14px; }
+        .collect-stats.error { background:#fff2f0; border-color:#ffccc7; color:#cf1322; }
+        .collect-errors { margin-top:10px; padding:10px 15px; background:#fffbe6; border:1px solid #ffe58f; border-radius:6px; color:#d48806; font-size:13px; }
+        #previewArea { display:none; margin-top:20px; }
+        .check-all-wrap { margin-bottom:8px; }
+        @media (max-width:768px) {
+            .preview-table { font-size:12px; }
+            .preview-table th, .preview-table td { padding:8px 6px; }
+            .hide-mobile { display:none; }
+        }
+    </style>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{:U('Admin/Index/index')}"><i class="fa fa-home"></i> 首页</a></li>
+            <li class="breadcrumb-item"><a href="{:U('Admin/NodeMgr/index')}">节点管理</a></li>
+            <li class="breadcrumb-item active">采集节点</li>
+        </ol>
+    </nav>
+    <div class="page-navigation">
+        <a href="{:U('Admin/Index/index')}" class="nav-item"><i class="fa fa-home"></i> 首页</a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/NodeMgr/index')}" class="nav-item">节点管理</a>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">采集节点</div>
+    </div>
+    <div class="page-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-start">
+                    <ul class="nav nav-tabs border-0">
+                        <li class="nav-item"><a class="nav-link" href="{:U('Admin/NodeMgr/index')}">节点列表</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{:U('Admin/NodeMgr/add')}">添加节点</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="javascript:;">采集节点</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{:U('Admin/NodeMgr/assign')}">节点分配</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+                <div style="margin-bottom:10px;color:#666;font-size:13px;">请输入订阅地址，每行一个。支持解析 vmess://、vless://、trojan://、ss:// 协议链接。</div>
+                <textarea class="collect-textarea" id="subUrls" placeholder="https://example.com/subscribe/xxx&#10;https://example.com/subscribe/yyy"></textarea>
+                <div class="btn-group-collect">
+                    <button class="btn btn-primary" id="btnPreview" onclick="doPreview()">预览解析</button>
+                    <button class="btn btn-success" id="btnImport" onclick="doImport()" style="display:none;">导入选中</button>
+                </div>
+                <div id="collectErrors" class="collect-errors" style="display:none;"></div>
+                <div id="collectStats" class="collect-stats" style="display:none;"></div>
+                <div id="previewArea">
+                    <div class="check-all-wrap">
+                        <label><input type="checkbox" id="checkAll" onchange="toggleAll(this)"> 全选/取消</label>
+                        <span id="selectedCount" style="margin-left:15px;color:#666;font-size:13px;"></span>
+                    </div>
+                    <table class="preview-table">
+                        <thead>
+                            <tr>
+                                <th width="4%"><input type="checkbox" id="checkAllHead" onchange="toggleAll(this)"></th>
+                                <th>名称</th>
+                                <th class="hide-mobile">服务器</th>
+                                <th width="6%">端口</th>
+                                <th width="8%">协议</th>
+                                <th class="hide-mobile">备注</th>
+                                <th width="8%">状态</th>
+                            </tr>
+                        </thead>
+                        <tbody id="previewBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- PLACEHOLDER_COLLECT_SCRIPT -->
+    <script>
+    var parsedNodes = [];
+    function doPreview() {
+        var urls = document.getElementById('subUrls').value.trim();
+        if (!urls) { alert('请输入订阅地址'); return; }
+        var btn = document.getElementById('btnPreview');
+        btn.disabled = true; btn.textContent = '解析中...';
+        document.getElementById('collectErrors').style.display = 'none';
+        document.getElementById('collectStats').style.display = 'none';
+        $.ajax({
+            url: "{:U('Admin/NodeMgr/importPreview')}",
+            type: 'post', dataType: 'json',
+            data: { urls: urls },
+            success: function(res) {
+                if (res.code == 0) {
+                    parsedNodes = res.data || [];
+                    renderPreview(parsedNodes);
+                    if (res.errors && res.errors.length > 0) {
+                        var el = document.getElementById('collectErrors');
+                        el.innerHTML = res.errors.join('<br>');
+                        el.style.display = 'block';
+                    }
+                } else {
+                    alert(res.msg);
+                }
+            },
+            error: function() { alert('请求失败，请检查网络'); },
+            complete: function() { btn.disabled = false; btn.textContent = '预览解析'; }
+        });
+    }
+    function renderPreview(nodes) {
+        var tbody = document.getElementById('previewBody');
+        var area = document.getElementById('previewArea');
+        var btnImport = document.getElementById('btnImport');
+        if (!nodes || nodes.length == 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#999;">未解析到任何节点</td></tr>';
+            area.style.display = 'block';
+            btnImport.style.display = 'none';
+            return;
+        }
+        var html = '';
+        for (var i = 0; i < nodes.length; i++) {
+            var n = nodes[i];
+            var cls = n.exists ? ' class="exists"' : '';
+            var badge = '<span class="badge-type badge-' + n.type + '">' + n.type.toUpperCase() + '</span>';
+            var statusTxt = n.exists ? '<span style="color:#fa8c16;">已存在</span>' : '<span style="color:#52c41a;">新节点</span>';
+            var checked = n.exists ? '' : ' checked';
+            html += '<tr' + cls + '>';
+            html += '<td><input type="checkbox" class="node-check" data-idx="' + i + '"' + checked + '></td>';
+            html += '<td>' + (n.name || '-') + '</td>';
+            html += '<td class="hide-mobile">' + (n.server || '-') + '</td>';
+            html += '<td>' + (n.port || '-') + '</td>';
+            html += '<td>' + badge + '</td>';
+            html += '<td class="hide-mobile">' + (n.remark || '-') + '</td>';
+            html += '<td>' + statusTxt + '</td>';
+            html += '</tr>';
+        }
+        tbody.innerHTML = html;
+        area.style.display = 'block';
+        btnImport.style.display = 'inline-block';
+        updateSelectedCount();
+    }
+    function toggleAll(el) {
+        var cbs = document.querySelectorAll('.node-check');
+        for (var i = 0; i < cbs.length; i++) cbs[i].checked = el.checked;
+        document.getElementById('checkAll').checked = el.checked;
+        document.getElementById('checkAllHead').checked = el.checked;
+        updateSelectedCount();
+    }
+    function updateSelectedCount() {
+        var cbs = document.querySelectorAll('.node-check:checked');
+        var el = document.getElementById('selectedCount');
+        el.textContent = '已选 ' + cbs.length + ' 个节点';
+    }
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('node-check')) updateSelectedCount();
+    });
+    function doImport() {
+        var cbs = document.querySelectorAll('.node-check:checked');
+        if (cbs.length == 0) { alert('请至少选择一个节点'); return; }
+        var selected = [];
+        for (var i = 0; i < cbs.length; i++) {
+            var idx = parseInt(cbs[i].getAttribute('data-idx'));
+            selected.push(parsedNodes[idx]);
+        }
+        var btn = document.getElementById('btnImport');
+        btn.disabled = true; btn.textContent = '导入中...';
+        $.ajax({
+            url: "{:U('Admin/NodeMgr/doCollect')}",
+            type: 'post', dataType: 'json',
+            data: { nodes: JSON.stringify(selected) },
+            success: function(res) {
+                var el = document.getElementById('collectStats');
+                if (res.code == 0) {
+                    el.className = 'collect-stats';
+                    el.textContent = res.msg;
+                    el.style.display = 'block';
+                } else {
+                    el.className = 'collect-stats error';
+                    el.textContent = res.msg;
+                    el.style.display = 'block';
+                }
+            },
+            error: function() { alert('请求失败'); },
+            complete: function() { btn.disabled = false; btn.textContent = '导入选中'; }
+        });
+    }
+    </script>
+</block>

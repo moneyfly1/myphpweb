@@ -1,0 +1,205 @@
+<extend name="Public:layout" />
+<block name="title">工单详情</block>
+<block name="content">
+    <style>
+        .ticket-page { max-width: 800px; margin: 0 auto; padding: 30px 20px; }
+        .ticket-detail-header { margin-bottom: 24px; }
+        .ticket-detail-header h2 { font-size: 1.5rem; font-weight: 700; margin: 0 0 12px; }
+        .ticket-meta { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--color-text-placeholder); align-items: center; }
+        .ticket-meta code { font-size: 12px; }
+        .status-tag { display: inline-block; padding: 3px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+        .status-0 { background: rgba(237,137,54,.12); color: #ed8936; }
+        .status-1 { background: rgba(66,153,225,.12); color: #4299e1; }
+        .status-2 { background: rgba(72,187,120,.12); color: #48bb78; }
+        .status-3 { background: rgba(160,174,192,.12); color: #a0aec0; }
+        .ticket-body {
+            background: var(--color-bg); border-radius: 12px; padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.08); border: 1px solid rgba(0,0,0,.06);
+            margin-bottom: 24px; line-height: 1.8; white-space: pre-wrap;
+        }
+        .reply-section { margin-bottom: 24px; }
+        .reply-section h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 16px; }
+        .reply-item {
+            display: flex; gap: 14px; padding: 18px; margin-bottom: 12px;
+            background: var(--color-bg); border-radius: 10px;
+            border: 1px solid rgba(0,0,0,.06);
+        }
+        .reply-item.is-admin { background: #fffbf0; border-color: rgba(237,137,54,.15); }
+        .reply-avatar {
+            width: 36px; height: 36px; border-radius: 50%; background: var(--color-primary);
+            color: #fff; display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 14px; flex-shrink: 0;
+        }
+        .reply-avatar.admin { background: #ed8936; }
+        .reply-body { flex: 1; }
+        .reply-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .reply-name { font-weight: 600; font-size: 14px; }
+        .reply-badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+        .reply-badge.admin-b { background: rgba(237,137,54,.12); color: #ed8936; }
+        .reply-badge.user-b { background: rgba(66,153,225,.12); color: #4299e1; }
+        .reply-time { font-size: 12px; color: var(--color-text-placeholder); }
+        .reply-text { font-size: 14px; line-height: 1.8; white-space: pre-wrap; }
+        .reply-form {
+            background: var(--color-bg); border-radius: 12px; padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.08); border: 1px solid rgba(0,0,0,.06);
+            margin-bottom: 24px;
+        }
+        .reply-form h3 { font-size: 1rem; font-weight: 600; margin-bottom: 14px; }
+        .reply-form textarea {
+            width: 100%; min-height: 100px; border: 1px solid var(--color-border); border-radius: 8px;
+            padding: 12px; font-size: 14px; font-family: inherit; resize: vertical;
+            box-sizing: border-box; transition: border-color .2s;
+        }
+        .reply-form textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(22,119,255,.1); }
+        .reply-form-actions { display: flex; gap: 10px; margin-top: 12px; justify-content: flex-end; }
+        .btn-primary-sm {
+            padding: 10px 24px; background: var(--color-primary); color: #fff; border: none;
+            border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .2s;
+        }
+        .btn-primary-sm:hover { background: var(--color-primary-active); }
+        .btn-close-ticket {
+            padding: 10px 20px; background: var(--color-bg-page); color: var(--color-text-secondary); border: none;
+            border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all .2s;
+        }
+        .btn-close-ticket:hover { background: var(--color-border); color: var(--color-text); }
+        .actions-bar { display: flex; gap: 10px; margin-bottom: 24px; }
+        .rate-section {
+            background: var(--color-bg); border-radius: 12px; padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.08); border: 1px solid rgba(0,0,0,.06);
+            margin-bottom: 24px; text-align: center;
+        }
+        .rate-section h3 { font-size: 1rem; font-weight: 600; margin-bottom: 14px; }
+        .star-rating { display: inline-flex; gap: 6px; font-size: 28px; cursor: pointer; }
+        .star-rating .star { color: var(--color-border); transition: color .15s; }
+        .star-rating .star.active { color: var(--color-warning); }
+        .star-rating .star:hover, .star-rating .star:hover ~ .star { color: var(--color-warning); }
+        .rate-done { color: var(--color-warning); font-size: 24px; }
+        .empty-reply { text-align: center; padding: 30px; color: var(--color-border); }
+        @media (max-width: 767px) {
+            .ticket-page { padding: 16px 12px; }
+            .ticket-detail-card { padding: 20px 16px; }
+            .reply-item { padding: 14px 16px; }
+            .reply-badge { font-size: 12px; }
+            .btn-primary-sm { padding: 12px 20px; min-height: 44px; }
+            .btn-close-ticket { padding: 12px 16px; min-height: 44px; }
+            .star { font-size: 32px; padding: 4px; }
+        }
+    </style>
+    <div class="ticket-page">
+        <div class="ticket-detail-header">
+            <h2>{$ticket['title']}</h2>
+            <div class="ticket-meta">
+                <code>{$ticket['ticket_no']}</code>
+                <if condition="$ticket['status'] eq 0"><span class="status-tag status-0">待处理</span>
+                <elseif condition="$ticket['status'] eq 1" /><span class="status-tag status-1">处理中</span>
+                <elseif condition="$ticket['status'] eq 2" /><span class="status-tag status-2">已回复</span>
+                <else /><span class="status-tag status-3">已关闭</span>
+                </if>
+                <span>创建于 {$ticket['created_at']|date='Y-m-d H:i',###}</span>
+            </div>
+        </div>
+
+        <div class="actions-bar">
+            <a href="{:U('Home/Ticket/index')}" class="btn-close-ticket"><i class="fas fa-arrow-left"></i> 返回列表</a>
+            <if condition="$ticket['status'] neq 3">
+            <a href="{:U('Home/Ticket/close', array('id'=>$ticket['id']))}" class="btn-close-ticket" onclick="return confirm('确定关闭该工单？')"><i class="fas fa-times-circle"></i> 关闭工单</a>
+            </if>
+        </div>
+
+        <div class="ticket-body">{$ticket['content']}</div>
+        <!-- 回复列表 -->
+        <div class="reply-section">
+            <h3>回复记录</h3>
+            <foreach name="replies" item="reply">
+            <div class="reply-item <if condition='$reply[\"is_admin\"] eq 1'>is-admin</if>">
+                <div class="reply-avatar <if condition='$reply[\"is_admin\"] eq 1'>admin</if>">
+                    <if condition="$reply['is_admin'] eq 1">A<else />U</if>
+                </div>
+                <div class="reply-body">
+                    <div class="reply-head">
+                        <span class="reply-name">{$reply['username']}</span>
+                        <if condition="$reply['is_admin'] eq 1">
+                        <span class="reply-badge admin-b">管理员</span>
+                        <else />
+                        <span class="reply-badge user-b">用户</span>
+                        </if>
+                        <span class="reply-time">{$reply['created_at']|date='Y-m-d H:i:s',###}</span>
+                    </div>
+                    <div class="reply-text">{$reply['content']}</div>
+                </div>
+            </div>
+            </foreach>
+            <if condition="empty($replies)">
+            <div class="empty-reply">暂无回复</div>
+            </if>
+        </div>
+
+        <!-- 回复表单（未关闭时显示） -->
+        <if condition="$ticket['status'] neq 3">
+        <div class="reply-form">
+            <h3>回复工单</h3>
+            <form action="{:U('Home/Ticket/reply')}" method="post">
+                <input type="hidden" name="ticket_id" value="{$ticket['id']}">
+                <textarea name="content" placeholder="请输入回复内容..." required></textarea>
+                <div class="reply-form-actions">
+                    <button type="submit" class="btn-primary-sm">提交回复</button>
+                </div>
+            </form>
+        </div>
+        </if>
+
+        <!-- 评价（已关闭且未评价时显示） -->
+        <if condition="$ticket['status'] eq 3">
+            <if condition="$ticket['rating']">
+            <div class="rate-section">
+                <h3>您的评价</h3>
+                <div class="rate-done">
+                    <foreach name="range(1,5)" item="i">
+                        <if condition="$i lte $ticket['rating']">&#9733;<else />&#9734;</if>
+                    </foreach>
+                </div>
+            </div>
+            <else />
+            <div class="rate-section">
+                <h3>请为本次服务评价</h3>
+                <form action="{:U('Home/Ticket/rate')}" method="post" id="rateForm">
+                    <input type="hidden" name="ticket_id" value="{$ticket['id']}">
+                    <input type="hidden" name="rating" id="ratingInput" value="0">
+                    <div class="star-rating" id="starRating">
+                        <span class="star" data-val="1">&#9733;</span>
+                        <span class="star" data-val="2">&#9733;</span>
+                        <span class="star" data-val="3">&#9733;</span>
+                        <span class="star" data-val="4">&#9733;</span>
+                        <span class="star" data-val="5">&#9733;</span>
+                    </div>
+                    <div style="margin-top:16px;">
+                        <button type="submit" class="btn-primary-sm" id="rateBtn" disabled>提交评价</button>
+                    </div>
+                </form>
+            </div>
+            </if>
+        </if>
+    </div>
+</block>
+<block name="footer">
+<script>
+$(function(){
+    var stars = $('#starRating .star');
+    stars.on('mouseenter', function(){
+        var val = $(this).data('val');
+        stars.each(function(){ $(this).toggleClass('active', $(this).data('val') <= val); });
+    });
+    $('#starRating').on('mouseleave', function(){
+        var cur = parseInt($('#ratingInput').val()) || 0;
+        stars.each(function(){ $(this).toggleClass('active', $(this).data('val') <= cur); });
+    });
+    stars.on('click', function(){
+        var val = $(this).data('val');
+        $('#ratingInput').val(val);
+        $('#rateBtn').prop('disabled', false);
+        stars.each(function(){ $(this).toggleClass('active', $(this).data('val') <= val); });
+    });
+});
+</script>
+</block>

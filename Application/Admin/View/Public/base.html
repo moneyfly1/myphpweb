@@ -1002,84 +1002,147 @@
         <!-- 导航菜单 -->
         <ul class="nav-list">
             <li class="nav-item">
-                <a href="{:U('Admin/Index/index')}" class="nav-link {if condition='$Think.MODULE_NAME eq \"Index\"'}active{/if}">
+                <a href="{:U('Admin/Index/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Index\"'}active{/if}">
                     <i class="fa fa-dashboard"></i>
                     <span class="menu-text">仪表盘</span>
                 </a>
             </li>
             
             <li class="nav-item">
-                <a href="{:U('Admin/Dingyue/list')}" class="nav-link {if condition='$Think.MODULE_NAME eq \"Dingyue\"'}active{/if}">
+                <a href="{:U('Admin/Dingyue/list')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Dingyue\"'}active{/if}">
                     <i class="fa fa-list"></i>
                     <span class="menu-text">订阅管理</span>
                 </a>
             </li>
             
             <li class="nav-item">
-                <a href="{:U('Admin/Users/list')}" class="nav-link {if condition='$Think.MODULE_NAME eq \"Users\"'}active{/if}">
+                <a href="{:U('Admin/Users/list')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Users\"'}active{/if}">
                     <i class="fa fa-users"></i>
                     <span class="menu-text">用户管理</span>
                 </a>
             </li>
             
             <li class="nav-item">
-                <a href="{:U('Admin/Level/index')}" class="nav-link {if condition='$Think.MODULE_NAME eq \"Level\"'}active{/if}">
+                <a href="{:U('Admin/Level/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Level\"'}active{/if}">
                     <i class="fa fa-cube"></i>
                     <span class="menu-text">套餐管理</span>
                 </a>
             </li>
             
             <li class="nav-item">
-                <a href="{:U('Admin/Order/index')}" class="nav-link {if condition='$Think.MODULE_NAME eq \"Order\" and $Think.ACTION_NAME eq \"index\"'}active{/if}">
+                <a href="{:U('Admin/Order/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Order\" and $Think.ACTION_NAME eq \"index\"'}active{/if}">
                     <i class="fa fa-shopping-cart"></i>
                     <span class="menu-text">订单列表</span>
                 </a>
             </li>
-            
+
             <li class="nav-item">
-                <a href="{:U('Admin/EmailQueue/index')}" class="nav-link {if condition='$Think.MODULE_NAME eq \"EmailQueue\"'}active{/if}">
+                <a href="{:U('Admin/Ticket/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Ticket\"'}active{/if}">
+                    <i class="fa fa-ticket"></i>
+                    <span class="menu-text">工单管理</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{:U('Admin/Announcement/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Announcement\"'}active{/if}">
+                    <i class="fa fa-bullhorn"></i>
+                    <span class="menu-text">公告管理</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{:U('Admin/Invite/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Invite\"'}active{/if}">
+                    <i class="fa fa-share-alt"></i>
+                    <span class="menu-text">邀请管理</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{:U('Admin/Coupon/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Coupon\"'}active{/if}">
+                    <i class="fa fa-tag"></i>
+                    <span class="menu-text">优惠券管理</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{:U('Admin/UserLevel/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"UserLevel\"'}active{/if}">
+                    <i class="fa fa-star"></i>
+                    <span class="menu-text">VIP等级</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{:U('Admin/NodeMgr/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"NodeMgr\"'}active{/if}">
+                    <i class="fa fa-server"></i>
+                    <span class="menu-text">节点管理</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{:U('Admin/Device/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Device\"'}active{/if}">
+                    <i class="fa fa-mobile"></i>
+                    <span class="menu-text">设备管理</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{:U('Admin/EmailQueue/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"EmailQueue\"'}active{/if}">
                     <i class="fa fa-envelope"></i>
                     <span class="menu-text">邮件队列</span>
                 </a>
             </li>
-            
+
             <li class="nav-item">
-                <a href="{:U('Admin/Notification/index')}" class="nav-link {if condition='$Think.MODULE_NAME eq \"Notification\"'}active{/if}">
+                <a href="{:U('Admin/EmailTemplate/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"EmailTemplate\"'}active{/if}">
+                    <i class="fa fa-file-text"></i>
+                    <span class="menu-text">邮件模板</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{:U('Admin/Notification/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Notification\"'}active{/if}">
                     <i class="fa fa-bell"></i>
                     <span class="menu-text">通知设置</span>
                 </a>
             </li>
+
+            <li class="nav-item">
+                <a href="{:U('Admin/Backup/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Backup\"'}active{/if}">
+                    <i class="fa fa-database"></i>
+                    <span class="menu-text">数据备份</span>
+                </a>
+            </li>
             
             <li class="nav-item">
-                <a href="{:U('Admin/Nav/index')}" class="nav-link {if condition='$Think.MODULE_NAME eq \"Nav\"'}active{/if}">
+                <a href="{:U('Admin/Nav/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Nav\"'}active{/if}">
                     <i class="fa fa-bars"></i>
                     <span class="menu-text">菜单管理</span>
                 </a>
             </li>
             
             <li class="nav-item">
-                <a href="{:U('Admin/Rule/index')}" class="nav-link {if condition='$Think.MODULE_NAME eq \"Rule\"'}active{/if}">
+                <a href="{:U('Admin/Rule/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Rule\"'}active{/if}">
                     <i class="fa fa-shield"></i>
                     <span class="menu-text">权限管理</span>
                 </a>
             </li>
             
             <li class="nav-item">
-                <a href="{:U('Admin/ConfigFile/edit')}" class="nav-link {if condition='$Think.MODULE_NAME eq \"ConfigFile\"'}active{/if}">
+                <a href="{:U('Admin/ConfigFile/edit')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"ConfigFile\"'}active{/if}">
                     <i class="fa fa-cog"></i>
                     <span class="menu-text">系统设置</span>
                 </a>
             </li>
             
             <li class="nav-item">
-                <a href="{:U('Admin/Order/paysite')}" class="nav-link {if condition='$Think.MODULE_NAME eq \"Order\" and $Think.ACTION_NAME eq \"paysite\"'}active{/if}">
+                <a href="{:U('Admin/Order/paysite')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Order\" and $Think.ACTION_NAME eq \"paysite\"'}active{/if}">
                     <i class="fa fa-credit-card"></i>
                     <span class="menu-text">支付宝配置</span>
                 </a>
             </li>
 
             <li class="nav-item">
-                <a href="{:U('Admin/Cron/index')}" class="nav-link {if condition='$Think.MODULE_NAME eq \"Cron\"'}active{/if}">
+                <a href="{:U('Admin/Cron/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Cron\"'}active{/if}">
                     <i class="fa fa-clock-o"></i>
                     <span class="menu-text">定时任务</span>
                 </a>

@@ -118,6 +118,7 @@ class UsersController extends AdminBaseController {
 			if ($data['lasttime'] > 0) $data['lasttime'] = date('Y-m-d H:i:s', $data['lasttime']);
 			$data['status'] = intval($data['status']);
 			$data['activation'] = intval($data['activation']);
+			$data['balance'] = isset($data['balance']) ? number_format(floatval($data['balance']), 2) : '0.00';
 			$this->assign('data', $data);
 			$this->display();
 		}
@@ -299,6 +300,47 @@ class UsersController extends AdminBaseController {
 		}
 		file_put_contents($logFile, "==== 批量发送结束: 成功: {$successCount} 失败: {$failCount} ====" . PHP_EOL, FILE_APPEND);
 		die("发送完成！成功：{$successCount}，失败：{$failCount}");
+	}
+
+	/**
+	 * 调整用户余额（管理员手动充值/扣款）
+	 */
+	public function adjustBalance() {
+		if (!IS_POST) {
+			$this->ajaxReturn(array('code' => 1, 'msg' => '请求方式错误'));
+		}
+		$userId = intval(I('post.user_id'));
+		$amount = floatval(I('post.amount'));
+		$remark = trim(I('post.remark', '', 'htmlspecialchars'));
+
+		if ($userId <= 0) {
+			$this->ajaxReturn(array('code' => 1, 'msg' => '用户ID无效'));
+		}
+		if ($amount == 0) {
+			$this->ajaxReturn(array('code' => 1, 'msg' => '调整金额不能为0'));
+		}
+		if (empty($remark)) {
+			$remark = $amount > 0 ? '管理员充值' : '管理员扣款';
+		}
+
+		$user = M('user')->where(array('id' => $userId))->find();
+		if (!$user) {
+			$this->ajaxReturn(array('code' => 1, 'msg' => '用户不存在'));
+		}
+
+		$operator = isset($_SESSION['user']['username']) ? $_SESSION['user']['username'] : 'admin';
+		$result = D('RechargeRecord')->changeBalance($userId, $amount, 4, $remark, null, $operator);
+
+		if ($result) {
+			$newBalance = M('user')->where(array('id' => $userId))->getField('balance');
+			$this->ajaxReturn(array(
+				'code' => 0,
+				'msg' => '余额调整成功',
+				'data' => array('balance' => number_format(floatval($newBalance), 2))
+			));
+		} else {
+			$this->ajaxReturn(array('code' => 1, 'msg' => '余额调整失败，余额不足或系统错误'));
+		}
 	}
 
 	/**

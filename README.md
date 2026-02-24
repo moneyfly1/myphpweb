@@ -22,8 +22,10 @@
 │   ├── design-tokens.css
 │   └── statics/        # 第三方库
 ├── ThinkPHP/           # 框架核心
-├── Upload/             # 用户上传目录
-├── shell/              # 辅助脚本
+├── Upload/
+│   ├── backup/         # 数据库备份
+│   └── ...             # 用户上传目录
+├── shell/              # 辅助脚本（含定时任务PHP和Shell脚本）
 ├── index.php           # 前台入口
 ├── admin.php           # 后台入口
 └── .env                # 环境配置（不提交到git）
@@ -152,22 +154,22 @@ git pull origin main
 
 ```cron
 # 处理邮件队列（每5分钟）
-*/5 * * * * /usr/bin/php /www/wwwroot/dingyue.moneyfly.top/process_email_queue.php process >> /dev/null 2>&1
+*/5 * * * * /usr/bin/php /www/wwwroot/dingyue.moneyfly.top/shell/process_email_queue.php process >> /dev/null 2>&1
 
 # 清理邮件队列（每天凌晨3点）
-0 3 * * * /usr/bin/php /www/wwwroot/dingyue.moneyfly.top/process_email_queue.php clean >> /dev/null 2>&1
+0 3 * * * /usr/bin/php /www/wwwroot/dingyue.moneyfly.top/shell/process_email_queue.php clean >> /dev/null 2>&1
 
 # 日志轮转（每天凌晨2点）
-0 2 * * * /usr/bin/php /www/wwwroot/dingyue.moneyfly.top/log_manager.php rotate >> /dev/null 2>&1
+0 2 * * * /usr/bin/php /www/wwwroot/dingyue.moneyfly.top/shell/log_manager.php rotate >> /dev/null 2>&1
 
 # 日志清理（每天凌晨2:05）
-5 2 * * * /usr/bin/php /www/wwwroot/dingyue.moneyfly.top/log_manager.php clean >> /dev/null 2>&1
+5 2 * * * /usr/bin/php /www/wwwroot/dingyue.moneyfly.top/shell/log_manager.php clean >> /dev/null 2>&1
 
 # 到期提醒邮件（每天上午9点）
-0 9 * * * /usr/bin/php /www/wwwroot/dingyue.moneyfly.top/generate_expire_mail.php >> /dev/null 2>&1
+0 9 * * * /usr/bin/php /www/wwwroot/dingyue.moneyfly.top/shell/generate_expire_mail.php >> /dev/null 2>&1
 
 # 用户同步（每周一凌晨4点）
-0 4 * * 1 /usr/bin/php /www/wwwroot/dingyue.moneyfly.top/sync_user_with_short.php >> /dev/null 2>&1
+0 4 * * 1 /usr/bin/php /www/wwwroot/dingyue.moneyfly.top/shell/sync_user_with_short.php >> /dev/null 2>&1
 ```
 
 ## 后台功能

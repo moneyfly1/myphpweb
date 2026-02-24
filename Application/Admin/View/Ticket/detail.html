@@ -1,0 +1,154 @@
+<extend name="Public:base" />
+<block name="title">工单详情</block>
+<block name="content">
+    <style>
+        .ticket-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .ticket-info .info-item { display: flex; flex-direction: column; gap: 4px; }
+        .ticket-info .info-label { font-size: 12px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; }
+        .ticket-info .info-value { font-size: 14px; color: var(--text-primary); }
+        .ticket-content { background: var(--bg-secondary); border-radius: 8px; padding: 20px; margin-bottom: 24px; line-height: 1.8; white-space: pre-wrap; }
+        .status-tag { display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+        .status-0 { background: rgba(237,137,54,.12); color: #ed8936; }
+        .status-1 { background: rgba(66,153,225,.12); color: #4299e1; }
+        .status-2 { background: rgba(72,187,120,.12); color: #48bb78; }
+        .status-3 { background: rgba(160,174,192,.12); color: #a0aec0; }
+        .priority-tag { display: inline-block; padding: 3px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+        .priority-0 { background: rgba(160,174,192,.12); color: #a0aec0; }
+        .priority-1 { background: rgba(66,153,225,.12); color: #4299e1; }
+        .priority-2 { background: rgba(245,101,101,.12); color: #f56565; }
+        .reply-list { margin: 24px 0; }
+        .reply-item { display: flex; gap: 16px; padding: 20px; border-bottom: 1px solid var(--border-light); }
+        .reply-item:last-child { border-bottom: none; }
+        .reply-avatar {
+            width: 40px; height: 40px; border-radius: 50%; background: var(--primary);
+            color: #fff; display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 16px; flex-shrink: 0;
+        }
+        .reply-avatar.admin { background: #ed8936; }
+        .reply-body { flex: 1; }
+        .reply-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .reply-name { font-weight: 600; font-size: 14px; }
+        .reply-badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+        .reply-badge.admin-badge { background: rgba(237,137,54,.12); color: #ed8936; }
+        .reply-badge.user-badge { background: rgba(66,153,225,.12); color: #4299e1; }
+        .reply-time { font-size: 12px; color: var(--text-secondary); }
+        .reply-content { font-size: 14px; line-height: 1.8; white-space: pre-wrap; }
+        .reply-form textarea {
+            width: 100%; min-height: 120px; border: 1px solid var(--border-light);
+            border-radius: 8px; padding: 14px; font-size: 14px; resize: vertical;
+            font-family: inherit; transition: border-color .2s;
+        }
+        .reply-form textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(22,119,255,.1); }
+        .reply-form-actions { display: flex; gap: 10px; margin-top: 14px; justify-content: flex-end; }
+    </style>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{:U('Admin/Index/index')}">首页</a></li>
+            <li class="breadcrumb-item"><a href="{:U('Admin/Ticket/index')}">工单管理</a></li>
+            <li class="breadcrumb-item active">工单详情</li>
+        </ol>
+    </nav>
+
+    <div class="page-content">
+        <div class="card" style="margin-bottom:24px;">
+            <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+                <span>{$ticket['title']}</span>
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <if condition="$ticket['status'] eq 0"><span class="status-tag status-0">待处理</span>
+                    <elseif condition="$ticket['status'] eq 1" /><span class="status-tag status-1">处理中</span>
+                    <elseif condition="$ticket['status'] eq 2" /><span class="status-tag status-2">已回复</span>
+                    <else /><span class="status-tag status-3">已关闭</span>
+                    </if>
+                    <if condition="$ticket['status'] neq 3">
+                    <a href="{:U('Admin/Ticket/close', array('id'=>$ticket['id']))}" class="btn btn-warning" style="padding:6px 16px;font-size:13px;" onclick="return confirm('确定关闭该工单？')">关闭工单</a>
+                    </if>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="ticket-info">
+                    <div class="info-item">
+                        <span class="info-label">工单号</span>
+                        <span class="info-value"><code>{$ticket['ticket_no']}</code></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">用户</span>
+                        <span class="info-value">{$ticket['username']}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">类型</span>
+                        <span class="info-value">
+                            <if condition="$ticket['type'] eq 0">咨询
+                            <elseif condition="$ticket['type'] eq 1" />故障
+                            <elseif condition="$ticket['type'] eq 2" />建议
+                            <else />其他
+                            </if>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">优先级</span>
+                        <span class="info-value">
+                            <if condition="$ticket['priority'] eq 0"><span class="priority-tag priority-0">低</span>
+                            <elseif condition="$ticket['priority'] eq 1" /><span class="priority-tag priority-1">中</span>
+                            <else /><span class="priority-tag priority-2">高</span>
+                            </if>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">创建时间</span>
+                        <span class="info-value">{$ticket['created_at']|date='Y-m-d H:i:s',###}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">更新时间</span>
+                        <span class="info-value">{$ticket['updated_at']|date='Y-m-d H:i:s',###}</span>
+                    </div>
+                </div>
+                <div class="ticket-content">{$ticket['content']}</div>
+            </div>
+        </div>
+        <!-- 回复列表 -->
+        <div class="card" style="margin-bottom:24px;">
+            <div class="card-header">回复记录 ({$replies|count})</div>
+            <div class="card-body" style="padding:0;">
+                <div class="reply-list">
+                    <foreach name="replies" item="reply">
+                    <div class="reply-item">
+                        <div class="reply-avatar <if condition='$reply[\"is_admin\"] eq 1'>admin</if>">
+                            <if condition="$reply['is_admin'] eq 1">A<else />U</if>
+                        </div>
+                        <div class="reply-body">
+                            <div class="reply-meta">
+                                <span class="reply-name">{$reply['username']}</span>
+                                <if condition="$reply['is_admin'] eq 1">
+                                <span class="reply-badge admin-badge">管理员</span>
+                                <else />
+                                <span class="reply-badge user-badge">用户</span>
+                                </if>
+                                <span class="reply-time">{$reply['created_at']|date='Y-m-d H:i:s',###}</span>
+                            </div>
+                            <div class="reply-content">{$reply['content']}</div>
+                        </div>
+                    </div>
+                    </foreach>
+                    <if condition="empty($replies)">
+                    <div style="text-align:center;padding:40px;color:#999;">暂无回复</div>
+                    </if>
+                </div>
+            </div>
+        </div>
+
+        <!-- 管理员回复表单 -->
+        <if condition="$ticket['status'] neq 3">
+        <div class="card">
+            <div class="card-header">回复工单</div>
+            <div class="card-body">
+                <form action="{:U('Admin/Ticket/detail', array('id'=>$ticket['id']))}" method="post" class="reply-form">
+                    <textarea name="content" placeholder="请输入回复内容..." required></textarea>
+                    <div class="reply-form-actions">
+                        <button type="submit" class="btn btn-primary">提交回复</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        </if>
+    </div>
+</block>

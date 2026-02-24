@@ -1,0 +1,97 @@
+<extend name="Public:base" />
+<block name="title">添加节点</block>
+<block name="content">
+    <style>
+        .table { width:100%; border-collapse:collapse; margin-bottom:20px; background:white; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+        .table th { background:#f8f9fa; border:1px solid #dee2e6; padding:15px 20px; text-align:left; font-weight:600; color:#495057; width:150px; vertical-align:top; font-size:14px; }
+        .table td { border:1px solid #dee2e6; padding:15px 20px; vertical-align:top; background:white; }
+        .input-medium { width:100%; min-width:400px; padding:12px 15px; border:1px solid #ced4da; border-radius:6px; font-size:14px; line-height:1.5; transition:border-color 0.3s ease,box-shadow 0.3s ease; background:#fafafa; }
+        .input-medium:focus { outline:none; border-color:#1677ff; box-shadow:0 0 0 3px rgba(22,119,255,0.1); background:white; }
+        select.input-medium { appearance:auto; }
+        textarea.input-medium { min-height:100px; resize:vertical; }
+        .inputword { font-size:14px; margin-right:10px; color:#495057; font-weight:500; }
+        @media (max-width:768px) {
+            .input-medium { min-width:100%; font-size:16px; padding:12px; }
+            .table th { width:100px; padding:12px 10px; font-size:13px; }
+            .table td { padding:12px 10px; }
+        }
+    </style>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{:U('Admin/Index/index')}"><i class="fa fa-home"></i> 首页</a></li>
+            <li class="breadcrumb-item"><a href="{:U('Admin/NodeMgr/index')}">节点管理</a></li>
+            <li class="breadcrumb-item active">添加节点</li>
+        </ol>
+    </nav>
+    <div class="page-navigation">
+        <a href="{:U('Admin/Index/index')}" class="nav-item"><i class="fa fa-home"></i> 首页</a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/NodeMgr/index')}" class="nav-item">节点管理</a>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">添加节点</div>
+    </div>
+    <div class="page-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-start">
+                    <ul class="nav nav-tabs border-0">
+                        <li class="nav-item"><a class="nav-link" href="{:U('Admin/NodeMgr/index')}">节点列表</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="javascript:;">添加节点</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{:U('Admin/NodeMgr/collect')}">采集节点</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{:U('Admin/NodeMgr/assign')}">节点分配</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{:U('Admin/NodeMgr/add')}">
+                    <table class="table">
+<!-- PLACEHOLDER_FORM_ROWS -->
+                        <tr>
+                            <th>节点名称</th>
+                            <td><input class="input-medium" type="text" name="name" required placeholder="如：香港01"></td>
+                        </tr>
+                        <tr>
+                            <th>服务器地址</th>
+                            <td><input class="input-medium" type="text" name="server" required placeholder="IP或域名"></td>
+                        </tr>
+                        <tr>
+                            <th>端口</th>
+                            <td><input class="input-medium" type="number" name="port" value="443" required></td>
+                        </tr>
+                        <tr>
+                            <th>协议类型</th>
+                            <td>
+                                <select class="input-medium" name="type">
+                                    <option value="vmess">VMess</option>
+                                    <option value="vless">VLESS</option>
+                                    <option value="trojan">Trojan</option>
+                                    <option value="ss">Shadowsocks</option>
+                                    <option value="hysteria2">Hysteria2</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>排序</th>
+                            <td><input class="input-medium" type="number" name="sort_order" value="0" placeholder="数字越小越靠前"></td>
+                        </tr>
+                        <tr>
+                            <th>是否可见</th>
+                            <td>
+                                <span class="inputword">是</span> <input type="radio" name="is_visible" value="1" checked="checked"> &emsp;
+                                <span class="inputword">否</span> <input type="radio" name="is_visible" value="0">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>备注</th>
+                            <td><textarea class="input-medium" name="remark" placeholder="可选备注信息"></textarea></td>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <td><input class="btn btn-success" type="submit" value="添加"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</block>

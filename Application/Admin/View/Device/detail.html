@@ -1,0 +1,113 @@
+<extend name="Public:base" />
+<block name="title">设备详情</block>
+<block name="content">
+    <style>
+        .detail-card { background:white; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.08); padding:24px; margin-bottom:20px; }
+        .detail-card h3 { font-size:16px; font-weight:600; margin:0 0 16px 0; padding-bottom:12px; border-bottom:1px solid #f0f0f0; color:#262626; }
+        .detail-row { display:flex; padding:10px 0; border-bottom:1px solid #fafafa; }
+        .detail-label { width:120px; color:#8c8c8c; font-size:14px; flex-shrink:0; }
+        .detail-value { flex:1; font-size:14px; color:#262626; word-break:break-all; }
+        .ip-list { list-style:none; padding:0; margin:0; }
+        .ip-list li { padding:6px 12px; margin:4px 0; background:#f6f8fa; border-radius:6px; font-family:monospace; font-size:13px; display:flex; justify-content:space-between; }
+        .ip-list li .ip-time { color:#8c8c8c; font-size:12px; }
+        .btn-back { margin-bottom:16px; }
+        @media (max-width:768px) {
+            .detail-row { flex-direction:column; gap:4px; }
+            .detail-label { width:100%; }
+        }
+    </style>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{:U('Admin/Index/index')}"><i class="fa fa-home"></i> 首页</a></li>
+            <li class="breadcrumb-item"><a href="{:U('Admin/Device/index')}">设备管理</a></li>
+            <li class="breadcrumb-item active">设备详情</li>
+        </ol>
+    </nav>
+    <div class="page-navigation">
+        <a href="{:U('Admin/Index/index')}" class="nav-item"><i class="fa fa-home"></i> 首页</a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/Device/index')}" class="nav-item">设备管理</a>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">设备详情</div>
+    </div>
+    <div class="page-content">
+        <a class="btn btn-default btn-back" href="{:U('Admin/Device/index')}">返回列表</a>
+
+        <div class="detail-card">
+            <h3>设备信息</h3>
+            <div class="detail-row">
+                <div class="detail-label">ID</div>
+                <div class="detail-value">{$device['id']}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">QQ号</div>
+                <div class="detail-value">{$device['qq']}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">客户端</div>
+                <div class="detail-value">{$device['client']}</div>
+            </div>
+<!-- PLACEHOLDER_DETAIL2 -->
+            <div class="detail-row">
+                <div class="detail-label">User-Agent</div>
+                <div class="detail-value" style="font-size:12px;font-family:monospace;">{$device['ua']}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">设备指纹</div>
+                <div class="detail-value" style="font-family:monospace;">{$device['fingerprint']}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">当前IP</div>
+                <div class="detail-value">{$device['ip']}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">最后活跃</div>
+                <div class="detail-value">{$device['last_seen_fmt']}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">订阅ID</div>
+                <div class="detail-value">{$device['dingyue_id']}</div>
+            </div>
+        </div>
+
+        <if condition="$dingyue">
+        <div class="detail-card">
+            <h3>关联订阅信息</h3>
+            <div class="detail-row">
+                <div class="detail-label">订阅ID</div>
+                <div class="detail-value">{$dingyue['id']}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">用户</div>
+                <div class="detail-value">{$dingyue['qq']}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">状态</div>
+                <div class="detail-value">
+                    <if condition="$dingyue['status'] eq 1"><span style="color:#52c41a">正常</span><else /><span style="color:#f5222d">禁用</span></if>
+                </div>
+            </div>
+        </div>
+        </if>
+
+        <div class="detail-card">
+            <h3>IP历史记录 (共 <?php echo count($device['ip_history_arr']); ?> 条)</h3>
+            <if condition="$device['ip_history_arr']">
+                <ul class="ip-list">
+                    <foreach name="device['ip_history_arr']" item="ipItem">
+                        <li>
+                            <if condition="is_array($ipItem)">
+                                <span>{$ipItem['ip']}</span>
+                                <span class="ip-time"><?php echo isset($ipItem['time']) ? date('Y-m-d H:i:s', $ipItem['time']) : '-'; ?></span>
+                            <else />
+                                <span>{$ipItem}</span>
+                            </if>
+                        </li>
+                    </foreach>
+                </ul>
+            <else />
+                <div style="color:#8c8c8c;padding:20px 0;text-align:center;">暂无IP历史记录</div>
+            </if>
+        </div>
+    </div>
+</block>

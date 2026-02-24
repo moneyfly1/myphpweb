@@ -1,0 +1,116 @@
+<extend name="Public:base" />
+<block name="title">工单管理</block>
+<block name="content">
+    <style>
+        .ticket-tabs { display: flex; gap: 0; margin-bottom: 24px; border-bottom: 2px solid var(--border-light); }
+        .ticket-tabs a {
+            padding: 12px 24px; text-decoration: none; color: var(--text-secondary);
+            font-weight: 500; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .2s;
+        }
+        .ticket-tabs a:hover { color: var(--primary); }
+        .ticket-tabs a.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+        .ticket-tabs .badge {
+            display: inline-block; min-width: 20px; padding: 2px 8px; border-radius: 10px;
+            font-size: 12px; font-weight: 600; text-align: center; margin-left: 6px;
+        }
+        .badge-orange { background: rgba(237,137,54,.15); color: #ed8936; }
+        .badge-blue   { background: rgba(66,153,225,.15); color: #4299e1; }
+        .badge-green  { background: rgba(72,187,120,.15); color: #48bb78; }
+        .badge-gray   { background: rgba(160,174,192,.15); color: #a0aec0; }
+        .status-tag {
+            display: inline-block; padding: 4px 12px; border-radius: 9999px;
+            font-size: 12px; font-weight: 500;
+        }
+        .status-0 { background: rgba(237,137,54,.12); color: #ed8936; }
+        .status-1 { background: rgba(66,153,225,.12); color: #4299e1; }
+        .status-2 { background: rgba(72,187,120,.12); color: #48bb78; }
+        .status-3 { background: rgba(160,174,192,.12); color: #a0aec0; }
+        .priority-tag { display: inline-block; padding: 3px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+        .priority-0 { background: rgba(160,174,192,.12); color: #a0aec0; }
+        .priority-1 { background: rgba(66,153,225,.12); color: #4299e1; }
+        .priority-2 { background: rgba(245,101,101,.12); color: #f56565; }
+        .btn-sm { padding: 6px 14px; font-size: 13px; }
+        .action-group { display: flex; gap: 6px; align-items: center; }
+    </style>
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{:U('Admin/Index/index')}">首页</a></li>
+            <li class="breadcrumb-item active">工单管理</li>
+        </ol>
+    </nav>
+    <div class="page-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="ticket-tabs">
+                    <a href="{:U('Admin/Ticket/index')}" class="<if condition='$status eq &quot;&quot;'>active</if>">全部 <span class="badge badge-blue">{$countAll}</span></a>
+                    <a href="{:U('Admin/Ticket/index', array('status'=>0))}" class="<if condition='$status eq &quot;0&quot;'>active</if>">待处理 <span class="badge badge-orange">{$countNew}</span></a>
+                    <a href="{:U('Admin/Ticket/index', array('status'=>1))}" class="<if condition='$status eq &quot;1&quot;'>active</if>">处理中 <span class="badge badge-blue">{$countOpen}</span></a>
+                    <a href="{:U('Admin/Ticket/index', array('status'=>2))}" class="<if condition='$status eq &quot;2&quot;'>active</if>">已回复 <span class="badge badge-green">{$countReply}</span></a>
+                    <a href="{:U('Admin/Ticket/index', array('status'=>3))}" class="<if condition='$status eq &quot;3&quot;'>active</if>">已关闭 <span class="badge badge-gray">{$countClose}</span></a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>工单号</th>
+                                <th>用户</th>
+                                <th>标题</th>
+                                <th>类型</th>
+                                <th>优先级</th>
+                                <th>状态</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <foreach name="list" item="v">
+                            <tr>
+                                <td><code>{$v['ticket_no']}</code></td>
+                                <td>{$v['username']}</td>
+                                <td><a href="{:U('Admin/Ticket/detail', array('id'=>$v['id']))}">{$v['title']}</a></td>
+                                <td>
+                                    <if condition="$v['type'] eq 0">咨询
+                                    <elseif condition="$v['type'] eq 1" />故障
+                                    <elseif condition="$v['type'] eq 2" />建议
+                                    <else />其他
+                                    </if>
+                                </td>
+                                <td>
+                                    <if condition="$v['priority'] eq 0"><span class="priority-tag priority-0">低</span>
+                                    <elseif condition="$v['priority'] eq 1" /><span class="priority-tag priority-1">中</span>
+                                    <else /><span class="priority-tag priority-2">高</span>
+                                    </if>
+                                </td>
+                                <td>
+                                    <if condition="$v['status'] eq 0"><span class="status-tag status-0">待处理</span>
+                                    <elseif condition="$v['status'] eq 1" /><span class="status-tag status-1">处理中</span>
+                                    <elseif condition="$v['status'] eq 2" /><span class="status-tag status-2">已回复</span>
+                                    <else /><span class="status-tag status-3">已关闭</span>
+                                    </if>
+                                </td>
+                                <td>{$v['created_at']|date='Y-m-d H:i',###}</td>
+                                <td>
+                                    <div class="action-group">
+                                        <a href="{:U('Admin/Ticket/detail', array('id'=>$v['id']))}" class="btn btn-info btn-sm">查看</a>
+                                        <if condition="$v['status'] neq 3">
+                                        <a href="{:U('Admin/Ticket/close', array('id'=>$v['id']))}" class="btn btn-warning btn-sm" onclick="return confirm('确定关闭该工单？')">关闭</a>
+                                        </if>
+                                        <a href="{:U('Admin/Ticket/del', array('id'=>$v['id']))}" class="btn btn-danger btn-sm" onclick="return confirm('确定删除该工单及所有回复？')">删除</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            </foreach>
+                            <if condition="empty($list)">
+                            <tr><td colspan="8" class="text-center" style="padding:40px;color:#999;">暂无工单数据</td></tr>
+                            </if>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="text-align:center;margin-top:20px;">{$page}</div>
+            </div>
+        </div>
+    </div>
+</block>

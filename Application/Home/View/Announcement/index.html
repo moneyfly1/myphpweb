@@ -1,0 +1,60 @@
+<extend name="Public:layout" />
+<block name="title">公告</block>
+<block name="content">
+    <style>
+        .announce-page { max-width: 900px; margin: 0 auto; padding: 30px 20px; }
+        .announce-page-header { margin-bottom: 24px; }
+        .announce-page-header h2 { font-size: 1.6rem; font-weight: 700; margin: 0 0 6px; }
+        .announce-page-header p { color: var(--color-text-secondary); margin: 0; font-size: 14px; }
+        .announce-card {
+            display: block; background: var(--color-bg); border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.08); padding: 20px 24px;
+            margin-bottom: 14px; text-decoration: none; color: inherit;
+            transition: all .2s; border: 1px solid rgba(0,0,0,.06);
+        }
+        .announce-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.1); transform: translateY(-2px); }
+        .announce-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .announce-card-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--color-text); }
+        .announce-card-preview { font-size: 14px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 10px;
+            overflow: hidden; text-overflow: ellipsis; display: -webkit-box;
+            -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .announce-card-bottom { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--color-text-placeholder); }
+        .type-tag { display: inline-block; padding: 3px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+        .type-通知 { background: rgba(66,153,225,.12); color: #4299e1; }
+        .type-维护 { background: rgba(237,137,54,.12); color: #ed8936; }
+        .type-促销 { background: rgba(72,187,120,.12); color: #48bb78; }
+        .type-紧急 { background: rgba(229,62,62,.12); color: #e53e3e; }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--color-text-placeholder); }
+        .empty-state i { font-size: 48px; margin-bottom: 16px; display: block; color: var(--color-border); }
+        @media (max-width: 767px) {
+            .announce-page { padding: 16px 12px; }
+            .announce-card { padding: 14px 16px; }
+            .type-tag { font-size: 12px; }
+        }
+    </style>
+    <div class="announce-page">
+        <div class="announce-page-header">
+            <h2>公告中心</h2>
+            <p>了解最新的平台动态和通知</p>
+        </div>
+        <foreach name="list" item="v">
+        <a href="{:U('Home/Announcement/detail', array('id'=>$v['id']))}" class="announce-card">
+            <div class="announce-card-top">
+                <span class="type-tag type-{$v.type_text}">{$v.type_text}</span>
+                <span style="font-size:13px;color:var(--color-text-placeholder);">{$v.start_time_fmt}</span>
+            </div>
+            <div class="announce-card-title">{$v.title}</div>
+            <div class="announce-card-preview">{$v.content|strip_tags|mb_substr=0,100,'UTF-8'}</div>
+            <div class="announce-card-bottom">
+                <span><i class="fas fa-arrow-right"></i> 查看详情</span>
+            </div>
+        </a>
+        </foreach>
+        <if condition="empty($list)">
+        <div class="empty-state">
+            <i class="fas fa-bullhorn"></i>
+            <p>暂无公告</p>
+        </div>
+        </if>
+    </div>
+</block>

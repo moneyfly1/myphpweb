@@ -1,0 +1,152 @@
+<extend name="Public:layout" />
+<block name="title">充值支付</block>
+<block name="head">
+    <style>
+        .container { max-width: 700px; margin: 0 auto; padding: 20px; }
+        .pay-card { background: var(--color-bg); border-radius: var(--radius-xl); box-shadow: var(--shadow-md); overflow: hidden; margin-top: 20px; }
+        .pay-card-header { padding: 16px 24px; background: rgba(22,119,255,.05); border-bottom: 1px solid var(--color-border); font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .pay-card-body { padding: 30px 24px; text-align: center; }
+        .qr-wrap { display: inline-block; padding: 12px; background: var(--color-bg); border: 2px solid var(--color-border); border-radius: var(--radius-lg); }
+        .qr-wrap img { width: 200px; height: 200px; display: block; }
+        .qr-error { padding: 20px; color: var(--color-danger); }
+        .order-info { margin: 20px 0; }
+        .order-info .order-no { color: var(--color-warning); font-size: 1rem; font-weight: 600; margin-bottom: 8px; }
+        .order-info .order-amount { font-size: 2rem; font-weight: 700; color: var(--color-primary); margin: 10px 0; }
+        .order-info .countdown-wrap { color: var(--color-text-secondary); font-size: 0.95rem; }
+        .order-info .countdown-wrap #countdown { color: var(--color-danger); font-weight: 600; font-size: 1.1rem; }
+        #mobile-pay-btn { display: none; margin: 16px 0; }
+        #mobile-pay-btn a { display: inline-block; padding: 12px 30px; background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-active) 100%); color: #fff; text-decoration: none; border-radius: 25px; font-size: 1rem; font-weight: 600; box-shadow: 0 4px 12px rgba(22,119,255,.3); }
+        .pay-steps { background: rgba(82,196,26,.06); border: 1px solid rgba(82,196,26,.25); border-radius: var(--radius); padding: 16px 20px; margin-top: 20px; text-align: left; }
+        .pay-steps p { font-weight: 600; margin-bottom: 8px; color: var(--color-success); }
+        .pay-steps ol { padding-left: 20px; line-height: 2; color: var(--color-text-secondary); font-size: 0.9rem; margin: 0; }
+        .success-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 9999; justify-content: center; align-items: center; }
+        .success-overlay.show { display: flex; }
+        .success-box { background: var(--color-bg); border-radius: var(--radius-xl); padding: 40px; text-align: center; max-width: 360px; }
+        .success-box .icon { font-size: 3rem; color: var(--color-success); margin-bottom: 16px; }
+        .success-box h3 { margin: 0 0 8px; font-size: 1.3rem; }
+        .success-box p { color: var(--color-text-secondary); margin: 0 0 20px; }
+        .success-box a { display: inline-block; padding: 10px 30px; background: var(--color-primary); color: #fff; border-radius: var(--radius); text-decoration: none; font-weight: 600; }
+        @media (max-width: 767px) {
+            .container { padding: 12px; }
+            .pay-card-body { padding: 20px 16px; }
+            .qr-wrap img { width: 180px; height: 180px; }
+            .order-info .order-amount { font-size: 1.6rem; }
+        }
+    </style>
+</block>
+<block name="content">
+    <div class="container">
+        <div class="pay-card">
+            <div class="pay-card-header">
+                <i class="fab fa-alipay"></i> 支付宝扫码充值
+            </div>
+            <div class="pay-card-body">
+                <if condition="$list['path']">
+                    <div class="qr-wrap">
+                        <img src="{$list.path}" alt="支付宝充值二维码">
+                    </div>
+                <else/>
+                    <div class="qr-error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>二维码生成失败，请返回重试</p>
+                    </div>
+                </if>
+
+                <div id="mobile-pay-btn">
+                    <a href="javascript:void(0)" id="alipay-app-link">
+                        <i class="fas fa-mobile-alt"></i> 打开支付宝APP支付
+                    </a>
+                </div>
+
+                <div class="order-info">
+                    <div class="order-no">订单号：{$list.order_no}</div>
+                    <div class="order-amount">&yen;{$list.price}</div>
+                    <div class="countdown-wrap">
+                        <i class="fas fa-clock"></i>
+                        支付剩余时间：<span id="countdown">05:00</span>
+                    </div>
+                </div>
+
+                <div class="pay-steps">
+                    <p><i class="fas fa-check-circle"></i> 支付步骤</p>
+                    <ol>
+                        <li>打开手机支付宝APP</li>
+                        <li>点击"扫一扫"扫描上方二维码</li>
+                        <li>确认金额并完成支付</li>
+                        <li>支付成功后余额自动到账</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-box">
+            <div class="icon"><i class="fas fa-check-circle"></i></div>
+            <h3>充值成功</h3>
+            <p>余额已自动到账</p>
+            <a href="{:U('Home/Balance/index')}">查看余额</a>
+        </div>
+    </div>
+</block>
+<block name="footer">
+<script>
+    var orderNo = '{$list.order_no}';
+    var qrCodeContent = '{$list.qr_code}';
+    var expireTime = Date.now() + 5 * 60 * 1000;
+    var countdownTimer = null;
+    var pollTimer = null;
+
+    // 移动端检测
+    function isMobile() {
+        return /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+    // 初始化移动端支付按钮
+    if (isMobile() && qrCodeContent) {
+        document.getElementById('mobile-pay-btn').style.display = 'block';
+        document.getElementById('alipay-app-link').onclick = function(e) {
+            e.preventDefault();
+            var url = 'alipays://platformapi/startapp?saId=10000007&qrcode=' + encodeURIComponent(qrCodeContent);
+            window.location.href = url;
+        };
+    }
+
+    // 倒计时
+    function updateCountdown() {
+        var remaining = Math.max(0, Math.floor((expireTime - Date.now()) / 1000));
+        var m = Math.floor(remaining / 60).toString().padStart(2, '0');
+        var s = (remaining % 60).toString().padStart(2, '0');
+        var el = document.getElementById('countdown');
+        el.textContent = m + ':' + s;
+        if (remaining <= 60) el.style.color = '#ff0000';
+        if (remaining <= 0) {
+            clearInterval(countdownTimer);
+            clearInterval(pollTimer);
+            alert('支付超时，请返回重新发起充值');
+            window.location.href = '{:U("Home/Balance/recharge")}';
+        }
+    }
+    countdownTimer = setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // 轮询支付状态
+    function checkStatus() {
+        if (document.visibilityState === 'hidden') return;
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '{:U("Home/Balance/checkStatus")}?order_no=' + encodeURIComponent(orderNo));
+        xhr.onload = function() {
+            try {
+                var res = JSON.parse(xhr.responseText);
+                if (res.paid) {
+                    clearInterval(pollTimer);
+                    clearInterval(countdownTimer);
+                    document.getElementById('successOverlay').classList.add('show');
+                }
+            } catch(e) {}
+        };
+        xhr.send();
+    }
+    pollTimer = setInterval(checkStatus, 3000);
+</script>
+</block>

@@ -20,7 +20,7 @@ return array(
 		'tc' => 'Order/tc',
 		'pay' => 'Order/pay',
 		'notify' => 'Order/notify',
-		'return' => 'Order/return',
+		'return' => 'Order/payReturn',
 		'qx' => 'Order/qx',
 		'checkDingyue' => 'User/checkDingyue',
 		'checkDingyues' => 'User/checkDingyues',

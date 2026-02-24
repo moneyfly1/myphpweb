@@ -1,8 +1,6 @@
 <?php
 namespace Home\Controller;
 use Think\Controller;
-use Think\Db;
-use think\db\Expression;
 
 class OrderController extends Controller
 {
@@ -38,7 +36,49 @@ class OrderController extends Controller
         $model = D('level');
         $list = $model->where('status = 1')->order('id asc')->select();
         $this->assign('list', $list);
+
+        // 获取用户余额和VIP等级信息
+        $userId = $_SESSION['users']['id'];
+        $userInfo = M('user')->where(array('id' => $userId))->find();
+        $this->assign('userBalance', floatval($userInfo['balance']));
+
+        $vipDiscount = 1.00; // 默认无折扣(1.00=原价, 0.80=8折)
+        $vipLevelName = '';
+        if (!empty($userInfo['user_level_id'])) {
+            $levelInfo = D('UserLevel')->where(array('id' => $userInfo['user_level_id']))->find();
+            if ($levelInfo && floatval($levelInfo['discount_rate']) > 0) {
+                $vipDiscount = floatval($levelInfo['discount_rate']);
+                $vipLevelName = $levelInfo['level_name'];
+            }
+        }
+        $this->assign('vipDiscount', $vipDiscount);
+        $this->assign('vipLevelName', $vipLevelName);
+
         $this->display();
+    }
+
+    /**
+     * AJAX验证优惠券
+     */
+    public function checkCoupon()
+    {
+        if (!isset($_SESSION['users']['id'])) {
+            $this->ajaxReturn(array('code' => 1, 'msg' => '请先登录'));
+        }
+        $couponCode = I('post.coupon_code', '', 'trim');
+        $planId = intval(I('post.plan_id', 0));
+        $amount = floatval(I('post.amount', 0));
+
+        if (empty($couponCode)) {
+            $this->ajaxReturn(array('code' => 1, 'msg' => '请输入优惠码'));
+        }
+        if ($planId <= 0 || $amount <= 0) {
+            $this->ajaxReturn(array('code' => 1, 'msg' => '请先选择套餐'));
+        }
+
+        $userId = $_SESSION['users']['id'];
+        $result = D('Coupon')->validateCoupon($couponCode, $userId, $amount, $planId);
+        $this->ajaxReturn($result);
     }
 
     public function notify()
@@ -47,13 +87,13 @@ class OrderController extends Controller
         parse_str($input, $data);
 
         if (empty($data['out_trade_no']) || empty($data['trade_no']) || empty($data['sign'])) {
-            $this->logError("缺少必要参数");
+            error_log("缺少必要参数");
             echo "failure";
             return;
         }
 
         if (($data['trade_status']) != 'TRADE_SUCCESS') {
-            $this->logError("订单不存在");
+            error_log("订单不存在");
             echo "failure";
             return;
         }
@@ -65,7 +105,7 @@ class OrderController extends Controller
         ])->lock(true)->find();
 
         if (!$order) {
-            $this->logError("订单不存在或状态非0");
+            error_log("订单不存在或状态非0");
             echo "success";
             return;
         }
@@ -80,7 +120,7 @@ class OrderController extends Controller
         $result = $orderModel->where(['order_no' => $data['out_trade_no']])->save($updateData);
 
         if ($result === false) {
-            $this->logError("订单更新失败: " . $orderModel->getDbError());
+            error_log("订单更新失败: " . $orderModel->getDbError());
             echo "failure";
             return;
         }
@@ -160,6 +200,20 @@ class OrderController extends Controller
             // 记录成功日志
             error_log('订阅更新成功 - 用户: ' . $order['user_name'] . ', 新到期时间: ' . date('Y-m-d H:i:s', $newEndTime) . ', 设备限制: ' . (isset($updateData['setdrivers']) ? $updateData['setdrivers'] : '未更新'));
 
+            // 更新用户累计消费并检查VIP升级
+            $payUserId = M('user')->where(array('username' => $order['user_name']))->getField('id');
+            if ($payUserId) {
+                M('user')->where(array('id' => $payUserId))->setInc('total_consumption', $order['total_amount']);
+                D('UserLevel')->checkUpgrade($payUserId);
+            }
+            // 记录优惠券使用
+            if (!empty($order['coupon_code'])) {
+                $coupon = D('Coupon')->where(array('code' => $order['coupon_code']))->find();
+                if ($coupon) {
+                    D('Coupon')->useCoupon($coupon['id'], $payUserId, $order['id'], $order['discount_amount']);
+                }
+            }
+
             // 无论是否发生变更，都发送通知
             error_log('数据库更新结果: ' . ($result === 0 ? '无变更' : '已更新'));
 
@@ -208,7 +262,7 @@ class OrderController extends Controller
         }
     }
 
-    public function return()
+    public function payReturn()
     {
         // 获取所有输入数据
         $input = file_get_contents("php://input");
@@ -289,8 +343,9 @@ class OrderController extends Controller
         $planId = intval(I('get.plan', 0));
         $paymentMethod = I('get.method', '', 'trim');
         $orderNo = I('get.order_no', '', 'trim');
+        $couponCode = I('get.coupon_code', '', 'trim');
 
-        $allowedMethods = ['支付宝', 'alipay'];
+        $allowedMethods = ['支付宝', 'alipay', 'balance'];
         if (!in_array($paymentMethod, $allowedMethods)) {
             $this->error('不支持的支付方式');
         }
@@ -313,6 +368,40 @@ class OrderController extends Controller
             $this->error('套餐不存在或已下架');
         }
 
+        // --- 计算折扣后金额 ---
+        $userId = $_SESSION['users']['id'];
+        $originalPrice = floatval($plan['price']);
+        $finalAmount = $originalPrice;
+        $discountAmount = 0;
+        $couponDiscount = 0;
+        $vipDiscountRate = 1.00; // 1.00=原价, 0.80=8折
+
+        // VIP等级折扣
+        $userInfo = M('user')->where(array('id' => $userId))->find();
+        if (!empty($userInfo['user_level_id'])) {
+            $userLevel = D('UserLevel')->where(array('id' => $userInfo['user_level_id']))->find();
+            if ($userLevel && floatval($userLevel['discount_rate']) > 0 && floatval($userLevel['discount_rate']) < 1.00) {
+                $vipDiscountRate = floatval($userLevel['discount_rate']);
+            }
+        }
+        $finalAmount = round($originalPrice * $vipDiscountRate, 2);
+
+        // 优惠券折扣
+        if (!empty($couponCode)) {
+            $couponResult = D('Coupon')->validateCoupon($couponCode, $userId, $finalAmount, $planId);
+            if ($couponResult['code'] == 0) {
+                $couponDiscount = floatval($couponResult['data']['discount']);
+                $finalAmount = round($finalAmount - $couponDiscount, 2);
+            } else {
+                $this->error($couponResult['msg']);
+            }
+        }
+
+        $discountAmount = round($originalPrice - $finalAmount, 2);
+        if ($finalAmount < 0.01) {
+            $finalAmount = 0.01;
+        }
+
         if ($dd) {
             if ($dd['status'] != 0) {
                 $this->error('订单已处理，无法重复支付');
@@ -323,7 +412,9 @@ class OrderController extends Controller
                 'user_name' => $_SESSION['users']['username'],
                 'plan_id' => $plan['id'],
                 'order_no' => $orderNo,
-                'total_amount' => $plan['price'],
+                'total_amount' => $finalAmount,
+                'discount_amount' => $discountAmount,
+                'coupon_code' => $couponCode,
                 'days' => $plan['num'],
                 'status' => 0,
                 'pay_method' => $paymentMethod,
@@ -335,6 +426,19 @@ class OrderController extends Controller
             }
         }
 
+        // --- 余额支付 ---
+        if ($paymentMethod === 'balance') {
+            $order = $orderModel->where(['order_no' => $orderNo])->find();
+            $result = $this->processBalancePayment($order, $plan);
+            if ($result === true) {
+                $this->redirect('/tc?pay_success=1');
+            } else {
+                $this->error($result);
+            }
+            return;
+        }
+
+        // --- 支付宝支付 ---
         $alipayConfig = D('paysite')->where([
             'pay_type' => 'zfb',
             'status' => 1
@@ -344,14 +448,15 @@ class OrderController extends Controller
             $this->error('支付宝配置错误');
         }
 
-        // 先生成二维码，不阻塞用户支付
-        // 注意：订单创建时不发送邮件，避免阻塞页面加载
-        // 邮件通知已在 notify 方法（支付成功回调）中统一处理
-        $alipayResult = $this->alipayPay($orderNo, $plan, $alipayConfig);
+        // 用折扣后的价格覆盖plan price用于支付宝下单
+        $planForPay = $plan;
+        $planForPay['price'] = $finalAmount;
+
+        $alipayResult = $this->alipayPay($orderNo, $planForPay, $alipayConfig);
 
         if ($alipayResult && $alipayResult['status'] === 'success') {
             $alipayResult['order_no'] = $orderNo;
-            $alipayResult['price'] = $plan['price'];
+            $alipayResult['price'] = $finalAmount;
             // 检查二维码是否生成成功（应该是Base64格式）
             if (empty($alipayResult['path']) || strpos($alipayResult['path'], 'data:image') !== 0) {
                 error_log('二维码生成失败，path: ' . var_export($alipayResult['path'], true));
@@ -365,10 +470,81 @@ class OrderController extends Controller
         }
     }
 
+    /**
+     * 余额支付处理
+     * @param array $order 订单信息
+     * @param array $plan 套餐信息
+     * @return true|string 成功返回true，失败返回错误信息
+     */
+    private function processBalancePayment($order, $plan)
+    {
+        $userId = $_SESSION['users']['id'];
+        $userInfo = M('user')->where(array('id' => $userId))->find();
+        if (!$userInfo) {
+            return '用户不存在';
+        }
+
+        $amount = floatval($order['total_amount']);
+        if (floatval($userInfo['balance']) < $amount) {
+            return '余额不足，当前余额 ¥' . number_format($userInfo['balance'], 2);
+        }
+
+        // 扣除余额 (type: 2=消费)
+        $balanceResult = D('RechargeRecord')->changeBalance(
+            $userId,
+            -$amount,
+            2,
+            '余额支付订单: ' . $order['order_no'],
+            $order['id']
+        );
+
+        if (!$balanceResult) {
+            return '余额扣除失败，请重试';
+        }
+
+        // 更新订单状态为已支付
+        $orderModel = D('order');
+        $orderModel->where(array('id' => $order['id']))->save(array(
+            'status' => 1,
+            'pay_time' => date('Y-m-d H:i:s'),
+            'pay_no' => 'BALANCE_' . $order['order_no'],
+        ));
+
+        // 开通套餐服务
+        $granted = $this->grantService($order);
+        if (!$granted) {
+            // 服务开通失败，退还余额
+            D('RechargeRecord')->changeBalance(
+                $userId,
+                $amount,
+                3, // type 3=退款
+                '余额支付服务开通失败自动退款: ' . $order['order_no'],
+                $order['id']
+            );
+            // 回滚订单状态
+            $orderModel->where(array('id' => $order['id']))->save(array('status' => 0, 'pay_no' => ''));
+            return '服务开通失败，余额已退还，请重试或联系管理员';
+        }
+
+        // 更新用户累计消费并检查VIP升级
+        M('user')->where(array('id' => $userId))->setInc('total_consumption', $amount);
+        D('UserLevel')->checkUpgrade($userId);
+
+        // 记录优惠券使用
+        if (!empty($order['coupon_code'])) {
+            $coupon = D('Coupon')->where(array('code' => $order['coupon_code']))->find();
+            if ($coupon) {
+                D('Coupon')->useCoupon($coupon['id'], $userId, $order['id'], $order['discount_amount']);
+            }
+        }
+
+        return true;
+    }
+
     private function alipayPay($orderNo, $planInfo, $alipayConfig)
     {
-        require_once './a/f2fpay/model/builder/AlipayTradePrecreateContentBuilder.php';
-        require_once './a/f2fpay/service/AlipayTradeService.php';
+        require_once './Vendor/Alipay/f2fpay/model/builder/AlipayTradePrecreateContentBuilder.php';
+        require_once './Vendor/Alipay/f2fpay/service/AlipayTradeService.php';
 
         $qrcode = null;
         $outTradeNo = $orderNo;
@@ -541,52 +717,63 @@ class OrderController extends Controller
         error_log('handlePayment 完成 - 订单号: ' . $orderNo);
     }
 
+    /**
+     * 开通套餐服务
+     * @param array $order 订单信息
+     * @return bool 成功返回true，失败返回false
+     */
     private function grantService($order)
     {
         error_log('grantService 开始 - 用户: ' . $order['user_name'] . ', 订单号: ' . $order['order_no']);
-        
-        // 使用M方法，ThinkPHP会自动处理表名映射（与旧代码保持一致）
+
         $subscription = M('ShortDingyue')->where(['qq' => $order['user_name']])->find();
-        
-        // 如果订阅记录不存在，直接返回（与旧代码逻辑保持一致）
-        // 注意：旧代码中如果记录不存在就直接返回，说明记录应该已经存在
+
         if (!$subscription) {
-            error_log('grantService 警告：订阅记录不存在，用户: ' . $order['user_name'] . ', 订单号: ' . $order['order_no']);
-            return;
+            // 订阅记录不存在，尝试创建
+            error_log('grantService: 订阅记录不存在，创建新记录: ' . $order['user_name']);
+            $newRecord = [
+                'qq' => $order['user_name'],
+                'endtime' => 0,
+                'setdrivers' => 5,
+                'mobileshorturl' => '',
+                'clashshorturl' => ''
+            ];
+            $recordId = M('ShortDingyue')->add($newRecord);
+            if (!$recordId) {
+                error_log('grantService 错误：创建订阅记录失败: ' . M('ShortDingyue')->getDbError());
+                return false;
+            }
+            $subscription = M('ShortDingyue')->where(['qq' => $order['user_name']])->find();
+            if (!$subscription) {
+                error_log('grantService 错误：创建后查询失败: ' . $order['user_name']);
+                return false;
+            }
         }
-        
-        error_log('grantService: 找到订阅记录 - 用户: ' . $order['user_name'] . ', 当前到期时间: ' . ($subscription['endtime'] > 0 ? date('Y-m-d H:i:s', $subscription['endtime']) : '未设置'));
 
         $utcNow = (new \DateTime('now', new \DateTimeZone('UTC')))->getTimestamp();
         $addSeconds = $order['days'] * 86400;
 
         if ($subscription['endtime'] == 0 || $subscription['endtime'] <= $utcNow) {
             $newEndTime = $utcNow + $addSeconds;
-            error_log('grantService: 从当前时间开始计算 - 当前时间: ' . date('Y-m-d H:i:s', $utcNow) . ', 增加秒数: ' . $addSeconds);
         } else {
             $newEndTime = $subscription['endtime'] + $addSeconds;
-            error_log('grantService: 从现有到期时间延长 - 现有到期时间: ' . date('Y-m-d H:i:s', $subscription['endtime']) . ', 增加秒数: ' . $addSeconds);
         }
 
-        // 获取套餐信息以更新设备数量限制
         $level = M('level')->where(['id' => $order['plan_id']])->find();
         $setdrivers = $level && isset($level['setdrivers']) ? intval($level['setdrivers']) : 5;
-        
-        error_log('grantService: 套餐信息 - 套餐ID: ' . $order['plan_id'] . ', 设备限制: ' . $setdrivers . ', 新到期时间: ' . date('Y-m-d H:i:s', $newEndTime));
 
-        // 更新订阅时间和设备数量限制（与旧代码保持一致）
         $result = M('ShortDingyue')->where(['qq' => $order['user_name']])->save([
             'endtime' => $newEndTime,
             'setdrivers' => $setdrivers
         ]);
-        
-        // 添加详细日志用于调试
+
         if ($result === false) {
             error_log('grantService 错误：更新订阅失败 - 用户: ' . $order['user_name'] . ', 错误: ' . M('ShortDingyue')->getDbError());
-            error_log('grantService 错误：更新数据 - endtime=' . $newEndTime . ' (' . date('Y-m-d H:i:s', $newEndTime) . '), setdrivers=' . $setdrivers);
-        } else {
-            error_log('grantService 成功：订阅更新成功 - 用户: ' . $order['user_name'] . ', 订单号: ' . $order['order_no'] . ', 新到期时间: ' . date('Y-m-d H:i:s', $newEndTime) . ', 设备限制: ' . $setdrivers . ', 更新行数: ' . $result);
+            return false;
         }
+
+        error_log('grantService 成功 - 用户: ' . $order['user_name'] . ', 到期: ' . date('Y-m-d H:i:s', $newEndTime) . ', 设备: ' . $setdrivers);
+        return true;
     }
 
     private function getNotificationConfig()
