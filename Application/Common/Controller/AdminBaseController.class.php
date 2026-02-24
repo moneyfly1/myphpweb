@@ -20,7 +20,7 @@ class AdminBaseController extends BaseController{
 		if ($rule_name != 'Admin/User/login') {
 			// 检查用户是否登录
 			if(!isset($_SESSION['user']['id']) || empty($_SESSION['user']['id'])){
-				redirect('/admin.php/User/login');
+				redirect('/admin.php?s=/User/login');
 			}
 			
 			$superAdminIds = C('SUPER_ADMIN_IDS');
@@ -32,7 +32,7 @@ class AdminBaseController extends BaseController{
 				}
 				$result=$auth->check($rule_name,$_SESSION['user']['id']);
 				if(!$result){
-					redirect('/admin.php/User/login');
+					redirect('/admin.php?s=/User/login');
 				}
 			}
 		}

@@ -72,7 +72,7 @@ class UserController extends AdminBaseController{
 
 	public function logout(){
 		session('user',null);
-		redirect(U('Admin/User/login'));
+		redirect('/admin.php?s=/User/login');
 	}
 
 
