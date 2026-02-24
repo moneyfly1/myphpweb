@@ -406,34 +406,48 @@
     <script>
         document.getElementById('retrieveForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             const submitBtn = document.querySelector('.login-button');
             const originalBtnText = submitBtn.textContent;
-            
+
             // 显示加载状态
             submitBtn.textContent = '处理中...';
             submitBtn.disabled = true;
-            
+
             // 获取表单数据
             const formData = new FormData(this);
-            
-            // 发送请求
-            fetch(this.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                // 无论服务器返回什么状态，只要收到响应就认为是成功的
-                alert('邮件已发送，请查看您的QQ邮箱（如未收到请检查垃圾箱）');
-            })
-            .catch(error => {
-                // 只有在网络错误时才显示错误
-                alert('邮件已发送成功，请检查您的QQ邮箱,点击邮箱中的连接进行密码重置');
-            })
-            .finally(() => {
-                submitBtn.textContent = originalBtnText;
-                submitBtn.disabled = false;
+
+            // 使用 jQuery AJAX 发送请求
+            jQuery.ajax({
+                url: '/getpass',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function(response) {
+                    if(response.status == 1) {
+                        alert(response.msg || '邮件已发送，请查看您的QQ邮箱（如未收到请检查垃圾箱）');
+                        setTimeout(function() {
+                            window.location.href = response.url || '/login';
+                        }, 1000);
+                    } else {
+                        alert(response.msg || '发送失败，请重试');
+                        submitBtn.textContent = originalBtnText;
+                        submitBtn.disabled = false;
+                    }
+                },
+                error: function(xhr) {
+                    var errorMsg = '邮件已发送成功，请检查您的QQ邮箱,点击邮箱中的连接进行密码重置';
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        if(response.msg) errorMsg = response.msg;
+                    } catch(e) {}
+
+                    alert(errorMsg);
+                    submitBtn.textContent = originalBtnText;
+                    submitBtn.disabled = false;
+                }
             });
         });
     </script>

@@ -27,9 +27,17 @@ class EmailTemplateController extends AdminBaseController {
             );
             $result = D('EmailTemplateDb')->where(array('id' => $temp['id']))->save($data);
             if ($result !== false) {
-                $this->success('修改成功', U('Admin/EmailTemplate/index'));
+                if(IS_AJAX) {
+                    $this->ajaxReturn(array('status'=>1,'msg'=>'修改成功','url'=>U('Admin/EmailTemplate/index')));
+                } else {
+                    $this->success('修改成功', U('Admin/EmailTemplate/index'));
+                }
             } else {
-                $this->error('修改失败');
+                if(IS_AJAX) {
+                    $this->ajaxReturn(array('status'=>0,'msg'=>'修改失败'));
+                } else {
+                    $this->error('修改失败');
+                }
             }
         } else {
             $id = I('get.id', 0, 'intval');

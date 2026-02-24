@@ -86,6 +86,9 @@ class IndexController extends Controller
     public function index()
     {
         if (!check_user_login()) {
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'请登录后操作','url'=>'/login'));
+            }
             $this->error('请登录后操作', '/login', 0);
         }
 
@@ -93,6 +96,9 @@ class IndexController extends Controller
         $data = M('ShortDingyue')->where(['qq' => $qq])->find();
 
         if (!$data) {
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'致命错误，请联系管理员'));
+            }
             $this->error('致命错误，请联系管理员');
             return;
         }
@@ -139,6 +145,9 @@ class IndexController extends Controller
         ])->find();
 
         if (!$data) {
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'订阅不存在'));
+            }
             $this->error('订阅不存在');
             return;
         }

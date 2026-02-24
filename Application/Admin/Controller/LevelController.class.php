@@ -34,12 +34,16 @@ foreach ($list as $k => $v) {
        if(IS_POST){
 			$data=I('post.');
 			unset($data['file']);
-		
-    		
-    			
+
+
+
     		$res = D('level')->add($data);
-    			
-			$this->success('添加成功', U('Admin/Level/index'));
+
+			if(IS_AJAX) {
+				$this->ajaxReturn(array('status'=>1,'msg'=>'添加成功','url'=>U('Admin/Level/index')));
+			} else {
+				$this->success('添加成功', U('Admin/Level/index'));
+			}
 		}
 		$this->display();
     }
@@ -50,9 +54,17 @@ public function del(){
 		$result = D('level')->where(['id' => $id])->delete();
 
 		if ($result) {
-			$this->success('删除成功', U('Admin/Level/index'));
+			if(IS_AJAX) {
+				$this->ajaxReturn(array('status'=>1,'msg'=>'删除成功','url'=>U('Admin/Level/index')));
+			} else {
+				$this->success('删除成功', U('Admin/Level/index'));
+			}
 		}else{
-			$this->error('删除失败');
+			if(IS_AJAX) {
+				$this->ajaxReturn(array('status'=>0,'msg'=>'删除失败'));
+			} else {
+				$this->error('删除失败');
+			}
 		}
 	}
     /**
@@ -63,18 +75,26 @@ public function del(){
         $temp = I('post.');
         $data = $temp;
         unset($data['id']);
-        
+
         $result = D('level')->where(['id' => $temp['id']])->save($data);
         if ($result) {
-            $this->success('修改成功', U('Admin/Level/index'));
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>1,'msg'=>'修改成功','url'=>U('Admin/Level/index')));
+            } else {
+                $this->success('修改成功', U('Admin/Level/index'));
+            }
         } else {
-            $this->error('修改失败');
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'修改失败'));
+            } else {
+                $this->error('修改失败');
+            }
         }
     } else {
         $id = I('get.id', 'int');
-        
-        $data = D('level')->find($id); 
-        
+
+        $data = D('level')->find($id);
+
         $this->assign('data', $data);
         $this->display();
     }

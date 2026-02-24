@@ -399,6 +399,83 @@
       const pwd = form.pwd.value;
 
       const userErrorEl = document.getElementById('userError');
+      if (!/^\d+$/.test(user)) {
+        userErrorEl.textContent = '用户名必须为纯数字 QQ 号';
+        userErrorEl.classList.add('show');
+        valid = false;
+      } else {
+        userErrorEl.classList.remove('show');
+      }
+
+      const pwdErrorEl = document.getElementById('pwdError');
+      if (pwd.length < 8 || pwd.length > 16) {
+        pwdErrorEl.textContent = '密码长度须为 8-16 位';
+        pwdErrorEl.classList.add('show');
+        valid = false;
+      } else {
+        pwdErrorEl.classList.remove('show');
+      }
+
+      return valid;
+    }
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (!validate()) return;
+
+      // Show loading overlay and disable button
+      overlay.classList.add('show');
+      submitBtn.disabled = true;
+      submitBtn.textContent = '注册中...';
+
+      const formData = new FormData(form);
+
+      // Use jQuery AJAX for consistency
+      jQuery.ajax({
+        url: '/reg',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        success: function(response) {
+          if(response.status == 1) {
+            // Success - show message and redirect
+            document.querySelector('.reg-loading-text').textContent = response.msg;
+            setTimeout(function() {
+              window.location.href = response.url || '/login';
+            }, 2000);
+          } else {
+            // Error
+            alert(response.msg || '注册失败，请重试');
+            overlay.classList.remove('show');
+            submitBtn.disabled = false;
+            submitBtn.textContent = '注册';
+            // Refresh verify code
+            document.getElementById('reg-verify-img').src = '/verify?t=' + Date.now();
+          }
+        },
+        error: function(xhr) {
+          var errorMsg = '注册失败，请重试';
+          try {
+            var response = JSON.parse(xhr.responseText);
+            if(response.msg) errorMsg = response.msg;
+          } catch(e) {}
+
+          alert(errorMsg);
+          overlay.classList.remove('show');
+          submitBtn.disabled = false;
+          submitBtn.textContent = '注册';
+          document.getElementById('reg-verify-img').src = '/verify?t=' + Date.now();
+        }
+      });
+    });
+
+    document.getElementById('reg-verify-img').onclick = function(){ this.src = '/verify?t=' + Date.now(); };
+</script>
+</block>
+
+      const userErrorEl = document.getElementById('userError');
       if (!/^\d{5,16}$/.test(user)) {
         userErrorEl.textContent = '请输入 5-16 位数字用户名';
         userErrorEl.classList.add('show');

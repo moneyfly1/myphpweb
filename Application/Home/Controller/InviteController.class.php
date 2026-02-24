@@ -9,6 +9,9 @@ class InviteController extends Controller {
      */
     public function index() {
         if (!check_user_login()) {
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'请先登录','url'=>'/login'));
+            }
             $this->error('请先登录', '/login');
         }
         $userId = session('users.id');

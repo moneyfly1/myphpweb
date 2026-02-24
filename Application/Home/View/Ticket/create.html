@@ -41,7 +41,7 @@
     <div class="ticket-page">
         <h2>提交工单</h2>
         <div class="form-card">
-            <form action="{:U('Home/Ticket/create')}" method="post">
+            <form action="{:U('Home/Ticket/create')}" method="post" id="ticketForm">
                 <div class="form-group">
                     <label>标题 <span class="required">*</span></label>
                     <input type="text" name="title" class="form-control" placeholder="请简要描述您的问题" required maxlength="100">
@@ -74,4 +74,47 @@
             </form>
         </div>
     </div>
+</block>
+<block name="footer">
+<script>
+$(function(){
+    $('#ticketForm').on('submit', function(e){
+        e.preventDefault();
+        var $form = $(this);
+        var $btn = $form.find('.btn-submit');
+        var btnText = $btn.text();
+
+        $btn.prop('disabled', true).text('提交中...');
+
+        $.ajax({
+            url: $form.attr('action'),
+            type: 'POST',
+            data: $form.serialize(),
+            dataType: 'json',
+            success: function(res){
+                if(res.status == 1){
+                    showToast(res.msg, 'success');
+                    setTimeout(function(){
+                        window.location.href = res.url;
+                    }, 1000);
+                } else {
+                    showToast(res.msg, 'error');
+                    $btn.prop('disabled', false).text(btnText);
+                }
+            },
+            error: function(){
+                showToast('网络错误，请重试', 'error');
+                $btn.prop('disabled', false).text(btnText);
+            }
+        });
+    });
+
+    function showToast(msg, type){
+        var bgColor = type === 'success' ? '#48bb78' : '#f56565';
+        var toast = $('<div style="position:fixed;top:20px;left:50%;transform:translateX(-50%);background:'+bgColor+';color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.15);">'+msg+'</div>');
+        $('body').append(toast);
+        setTimeout(function(){ toast.fadeOut(300, function(){ $(this).remove(); }); }, 3000);
+    }
+});
+</script>
 </block>

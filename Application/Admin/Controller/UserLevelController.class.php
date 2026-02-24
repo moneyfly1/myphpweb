@@ -26,9 +26,17 @@ class UserLevelController extends AdminBaseController {
             $data['is_active'] = isset($data['is_active']) ? intval($data['is_active']) : 1;
             $res = D('UserLevel')->addData($data);
             if ($res) {
-                $this->success('添加成功', U('Admin/UserLevel/index'));
+                if(IS_AJAX) {
+                    $this->ajaxReturn(array('status'=>1,'msg'=>'添加成功','url'=>U('Admin/UserLevel/index')));
+                } else {
+                    $this->success('添加成功', U('Admin/UserLevel/index'));
+                }
             } else {
-                $this->error('添加失败');
+                if(IS_AJAX) {
+                    $this->ajaxReturn(array('status'=>0,'msg'=>'添加失败'));
+                } else {
+                    $this->error('添加失败');
+                }
             }
         }
         $this->display();
@@ -46,9 +54,17 @@ class UserLevelController extends AdminBaseController {
             $data['is_active'] = isset($data['is_active']) ? intval($data['is_active']) : 0;
             $result = D('UserLevel')->where(array('id' => $temp['id']))->save($data);
             if ($result !== false) {
-                $this->success('修改成功', U('Admin/UserLevel/index'));
+                if(IS_AJAX) {
+                    $this->ajaxReturn(array('status'=>1,'msg'=>'修改成功','url'=>U('Admin/UserLevel/index')));
+                } else {
+                    $this->success('修改成功', U('Admin/UserLevel/index'));
+                }
             } else {
-                $this->error('修改失败');
+                if(IS_AJAX) {
+                    $this->ajaxReturn(array('status'=>0,'msg'=>'修改失败'));
+                } else {
+                    $this->error('修改失败');
+                }
             }
         } else {
             $id = I('get.id', 0, 'intval');
@@ -62,9 +78,17 @@ class UserLevelController extends AdminBaseController {
         $id = I('get.id', 0, 'intval');
         $result = D('UserLevel')->where(array('id' => $id))->delete();
         if ($result) {
-            $this->success('删除成功', U('Admin/UserLevel/index'));
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>1,'msg'=>'删除成功','url'=>U('Admin/UserLevel/index')));
+            } else {
+                $this->success('删除成功', U('Admin/UserLevel/index'));
+            }
         } else {
-            $this->error('删除失败');
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'删除失败'));
+            } else {
+                $this->error('删除失败');
+            }
         }
     }
 }

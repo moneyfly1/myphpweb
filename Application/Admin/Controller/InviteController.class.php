@@ -72,13 +72,25 @@ class InviteController extends AdminBaseController {
     public function del() {
         $id = I('get.id', 0, 'intval');
         if (!$id) {
-            $this->error('参数错误');
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'参数错误'));
+            } else {
+                $this->error('参数错误');
+            }
         }
         $result = D('InviteCode')->deleteData(array('id' => $id));
         if ($result) {
-            $this->success('删除成功', U('Admin/Invite/index'));
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>1,'msg'=>'删除成功','url'=>U('Admin/Invite/index')));
+            } else {
+                $this->success('删除成功', U('Admin/Invite/index'));
+            }
         } else {
-            $this->error('删除失败');
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'删除失败'));
+            } else {
+                $this->error('删除失败');
+            }
         }
     }
 

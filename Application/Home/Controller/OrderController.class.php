@@ -8,6 +8,9 @@ class OrderController extends Controller
     public function tc()
     {
         if (!check_user_login()) {
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'请登录后操作','url'=>'/login'));
+            }
             $this->error('请登录后操作', '/login', 0);
         }
 
@@ -337,6 +340,9 @@ class OrderController extends Controller
     public function pay()
     {
         if (!isset($_SESSION['users']['username'])) {
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'请先登录','url'=>'/user/login'));
+            }
             $this->error('请先登录', '/user/login');
         }
 
@@ -347,10 +353,16 @@ class OrderController extends Controller
 
         $allowedMethods = ['支付宝', 'alipay', 'balance'];
         if (!in_array($paymentMethod, $allowedMethods)) {
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'不支持的支付方式'));
+            }
             $this->error('不支持的支付方式');
         }
 
         if (!$orderNo) {
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'订单不存在'));
+            }
             $this->error('订单不存在');
         }
 
@@ -365,6 +377,9 @@ class OrderController extends Controller
         ])->find();
 
         if (!$plan) {
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'套餐不存在或已下架'));
+            }
             $this->error('套餐不存在或已下架');
         }
 
@@ -393,6 +408,9 @@ class OrderController extends Controller
                 $couponDiscount = floatval($couponResult['data']['discount']);
                 $finalAmount = round($finalAmount - $couponDiscount, 2);
             } else {
+                if(IS_AJAX) {
+                    $this->ajaxReturn(array('status'=>0,'msg'=>$couponResult['msg']));
+                }
                 $this->error($couponResult['msg']);
             }
         }
@@ -404,6 +422,9 @@ class OrderController extends Controller
 
         if ($dd) {
             if ($dd['status'] != 0) {
+                if(IS_AJAX) {
+                    $this->ajaxReturn(array('status'=>0,'msg'=>'订单已处理，无法重复支付'));
+                }
                 $this->error('订单已处理，无法重复支付');
             }
         } else {
@@ -422,6 +443,9 @@ class OrderController extends Controller
             ];
 
             if (!$orderModel->add($orderData)) {
+                if(IS_AJAX) {
+                    $this->ajaxReturn(array('status'=>0,'msg'=>'订单创建失败'));
+                }
                 $this->error('订单创建失败');
             }
         }
@@ -433,6 +457,9 @@ class OrderController extends Controller
             if ($result === true) {
                 $this->redirect('/tc?pay_success=1');
             } else {
+                if(IS_AJAX) {
+                    $this->ajaxReturn(array('status'=>0,'msg'=>$result));
+                }
                 $this->error($result);
             }
             return;
@@ -445,6 +472,9 @@ class OrderController extends Controller
         ])->find();
 
         if (!$alipayConfig) {
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'支付宝配置错误'));
+            }
             $this->error('支付宝配置错误');
         }
 
@@ -466,6 +496,9 @@ class OrderController extends Controller
             $this->display();
         } else {
             error_log('Order pay: 二维码生成失败 ' . json_encode($alipayResult));
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'二维码生成失败，请稍后重试'));
+            }
             $this->error('二维码生成失败，请稍后重试');
         }
     }
@@ -619,6 +652,9 @@ class OrderController extends Controller
         ])->find();
 
         if (!$alipayConfig) {
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'支付宝配置错误'));
+            }
             $this->error('支付宝配置错误');
         }
 
@@ -639,8 +675,14 @@ class OrderController extends Controller
             if ($outTradeNo !== '' && $tradeNo !== '') {
                 $this->handlePayment($outTradeNo, $tradeNo);
             }
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>1,'msg'=>'支付成功'));
+            }
             $this->success('支付成功');
         } else {
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'支付验证失败'));
+            }
             $this->error('支付验证失败');
         }
     }

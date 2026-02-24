@@ -57,7 +57,11 @@ class UsersController extends AdminBaseController {
 			unset($data['file']); // 移除上传文件字段
 			$check = D('User')->getData(['username' => $data['username']]);
 			if ($check) {
-				$this->error('账户已存在');
+				if(IS_AJAX) {
+					$this->ajaxReturn(array('status'=>0,'msg'=>'账户已存在'));
+				} else {
+					$this->error('账户已存在');
+				}
 			} else {
 				$data['regtime'] = time();
 				$data['activation'] = '1';
@@ -80,9 +84,17 @@ class UsersController extends AdminBaseController {
 					];
 					$shortres = M('ShortDingyue')->add($shortData);
 					if ($shortres) {
-						$this->success('创建用户及短链成功');
+						if(IS_AJAX) {
+							$this->ajaxReturn(array('status'=>1,'msg'=>'创建用户及短链成功','url'=>U('Admin/Users/list')));
+						} else {
+							$this->success('创建用户及短链成功');
+						}
 					} else {
-						$this->error('添加失败');
+						if(IS_AJAX) {
+							$this->ajaxReturn(array('status'=>0,'msg'=>'添加失败'));
+						} else {
+							$this->error('添加失败');
+						}
 					}
 				}
 			}
@@ -105,9 +117,17 @@ class UsersController extends AdminBaseController {
 			}
 			$result = D('User')->editData(['id' => $temp['id']], $data);
 			if ($result) {
-				$this->success('修改成功');
+				if(IS_AJAX) {
+					$this->ajaxReturn(array('status'=>1,'msg'=>'修改成功','url'=>U('Admin/Users/list')));
+				} else {
+					$this->success('修改成功');
+				}
 			} else {
-				$this->error('修改失败');
+				if(IS_AJAX) {
+					$this->ajaxReturn(array('status'=>0,'msg'=>'修改失败'));
+				} else {
+					$this->error('修改失败');
+				}
 			}
 		} else {
 			$id = I('get.id', 'int');
@@ -166,9 +186,17 @@ class UsersController extends AdminBaseController {
 		if ($result) {
 			$temp['ispush'] = 1;
 			D('ShortDingyue')->editData(['id' => $id], $temp);
-			$this->success('发送成功');
+			if(IS_AJAX) {
+				$this->ajaxReturn(array('status'=>1,'msg'=>'发送成功'));
+			} else {
+				$this->success('发送成功');
+			}
 		} else {
-			$this->error('发送失败');
+			if(IS_AJAX) {
+				$this->ajaxReturn(array('status'=>0,'msg'=>'发送失败'));
+			} else {
+				$this->error('发送失败');
+			}
 		}
 	}
 

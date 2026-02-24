@@ -397,7 +397,8 @@
             <img src="/Public/statics/user/login/img/user_icon_copy.png" alt="用户头像">
         </div>
         <h1 class="login-title">欢迎回来</h1>
-        <form class="login-form" method="post" action="#">
+        <div id="message-toast" style="display:none;margin-bottom:15px;padding:12px;border-radius:8px;text-align:center;font-size:14px;"></div>
+        <form class="login-form" method="post" action="#" id="loginForm">
             <div class="input-group">
                 <input
                     type="text"
@@ -434,5 +435,72 @@
 <block name="footer">
     <script>
         document.getElementById('verify-img').onclick = function(){ this.src = '/verify?t=' + Date.now(); };
+
+        // AJAX login form submission
+        jQuery(document).ready(function($) {
+            $('#loginForm').on('submit', function(e) {
+                e.preventDefault();
+
+                var $form = $(this);
+                var $btn = $form.find('.login-button');
+                var $toast = $('#message-toast');
+                var originalBtnText = $btn.text();
+
+                // Disable button and show loading
+                $btn.prop('disabled', true).text('登录中...');
+                $toast.hide();
+
+                $.ajax({
+                    url: '/login',
+                    type: 'POST',
+                    data: $form.serialize(),
+                    dataType: 'json',
+                    success: function(response) {
+                        if(response.status == 1) {
+                            // Success
+                            $toast.css({
+                                'display': 'block',
+                                'background': 'rgba(76, 175, 80, 0.9)',
+                                'color': '#fff'
+                            }).text(response.msg);
+
+                            // Redirect after short delay
+                            setTimeout(function() {
+                                window.location.href = response.url || '/';
+                            }, 500);
+                        } else {
+                            // Error
+                            $toast.css({
+                                'display': 'block',
+                                'background': 'rgba(244, 67, 54, 0.9)',
+                                'color': '#fff'
+                            }).text(response.msg);
+
+                            // Re-enable button
+                            $btn.prop('disabled', false).text(originalBtnText);
+
+                            // Refresh verify code on error
+                            $('#verify-img').trigger('click');
+                        }
+                    },
+                    error: function(xhr) {
+                        var errorMsg = '登录失败，请重试';
+                        try {
+                            var response = JSON.parse(xhr.responseText);
+                            if(response.msg) errorMsg = response.msg;
+                        } catch(e) {}
+
+                        $toast.css({
+                            'display': 'block',
+                            'background': 'rgba(244, 67, 54, 0.9)',
+                            'color': '#fff'
+                        }).text(errorMsg);
+
+                        $btn.prop('disabled', false).text(originalBtnText);
+                        $('#verify-img').trigger('click');
+                    }
+                });
+            });
+        });
     </script>
 </block>

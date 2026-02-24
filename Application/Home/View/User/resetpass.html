@@ -355,23 +355,24 @@
             <img src="/Public/statics/user/login/img/user_icon_copy.png" alt="用户头像">
         </div>
         <h1 class="login-title">重置密码</h1>
-        <form class="login-form" method="post">
+        <div id="message-toast" style="display:none;margin-bottom:15px;padding:12px;border-radius:8px;text-align:center;font-size:14px;"></div>
+        <form class="login-form" method="post" id="resetpassForm">
             <div class="input-group">
-                <input 
-                    name="newpassword" 
-                    placeholder="请输入新密码:8-16位" 
-                    maxlength="16" 
-                    type="password" 
+                <input
+                    name="newpassword"
+                    placeholder="请输入新密码:8-16位"
+                    maxlength="16"
+                    type="password"
                     autocomplete="off"
                     required
                 >
             </div>
             <div class="input-group">
-                <input 
-                    name="confirmpassword" 
-                    placeholder="请确认密码" 
-                    maxlength="16" 
-                    type="password" 
+                <input
+                    name="confirmpassword"
+                    placeholder="请确认密码"
+                    maxlength="16"
+                    type="password"
                     autocomplete="off"
                     required
                 >
@@ -383,12 +384,76 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
         document.addEventListener('keypress', function(e) {
-            // 回车键事件  
+            // 回车键事件
             if(e.which == 13) {
                 var btn = document.querySelector('button[type="submit"], input[type="submit"]'); if (btn) btn.click();
             }
+        });
+
+        // AJAX form submission
+        jQuery(document).ready(function($) {
+            $('#resetpassForm').on('submit', function(e) {
+                e.preventDefault();
+
+                var $form = $(this);
+                var $btn = $form.find('.login-button');
+                var $toast = $('#message-toast');
+                var originalBtnText = $btn.text();
+
+                // Disable button and show loading
+                $btn.prop('disabled', true).text('处理中...');
+                $toast.hide();
+
+                $.ajax({
+                    url: window.location.pathname,
+                    type: 'POST',
+                    data: $form.serialize(),
+                    dataType: 'json',
+                    success: function(response) {
+                        if(response.status == 1) {
+                            // Success
+                            $toast.css({
+                                'display': 'block',
+                                'background': 'rgba(76, 175, 80, 0.9)',
+                                'color': '#fff'
+                            }).text(response.msg);
+
+                            // Redirect after short delay
+                            setTimeout(function() {
+                                window.location.href = response.url || '/login';
+                            }, 1000);
+                        } else {
+                            // Error
+                            $toast.css({
+                                'display': 'block',
+                                'background': 'rgba(244, 67, 54, 0.9)',
+                                'color': '#fff'
+                            }).text(response.msg);
+
+                            // Re-enable button
+                            $btn.prop('disabled', false).text(originalBtnText);
+                        }
+                    },
+                    error: function(xhr) {
+                        var errorMsg = '重置失败，请重试';
+                        try {
+                            var response = JSON.parse(xhr.responseText);
+                            if(response.msg) errorMsg = response.msg;
+                        } catch(e) {}
+
+                        $toast.css({
+                            'display': 'block',
+                            'background': 'rgba(244, 67, 54, 0.9)',
+                            'color': '#fff'
+                        }).text(errorMsg);
+
+                        $btn.prop('disabled', false).text(originalBtnText);
+                    }
+                });
+            });
         });
     </script>
 </body>

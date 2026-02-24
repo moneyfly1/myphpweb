@@ -47,12 +47,20 @@ class DingyueController extends AdminBaseController{
 	public function resetSubscription(){
 		$id = I('get.id');
 		if(!$id){
-			$this->error('参数错误');
+			if(IS_AJAX) {
+				$this->ajaxReturn(array('status'=>0,'msg'=>'参数错误'));
+			} else {
+				$this->error('参数错误');
+			}
 		}
 		// 获取订阅信息
 		$dingyue = D('ShortDingyue')->getData(['id'=>$id]);
 		if(!$dingyue){
-			$this->error('订阅不存在');
+			if(IS_AJAX) {
+				$this->ajaxReturn(array('status'=>0,'msg'=>'订阅不存在'));
+			} else {
+				$this->error('订阅不存在');
+			}
 		}
 
         // 获取用户信息
@@ -97,9 +105,17 @@ class DingyueController extends AdminBaseController{
 				$reset_data['allowed_devices'] = '[]';
 			}
 			D('ShortDingyue')->editData(['id' => $id], $reset_data);
-			$this->success('订阅地址重置成功');
+			if(IS_AJAX) {
+				$this->ajaxReturn(array('status'=>1,'msg'=>'订阅地址重置成功','url'=>U('Admin/Dingyue/list')));
+			} else {
+				$this->success('订阅地址重置成功');
+			}
 		}else{
-			$this->error('重置失败');
+			if(IS_AJAX) {
+				$this->ajaxReturn(array('status'=>0,'msg'=>'重置失败'));
+			} else {
+				$this->error('重置失败');
+			}
 		}
 	}
 
@@ -251,9 +267,17 @@ class DingyueController extends AdminBaseController{
 				}
 				$res = D('ShortDingyue')->addData($data);
 				if ($res) {
-					$this->success('添加成功');
+					if(IS_AJAX) {
+						$this->ajaxReturn(array('status'=>1,'msg'=>'添加成功','url'=>U('Admin/Dingyue/list')));
+					} else {
+						$this->success('添加成功');
+					}
 				}else{
-					$this->error('添加失败');
+					if(IS_AJAX) {
+						$this->ajaxReturn(array('status'=>0,'msg'=>'添加失败'));
+					} else {
+						$this->error('添加失败');
+					}
 				}
 			}else{
 				$list=import_excel('/www/wwwroot/proxy.icandoit.ml'.$data['upexcle'][0]);
@@ -297,9 +321,17 @@ class DingyueController extends AdminBaseController{
 			$data['endtime'] = strtotime($data['endtime']);
 			$result = D('ShortDingyue')->editData(['id'=>$temp['id']],$data);
 			if ($result) {
-				$this->success('修改成功');
+				if(IS_AJAX) {
+					$this->ajaxReturn(array('status'=>1,'msg'=>'修改成功','url'=>U('Admin/Dingyue/list')));
+				} else {
+					$this->success('修改成功');
+				}
 			}else{
-				$this->error('修改失败');
+				if(IS_AJAX) {
+					$this->ajaxReturn(array('status'=>0,'msg'=>'修改失败'));
+				} else {
+					$this->error('修改失败');
+				}
 			}
 		}else{
 			$id = I('get.id','int');
@@ -350,9 +382,17 @@ class DingyueController extends AdminBaseController{
 		if ($result) {
 		    $temp['ispush'] = 1;
 		    D('ShortDingyue')->editData(['id'=>$id],$temp);
-			$this->success('发送成功');
+			if(IS_AJAX) {
+				$this->ajaxReturn(array('status'=>1,'msg'=>'发送成功'));
+			} else {
+				$this->success('发送成功');
+			}
 		}else{
-			$this->error('发送失败');
+			if(IS_AJAX) {
+				$this->ajaxReturn(array('status'=>0,'msg'=>'发送失败'));
+			} else {
+				$this->error('发送失败');
+			}
 		}
 	}
 

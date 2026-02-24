@@ -6,6 +6,9 @@ class BalanceController extends Controller {
 
     public function index() {
         if (!check_user_login()) {
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'请先登录','url'=>'/login'));
+            }
             $this->error('请先登录', '/login');
         }
         $userId = $_SESSION['users']['id'];
@@ -27,6 +30,9 @@ class BalanceController extends Controller {
      */
     public function recharge() {
         if (!check_user_login()) {
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'请先登录','url'=>'/login'));
+            }
             $this->error('请先登录', '/login');
         }
         $userId = $_SESSION['users']['id'];
@@ -40,11 +46,17 @@ class BalanceController extends Controller {
      */
     public function pay() {
         if (!check_user_login()) {
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'请先登录','url'=>'/login'));
+            }
             $this->error('请先登录', '/login');
         }
 
         $amount = floatval(I('get.amount', 0));
         if ($amount < 1 || $amount > 10000) {
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'充值金额需在1-10000元之间'));
+            }
             $this->error('充值金额需在1-10000元之间');
         }
         $amount = round($amount, 2);
@@ -88,6 +100,9 @@ class BalanceController extends Controller {
         ))->find();
 
         if (!$alipayConfig) {
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'支付配置错误，请联系管理员'));
+            }
             $this->error('支付配置错误，请联系管理员');
         }
 
@@ -110,6 +125,9 @@ class BalanceController extends Controller {
             $this->display('rechargePay');
         } else {
             error_log('Balance recharge: QR generation failed ' . json_encode($alipayResult));
+            if(IS_AJAX) {
+                $this->ajaxReturn(array('status'=>0,'msg'=>'支付二维码生成失败，请稍后重试'));
+            }
             $this->error('支付二维码生成失败，请稍后重试');
         }
     }

@@ -103,7 +103,7 @@
         <div class="actions-bar">
             <a href="{:U('Home/Ticket/index')}" class="btn-close-ticket"><i class="fas fa-arrow-left"></i> 返回列表</a>
             <if condition="$ticket['status'] neq 3">
-            <a href="{:U('Home/Ticket/close', array('id'=>$ticket['id']))}" class="btn-close-ticket" onclick="return confirm('确定关闭该工单？')"><i class="fas fa-times-circle"></i> 关闭工单</a>
+            <a href="javascript:void(0);" class="btn-close-ticket" id="closeTicketBtn" data-id="{$ticket['id']}"><i class="fas fa-times-circle"></i> 关闭工单</a>
             </if>
         </div>
 
@@ -139,7 +139,7 @@
         <if condition="$ticket['status'] neq 3">
         <div class="reply-form">
             <h3>回复工单</h3>
-            <form action="{:U('Home/Ticket/reply')}" method="post">
+            <form action="{:U('Home/Ticket/reply')}" method="post" id="replyForm">
                 <input type="hidden" name="ticket_id" value="{$ticket['id']}">
                 <textarea name="content" placeholder="请输入回复内容..." required></textarea>
                 <div class="reply-form-actions">
@@ -185,6 +185,96 @@
 <block name="footer">
 <script>
 $(function(){
+    // Close ticket
+    $('#closeTicketBtn').on('click', function(){
+        if(!confirm('确定关闭该工单？')) return;
+        var ticketId = $(this).data('id');
+        $.ajax({
+            url: "{:U('Home/Ticket/close')}",
+            type: 'GET',
+            data: {id: ticketId},
+            dataType: 'json',
+            success: function(res){
+                if(res.status == 1){
+                    showToast(res.msg, 'success');
+                    setTimeout(function(){
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showToast(res.msg, 'error');
+                }
+            },
+            error: function(){
+                showToast('网络错误，请重试', 'error');
+            }
+        });
+    });
+
+    // Reply form
+    $('#replyForm').on('submit', function(e){
+        e.preventDefault();
+        var $form = $(this);
+        var $btn = $form.find('.btn-primary-sm');
+        var btnText = $btn.text();
+
+        $btn.prop('disabled', true).text('提交中...');
+
+        $.ajax({
+            url: $form.attr('action'),
+            type: 'POST',
+            data: $form.serialize(),
+            dataType: 'json',
+            success: function(res){
+                if(res.status == 1){
+                    showToast(res.msg, 'success');
+                    setTimeout(function(){
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showToast(res.msg, 'error');
+                    $btn.prop('disabled', false).text(btnText);
+                }
+            },
+            error: function(){
+                showToast('网络错误，请重试', 'error');
+                $btn.prop('disabled', false).text(btnText);
+            }
+        });
+    });
+
+    // Rate form
+    $('#rateForm').on('submit', function(e){
+        e.preventDefault();
+        var $form = $(this);
+        var $btn = $form.find('.btn-primary-sm');
+        var btnText = $btn.text();
+
+        $btn.prop('disabled', true).text('提交中...');
+
+        $.ajax({
+            url: $form.attr('action'),
+            type: 'POST',
+            data: $form.serialize(),
+            dataType: 'json',
+            success: function(res){
+                if(res.status == 1){
+                    showToast(res.msg, 'success');
+                    setTimeout(function(){
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showToast(res.msg, 'error');
+                    $btn.prop('disabled', false).text(btnText);
+                }
+            },
+            error: function(){
+                showToast('网络错误，请重试', 'error');
+                $btn.prop('disabled', false).text(btnText);
+            }
+        });
+    });
+
+    // Star rating
     var stars = $('#starRating .star');
     stars.on('mouseenter', function(){
         var val = $(this).data('val');
@@ -200,6 +290,13 @@ $(function(){
         $('#rateBtn').prop('disabled', false);
         stars.each(function(){ $(this).toggleClass('active', $(this).data('val') <= val); });
     });
+
+    function showToast(msg, type){
+        var bgColor = type === 'success' ? '#48bb78' : '#f56565';
+        var toast = $('<div style="position:fixed;top:20px;left:50%;transform:translateX(-50%);background:'+bgColor+';color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.15);">'+msg+'</div>');
+        $('body').append(toast);
+        setTimeout(function(){ toast.fadeOut(300, function(){ $(this).remove(); }); }, 3000);
+    }
 });
 </script>
 </block>
