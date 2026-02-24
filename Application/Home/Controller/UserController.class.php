@@ -68,14 +68,6 @@ class UserController extends Controller {
     	}
 	if (IS_POST) {
 		$data = I('post.');
-		if (empty($data['verify_code']) || !check_verify($data['verify_code'])) {
-			if(IS_AJAX){
-				$this->ajaxReturn(array('status'=>0, 'msg'=>'验证码错误'));
-			}else{
-				$this->error('验证码错误');
-			}
-			return;
-		}
 		$username = $data['user'];
 		$password = $data['pwd'];
 
@@ -147,14 +139,6 @@ class UserController extends Controller {
     	}
 	if (IS_POST) {
 		$data = I('post.');
-		if (empty($data['verify_code']) || !check_verify($data['verify_code'])) {
-			if(IS_AJAX){
-				$this->ajaxReturn(array('status'=>0, 'msg'=>'验证码错误'));
-			}else{
-				$this->error('验证码错误');
-			}
-			return;
-		}
 		$username = $data['user'];
 		$password = $data['pwd'];
 		if(!is_numeric($username) || strlen($password)<8){

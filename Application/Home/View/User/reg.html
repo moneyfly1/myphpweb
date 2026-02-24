@@ -361,15 +361,6 @@
         <p id="pwdError" class="reg-error-message"></p>
       </div>
       <div class="reg-form-group">
-        <label class="reg-form-label">验证码</label>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <input name="verify_code" type="text" maxlength="6" required placeholder="验证码"
-                 style="flex:1;height:56px;padding:0 20px;border:none;background:rgba(255,255,255,0.1);font-size:16px;color:#fff;outline:none;border-radius:12px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);">
-          <img src="/verify" alt="验证码" id="reg-verify-img"
-               style="height:40px;cursor:pointer;border-radius:6px;" title="点击刷新">
-        </div>
-      </div>
-      <div class="reg-form-group">
         <button id="submitBtn" type="submit" class="reg-submit-button">
           注册
         </button>
@@ -451,8 +442,7 @@
             overlay.classList.remove('show');
             submitBtn.disabled = false;
             submitBtn.textContent = '注册';
-            // Refresh verify code
-            document.getElementById('reg-verify-img').src = '/verify?t=' + Date.now();
+            // Refresh page on error
           }
         },
         error: function(xhr) {
@@ -466,69 +456,9 @@
           overlay.classList.remove('show');
           submitBtn.disabled = false;
           submitBtn.textContent = '注册';
-          document.getElementById('reg-verify-img').src = '/verify?t=' + Date.now();
         }
       });
     });
 
-    document.getElementById('reg-verify-img').onclick = function(){ this.src = '/verify?t=' + Date.now(); };
-</script>
-</block>
-
-      const userErrorEl = document.getElementById('userError');
-      if (!/^\d{5,16}$/.test(user)) {
-        userErrorEl.textContent = '请输入 5-16 位数字用户名';
-        userErrorEl.classList.add('show');
-        valid = false;
-      } else {
-        userErrorEl.classList.remove('show');
-      }
-
-      const pwdErrorEl = document.getElementById('pwdError');
-      if (pwd.length < 8 || pwd.length > 16) {
-        pwdErrorEl.textContent = '密码长度须为 8-16 位';
-        pwdErrorEl.classList.add('show');
-        valid = false;
-      } else {
-        pwdErrorEl.classList.remove('show');
-      }
-
-      return valid;
-    }
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!validate()) return;
-
-      // 展示加载遮罩并禁用按钮
-      overlay.classList.add('show');
-      submitBtn.disabled = true;
-      submitBtn.textContent = '注册中...';
-
-      const formData = new FormData(form);
-      try {
-        const resp = await fetch(window.location.pathname, {
-          method: 'POST',
-          body: formData,
-          headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        });
-        if (resp.ok) {
-          setTimeout(() => window.location.href = '/login', 2000);
-        } else {
-          const text = await resp.text();
-          alert(text || '注册失败，请重试');
-          overlay.classList.remove('show');
-          submitBtn.disabled = false;
-          submitBtn.textContent = '注册';
-        }
-      } catch (err) {
-        console.error(err);
-        alert('网络或服务器错误');
-        overlay.classList.remove('show');
-        submitBtn.disabled = false;
-        submitBtn.textContent = '注册';
-      }
-    });
-    document.getElementById('reg-verify-img').onclick = function(){ this.src = '/verify?t=' + Date.now(); };
 </script>
 </block>

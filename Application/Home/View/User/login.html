@@ -420,10 +420,6 @@
                     required
                 >
             </div>
-            <div class="input-group no-suffix" style="display:flex;align-items:center;gap:8px;">
-                <input type="text" name="verify_code" placeholder="验证码" maxlength="6" autocomplete="off" required style="flex:1;">
-                <img src="/verify" alt="验证码" id="verify-img" style="height:40px;cursor:pointer;border-radius:6px;" title="点击刷新">
-            </div>
             <button type="submit" class="btn btn-primary login-button">立即登录</button>
         </form>
         <div class="login-links">
@@ -434,8 +430,6 @@
 
 <block name="footer">
     <script>
-        document.getElementById('verify-img').onclick = function(){ this.src = '/verify?t=' + Date.now(); };
-
         // AJAX login form submission
         jQuery(document).ready(function($) {
             $('#loginForm').on('submit', function(e) {
@@ -478,9 +472,6 @@
 
                             // Re-enable button
                             $btn.prop('disabled', false).text(originalBtnText);
-
-                            // Refresh verify code on error
-                            $('#verify-img').trigger('click');
                         }
                     },
                     error: function(xhr) {
@@ -497,7 +488,6 @@
                         }).text(errorMsg);
 
                         $btn.prop('disabled', false).text(originalBtnText);
-                        $('#verify-img').trigger('click');
                     }
                 });
             });
