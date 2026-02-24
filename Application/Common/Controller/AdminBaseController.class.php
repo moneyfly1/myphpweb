@@ -13,16 +13,13 @@ class AdminBaseController extends BaseController{
 		$auth=new \Think\Auth();
 		$rule_name=MODULE_NAME.'/'.CONTROLLER_NAME.'/'.ACTION_NAME;
 
-        // if(!check_login()){
-        //     redirect('/admin.php/user/login');die;
-        // }
-		// p($_SESSION);die;
 		if ($rule_name != 'Admin/User/login') {
 			// 检查用户是否登录
 			if(!isset($_SESSION['user']['id']) || empty($_SESSION['user']['id'])){
-				redirect('/admin.php?s=/User/login');
+				$this->display('User:login');
+				exit;
 			}
-			
+
 			$superAdminIds = C('SUPER_ADMIN_IDS');
 			if (!is_array($superAdminIds)) $superAdminIds = array(88);
 			if (!in_array($_SESSION['user']['id'], $superAdminIds)) {
@@ -32,15 +29,19 @@ class AdminBaseController extends BaseController{
 				}
 				$result=$auth->check($rule_name,$_SESSION['user']['id']);
 				if(!$result){
-					redirect('/admin.php?s=/User/login');
+					if(IS_AJAX){
+						$this->ajaxReturn(array('status'=>0, 'msg'=>'您没有权限访问'));
+					}else{
+						$this->display('User:login');
+						exit;
+					}
 				}
 			}
 		}
-		
+
 
 		// 分配菜单数据
 		$nav_data=D('AdminNav')->getTreeData('level','order_number,id');
-		// var_dump($nav_data);die;
 		$assign=array(
 			'nav_data'=>$nav_data
 			);
