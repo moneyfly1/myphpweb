@@ -443,28 +443,27 @@
                     url: $(this).attr('action') || window.location.href,
                     method: 'POST',
                     data: formData,
+                    dataType: 'json',
                     timeout: 10000,
                     success: function(response) {
-                        status.removeClass('error').text('登录成功，正在跳转...');
-                        setTimeout(function() {
-                            if (response.url) {
-                                window.location.href = response.url;
-                            } else {
-                                window.location.reload();
-                            }
-                        }, 1000);
+                        if(response.status == 1) {
+                            status.removeClass('error').text(response.msg || '登录成功，正在跳转...');
+                            setTimeout(function() {
+                                window.location.href = response.url || '/admin.php';
+                            }, 500);
+                        } else {
+                            status.addClass('error').text(response.msg || '账号或密码错误');
+                            submitBtn.text(originalBtnText);
+                            submitBtn.prop('disabled', false);
+                        }
                     },
                     error: function(xhr, textStatus, errorThrown) {
                         status.addClass('error');
-                        if (xhr.status === 401) {
-                            status.text('用户名或密码错误');
-                        } else if (textStatus === 'timeout') {
+                        if (textStatus === 'timeout') {
                             status.text('请求超时，请检查网络连接');
                         } else {
                             status.text('登录失败，请稍后重试');
                         }
-                    },
-                    complete: function() {
                         submitBtn.text(originalBtnText);
                         submitBtn.prop('disabled', false);
                     }

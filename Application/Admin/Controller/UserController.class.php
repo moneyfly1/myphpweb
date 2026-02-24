@@ -31,7 +31,7 @@ class UserController extends AdminBaseController{
 
 			// 首先根据用户名查找管理员用户
 			$get = M('users')->where(['username'=>$username])->find();
-			
+
 			// 验证密码（支持新旧密码格式）
 			if ($get && verify_password($password, $get['password'])) {
 				// 如果密码需要重新哈希（从MD5升级），则更新密码
@@ -48,9 +48,17 @@ class UserController extends AdminBaseController{
                     'username'=>$get['username'],
                     'avatar'=>$get['avatar']
                 );
-				$this->success('登录成功',U('/'));
+				if(IS_AJAX){
+					$this->ajaxReturn(array('status'=>1, 'msg'=>'登录成功', 'url'=>U('/')));
+				}else{
+					$this->success('登录成功',U('/'));
+				}
 			}else{
-				$this->error('账号或密码错误');
+				if(IS_AJAX){
+					$this->ajaxReturn(array('status'=>0, 'msg'=>'账号或密码错误'));
+				}else{
+					$this->error('账号或密码错误');
+				}
 			}
 		}else{
 			$data=check_login() ? $_SESSION['user']['username'].'已登录' : '未登录';
@@ -64,7 +72,7 @@ class UserController extends AdminBaseController{
 
 	public function logout(){
 		session('user',null);
-		$this->success('退出成功、前往登录页面',U('Admin/User/login'));
+		redirect(U('Admin/User/login'));
 	}
 
 
