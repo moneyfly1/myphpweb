@@ -1,0 +1,576 @@
+<extend name="Public:base" />
+<block name="title">修改订阅</block>
+<block name="content">
+    <!-- 引入layer.js库 -->
+     <script src="__PUBLIC__/statics/layer/layer.js"></script>
+    <style>
+        /* 面包屑导航设计 */
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .breadcrumb-item a {
+            color: #1677ff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s ease;
+        }
+        
+        .breadcrumb-item a:hover {
+            color: #0958d9;
+            text-decoration: none;
+        }
+        
+        .breadcrumb-item.active {
+            color: #8c8c8c;
+        }
+        
+        .breadcrumb-item i {
+            font-size: 14px;
+        }
+        
+        .breadcrumb-item:not(:last-child)::after {
+            content: '/';
+            color: #d9d9d9;
+            margin-left: 8px;
+            font-size: 12px;
+        }
+        
+        /* 选项卡样式 - 并排排列 */
+        .nav-tabs {
+            border-bottom: none;
+            margin-bottom: 20px;
+            background: transparent;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+        
+        .nav-tabs .nav-item {
+            margin-right: 8px;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            color: #595959;
+            padding: 12px 20px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background: #1677ff;
+            color: white;
+            border: none;
+            box-shadow: 0 2px 8px rgba(22, 119, 255, 0.3);
+        }
+        
+        .nav-tabs .nav-link:hover {
+            background: #e6f7ff;
+            color: #1677ff;
+            transform: translateY(-1px);
+        }
+        
+        /* 页面导航路径 */
+        .page-navigation {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .page-navigation .nav-item {
+            display: flex;
+            align-items: center;
+            color: #6c757d;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .page-navigation .nav-item:hover {
+            color: #1677ff;
+            text-decoration: none;
+        }
+        
+        .page-navigation .nav-item.active {
+            color: #1677ff;
+            font-weight: 500;
+        }
+        
+        .page-navigation .nav-separator {
+            color: #dee2e6;
+            margin: 0 4px;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background: #fafafa;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 16px 20px;
+            font-weight: 500;
+        }
+        
+        /* 响应式处理 */
+        @media (max-width: 768px) {
+            .breadcrumb {
+                display: none !important;
+            }
+            
+            .page-navigation {
+                font-size: 12px;
+                padding: 8px 12px;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+    
+    <!-- 面包屑导航 -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Index/index')}">
+                    <i class="fa fa-home"></i>
+                    首页
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Index/index')}">
+                    后台管理
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Dingyue/list')}">
+                    订阅列表
+                </a>
+            </li>
+            <li class="breadcrumb-item active">
+                修改订阅
+            </li>
+        </ol>
+    </nav>
+    
+    <!-- 页面导航路径 -->
+    <div class="page-navigation">
+        <a href="{:U('Admin/Index/index')}" class="nav-item">
+            <i class="fa fa-home"></i>
+            首页
+        </a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/Index/index')}" class="nav-item">
+            后台管理
+        </a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/Dingyue/list')}" class="nav-item">
+            订阅管理
+        </a>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">
+            修改订阅
+        </div>
+    </div>
+    
+    <div class="page-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-start">
+                    <ul class="nav nav-tabs border-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{:U('Admin/Dingyue/list')}">订阅列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{:U('Admin/Dingyue/add')}">添加订阅</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+                <style>
+                    /* 页面容器 */
+                    .subscription-edit-container {
+                        background: #fff;
+                        border-radius: 0;
+                        box-shadow: none;
+                        border: none;
+                        overflow: hidden;
+                        margin: 0;
+                    }
+
+                    /* 页面头部 */
+                    .subscription-edit-header {
+                        background: #f8f9fa;
+                        border-bottom: 1px solid #e9ecef;
+                        padding: 1rem;
+                    }
+
+                    .subscription-edit-title {
+                        font-size: 1.75rem;
+                        font-weight: 600;
+                        color: #333;
+                        margin: 0 0 0.5rem 0;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.75rem;
+                    }
+
+                    .subscription-edit-subtitle {
+                        font-size: 1rem;
+                        color: #6c757d;
+                        margin: 0;
+                    }
+
+                    /* 表单样式 */
+                    .form-section {
+                        background: #fff;
+                        border-radius: 0;
+                        box-shadow: none;
+                        border: none;
+                        overflow: hidden;
+                    }
+
+        .form-header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-light);
+            padding: 1rem;
+        }
+
+        .form-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .form-body {
+            padding: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            background: #fff;
+            color: #333;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        .form-control[readonly] {
+            background: #f8f9fa;
+            color: #6c757d;
+        }
+
+        .form-text {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .form-check-input {
+            width: 1rem;
+            height: 1rem;
+            accent-color: #007bff;
+        }
+
+        .form-check-label {
+            font-size: 1rem;
+            color: #333;
+        }
+
+
+
+        .btn-submit {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 0.375rem;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: #fff;
+            border: 1px solid #6c757d;
+            border-radius: 0.375rem;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+            color: #fff;
+        }
+
+        /* 移动端样式 */
+        @media (max-width: 768px) {
+            .subscription-edit-header {
+                padding: 0.75rem;
+            }
+
+            .subscription-edit-title {
+                font-size: 1.25rem;
+            }
+
+            .form-header {
+                padding: 0.75rem;
+            }
+
+            .form-body {
+                padding: 0.75rem;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .btn-submit,
+            .btn-secondary {
+                width: 100%;
+                justify-content: center;
+                padding: 0.75rem 1rem;
+            }
+        }
+
+        /* 加载动画 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ced4da;
+            border-radius: 50%;
+            border-top-color: #007bff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 成功消息样式 */
+        .success-message {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.2);
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .error-message {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.2);
+            border-radius: 0.375rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+    </style>
+
+    <div class="subscription-edit-container">
+        <!-- 页面头部 -->
+            
+            <div class="form-body">
+                <!-- 成功/错误消息 -->
+                <div id="success-message" class="success-message"></div>
+                <div id="error-message" class="error-message"></div>
+
+                <form method="post" action="{:U('Admin/Dingyue/edit')}">
+                    <input type="hidden" name="id" value="{$data.id}">
+                    
+                    <div class="form-group">
+                        <label for="qq" class="form-label">QQ号码 <span style="color: #dc3545;">*</span></label>
+                        <input type="text" id="qq" name="qq" class="form-control" value="{$data.qq}" required>
+                        <div class="form-text">用户的QQ号码</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endtime" class="form-label">到期时间 <span style="color: #dc3545;">*</span></label>
+                        <input type="date" id="endtime" name="endtime" class="form-control endtime" data="{$data.id}" value="{$data.endtime}" required>
+                        <div class="form-text">订阅的到期时间</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status" class="form-label">状态</label>
+                        <select id="status" name="status" class="form-control">
+                            <option value="1" {$data.status == 1 ? 'selected' : ''}>正常</option>
+                            <option value="0" {$data.status == 0 ? 'selected' : ''}>已过期</option>
+                            <option value="2" {$data.status == 2 ? 'selected' : ''}>已禁用</option>
+                        </select>
+                        <div class="form-text">订阅的当前状态</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mobile_short_url" class="form-label">手机短链</label>
+                        <input type="text" id="mobile_short_url" name="mobile_short_url" class="form-control" value="{$data.mobile_short_url}" readonly>
+                        <div class="form-text">系统自动生成的手机端短链接</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="clash_short_url" class="form-label">Clash短链</label>
+                        <input type="text" id="clash_short_url" name="clash_short_url" class="form-control" value="{$data.clash_short_url}" readonly>
+                        <div class="form-text">系统自动生成的Clash配置短链接</div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" id="notify_expire" name="notify_expire" class="form-check-input" value="1" {$data.notify_expire == 1 ? 'checked' : ''}>
+                            <label for="notify_expire" class="form-check-label">到期提醒</label>
+                        </div>
+                        <div class="form-text">在订阅到期前发送提醒</div>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn-submit" id="submit-btn">
+                            <span class="icon icon-settings"></span>
+                            保存修改
+                        </button>
+                        <a href="{:U('Admin/Dingyue/list')}" class="btn-secondary">
+                            <span class="icon icon-arrow"></span>
+                            返回列表
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // 确保日期输入框正确显示日期
+            var endtimeInput = $('#endtime');
+            var currentValue = endtimeInput.val();
+            
+            // 如果当前值为空或无效，尝试从数据库值设置
+            if (!currentValue || currentValue === '0000-00-00') {
+                // 从data属性获取原始时间戳
+                var dataId = endtimeInput.attr('data');
+                if (dataId) {
+                    // 这里可以添加AJAX请求获取正确的日期
+                    console.log('需要获取ID为 ' + dataId + ' 的正确到期时间');
+                }
+            }
+            
+            // 表单提交处理
+            $('form').submit(function(e) {
+                e.preventDefault();
+                
+                var submitBtn = $('#submit-btn');
+                var originalText = submitBtn.html();
+                
+                // 显示加载状态
+                submitBtn.html('<span class="loading"></span> 保存中...');
+                submitBtn.prop('disabled', true);
+                
+                // 隐藏之前的消息
+                $('#success-message, #error-message').hide();
+                
+                $.post($(this).attr('action'), $(this).serialize(), function(data) {
+                    if (data.code == 1) {
+                        // 显示成功消息
+                        $('#success-message').html('订阅修改成功！正在跳转...').show();
+                        
+                        // 延迟跳转
+                        setTimeout(function() {
+                            window.location.href = '{:U("Admin/Dingyue/list")}';
+                        }, 1500);
+                    } else {
+                        // 显示错误消息
+                        $('#error-message').text('修改失败：' + (data.msg || '')).show();
+                        
+                        // 恢复按钮状态
+                        submitBtn.html(originalText);
+                        submitBtn.prop('disabled', false);
+                    }
+                }).fail(function() {
+                    // 网络错误
+                    $('#error-message').text('网络错误，请重试').show();
+                    
+                    // 恢复按钮状态
+                    submitBtn.html(originalText);
+                    submitBtn.prop('disabled', false);
+                });
+            });
+        });
+    </script>
+</block>

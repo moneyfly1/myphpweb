@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<title>用户中心 — NaikoCloud</title>
+
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+
+<!-- BEGIN: Vendor CSS-->
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.8.2/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/theme/cool/assets/vendors/css/vendors.min.css">
+<!-- END: Vendor CSS-->
+
+<!-- BEGIN: Theme CSS-->
+<link rel="stylesheet" type="text/css" href="/theme/cool/assets/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="/theme/cool/assets/css/bootstrap-extended.css">
+<link rel="stylesheet" type="text/css" href="/theme/cool/assets/css/cool.css">
+<link rel="stylesheet" type="text/css" href="/theme/cool/assets/css/theme/dark-layout.css">
+<link rel="stylesheet" type="text/css" href="/theme/cool/assets/css/theme/style-cyan.css">
+<!-- END: Theme CSS-->
+
+<!-- BEGIN: Page CSS-->
+<link rel="stylesheet" type="text/css" href="/theme/cool/assets/css/plugins/sweetalert2.min.css">
+<!-- END: Page CSS-->
+</head>
+<!-- END: Head-->
+
+<!-- BEGIN: Body-->
+<body class=" vertical-layout vertical-menu-modern navbar-floating footer-static menu-expanded pace-done" data-open="click" data-menu="vertical-menu-modern" data-col="2-columns">
+<!-- BEGIN: Header-->
+<nav class="header-navbar navbar-expand-lg navbar navbar-with-menu floating-nav navbar-light navbar-shadow">
+<div class="navbar-wrapper">
+<div class="navbar-container content">
+<div class="navbar-collapse" id="navbar-mobile">
+<div class="mr-auto float-left bookmark-wrapper d-flex align-items-center">
+<ul class="nav navbar-nav">
+<li class="nav-item mobile-menu d-xl-none mr-auto"><a class="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i class="ficon feather icon-menu"></i></a></li>
+</ul>
+<ul class="nav navbar-nav bookmark-icons">
+<li class="nav-item d-none d-lg-block"><a class="nav-link" href="/user/shop" data-toggle="tooltip" data-placement="top" title="" data-original-title="购买套餐">
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+</a></li>
+</ul>
+<ul class="nav navbar-nav bookmark-icons">
+<li class="nav-item d-none d-lg-block"><a class="nav-link" href="/user/help" data-toggle="tooltip" data-placement="top" data-original-title="下载与使用教程">
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book-open"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+</a></li>
+</ul>
+</div>
+<ul class="nav navbar-nav float-right">
+<li class="nav-item d-none d-lg-block">
+<a class="nav-link" onclick="if (!window.__cfRLUnblockHandlers) return false; change_style()" data-cf-modified-0752eb0c16454762d2f27156-="">
+<i class="ficon feather icon-moon"></i>
+</a>
+</li>
+
+<li class="dropdown dropdown-notification nav-item">
+<a href="#" data-toggle="dropdown" id="tongzhi" class="nav-link notification-toggle nav-link-lg"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bell"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"></path></svg>
+</a>
+<div class="dropdown-menu dropdown-list dropdown-menu-right">
+<div class="dropdown-header">消息提醒
+</div>
+<div class="dropdown-list-content dropdown-list-icons">
+<a href="/user/announcement" class="dropdown-item">
+<div class="dropdown-item-icon bg-primary text-white">
+<i class="fas fa-code"></i>
+</div>
+<div class="dropdown-item-desc">
+查看公告日志！
+<div class="time text-primary">2025-08-26 17:13:12</div>
+</div>
+</a>
+</div>
+</div>
+</li>
+<li class="dropdown dropdown-user nav-item"><a class="dropdown-toggle nav-link dropdown-user-link" href="#" data-toggle="dropdown">
+<div class="user-nav d-sm-flex d-none">
+<span class="user-name text-bold-600">kdaisywendy</span>
+<span class="user-status"><span class="__cf_email__" data-cfemail="aac1cecbc3d9d3ddcfc4ced3eacdc7cbc3c684c9c5c7">[email&#160;protected]</span></span>
+</div>
+<span class="avatar">
+<img class="w-px-40 h-px-40 round" src="/theme/cool/assets/images/images.png" alt="avatar">
+<span class="avatar-status-online"></span>
+</span>
+</a>
+<div class="dropdown-menu dropdown-menu-right">
+<a class="dropdown-item" href="/user/shop"><i class="feather icon-shopping-cart""></i> 套餐商店</a>
+<a class="dropdown-item" href="/user/code"><i class="feather icon-credit-card""></i> 我的钱包</a>
+<a class="dropdown-item" href="/user/invite"><i class="feather icon-paperclip"></i> 邀请好友</a>
+
+<div class="dropdown-divider"></div>
+<a class="dropdown-item" href="https://doc.naiko.org" target="_blank"><i class="feather icon-headphones"></i> 使用教程</a>
+<a class="dropdown-item" href="/user/faq"><i class="feather icon-help-circle"></i> 常见问题</a>
+
+<div class="dropdown-divider"></div>
+<a class="dropdown-item" href="/user/logout"><i class="feather icon-power"></i> 退出登录</a>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</nav>
+<!-- END: Header-->
+
+<!-- BEGIN: Main Menu-->
+<div class="main-menu menu-fixed menu-accordion menu-shadow menu-light" data-scroll-to-active="true">
+<div class="navbar-header">
+<ul class="nav navbar-nav flex-row">
+<li class="nav-item mr-auto"><a class="navbar-brand" href="/user">
+<div class="brand-logo"></div>
+<h2 class="brand-text mb-0">NaikoCloud</h2>
+</a></li>
+<li class="nav-item nav-toggle"><a class="nav-link modern-nav-toggle pr-0" data-toggle="collapse"><i class="icon-x d-block d-xl-none font-medium-4 primary toggle-icon feather icon-disc"></i><i class="toggle-icon icon-disc font-medium-4 d-none d-xl-block collapse-toggle-icon primary feather" data-ticon="icon-disc"></i></a></li>
+</ul>
+</div>
+<div class="shadow-bottom"></div>
+<div class="main-menu-content">
+<ul class="navigation navigation-main sidebarnav" data-menu="menu-navigation">
+<li class="nav-item"><a href="/user"><i class="feather icon-home"></i><span class="menu-title">用户中心</span></a></li>
+<li class="nav-item"><a href="/user/announcement"><i class="feather icon-volume-1"></i><span class="menu-title">网站公告</span></a></li>
+<li class="nav-item"><a href="https://chat.naikonav.com" target="_blank"><i class="feather icon-phone-call"></i><span class="menu-title">定制服务</span></a></li>
+
+<li class="nav-item"><a href="https://doc.naiko.org/#/emby" target="_blank"><i class="feather icon-cloud"></i><span class="menu-title">Emby 库</span></a></li>
+
+<li class="nav-item navigation-header"><span>我的</span></li>
+<li class="nav-item"><a href="/user/profile"><i class="feather icon-user"></i><span class="menu-title">我的账号</span></a></li>
+<li class="nav-item"><a href="/user/code"><i class="feather icon-credit-card"></i><span class="menu-title">我的钱包</span></a></li>
+<li class="nav-item"><a href="/user/shop"><i class="feather icon-shopping-cart"></i><span class="menu-title">套餐商店</span></a></li>
+
+
+<li class="nav-item"><a href="/user/invite"><i class="feather icon-git-merge"></i><span class="menu-title">邀请好友</span></a></li>
+
+<li class="navigation-header"><span>服务</span></li>
+<li class="nav-item"><a href="/user/node"><i class="feather icon-server"></i><span class="menu-title">节点列表</span></a></li>
+
+
+<li class="nav-item"><a href="/user/subscribe_log"><i class="feather icon-download-cloud"></i><span class="menu-title">节点记录</span></a></li>
+
+<li class="nav-item"><a href="/user/share-account"><i class="feather icon-share-2"></i><span class="menu-title">共享账号</span></a></li>
+
+<li class="nav-item"><a href="/user/ticket"><i class="feather icon-mail"></i><span class="menu-title">工单系统</span></a></li>
+<li class="nav-item"><a href="/user/detect"><i class="feather icon-shield"></i><span class="menu-title">审计系统</span></a></li>
+
+<li class="navigation-header"><span>使用</span></li>
+<li class="nav-item"><a href="https://doc.naiko.org" target="_blank"><i class="feather icon-headphones"></i><span class="menu-title">使用教程</span></a></li>
+<li class="nav-item"><a href="/user/faq"><i class="feather icon-help-circle"></i><span class="menu-title">常见问题</span></a></li>
+
+<hr />
+
+<div class="mb-2 hide-sidebar-mini" style="padding: 1rem 2.5rem">
+<a href="https://t.me/naikoannouncements" target="_blank" onclick="if (!window.__cfRLUnblockHandlers) return false; joinTelegramGroup()" class="btn btn-primary waves-effect waves-light btn-block btn-icon-split" data-cf-modified-0752eb0c16454762d2f27156-="">
+<i class="fab fa-telegram-plane"></i>&nbsp;&nbsp;加入 Telegram
+</a>
+</div>
+
+
+</ul>
+</div>
+</div>
+<!-- END: Main Menu--> <link rel="stylesheet" type="text/css" href="/theme/cool/assets/css/plugins/chart-apex.css">
+<style>
+.nav-pills .nav-link {
+font-weight: 500;
+transition: all .15s ease;
+box-shadow: 0 4px 6px rgba(50,50,93,.11),0 1px 3px rgba(0,0,0,.08);
+}
+
+.dropdown .btn-group{
+margin: 5px;
+}
+
+@media (max-width:575.98px) {
+.nav-pills .nav-item {
+margin-bottom: 1rem
+}
+}
+
+@media (max-width:767.98px) {
+.nav-pills:not(.nav-pills-circle) .nav-item {
+padding-right: 0
+}
+}
+
+@keyframes flame {
+50% {
+-webkit-transform: scale(0.8) rotate(45deg);
+transform: scale(0.8) rotate(45deg);
+}
+}
+</style>
+<!-- BEGIN: Content-->
+</head>
+
+<body>
+<div class="app-content content">
+<div class="content-overlay"></div>
+<div class="header-navbar-shadow"></div>
+<div class="content-wrapper">
+<div class="content-body">
+<!-- Dashboard Analytics Start -->
+<section id="dashboard-analytics">
+<div class="row">
+<div class="col-lg-6 col-md-12 col-sm-12">
+<div class="card bg-analytics text-white">
+<div class="card-content">
+<div class="card-body text-center">
+<img src="/theme/cool/assets/images/elements/decore-left.png" class="img-left" alt="card-img-left">
+<img src="/theme/cool/assets/images/elements/decore-right.png" class="img-right" alt="card-img-right">
+<div class="avatar avatar-xl bg-primary shadow mt-0">
+<div class="avatar-content">
+<i class="feather icon-award white font-large-1"></i>
+</div>
+</div>
+<div class="text-center">
+<h1 class="mb-2 text-white">Hi, kdaisywendy</h1>
+<p class="m-auto w-75">欢迎使用 <strong>NaikoCloud</strong>，我们致力于为您提供卓越的网络加速体验，期待为您带来出色的服务！</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="col-xl-3 col-md-6">
+<div class="card card-stats">
+<!-- Card body -->
+<div class="card-body">
+<div class="row">
+<div class="col">
+<span class="h3 font-weight-bold mb-0">普通会员</span>
+<h5 class="card-title text-uppercase text-muted mb-0 font-small-4">到期时间：2026-02-21 09:27:38</h5>
+</div>
+<div class="avatar bg-rgba-primary p-50 m-0">
+<div class="avatar-content">
+<i class="feather icon-users font-medium-5" style="color:#7367f0"></i>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="card card-stats">
+<!-- Card body -->
+<div class="card-body">
+<div class="row">
+<div class="col">
+<span class="h3 font-weight-bold mb-0">正常</span>
+<h5 class="card-title text-uppercase text-muted mb-0 font-small-4">在线设备</h5>
+</div>
+<div class="avatar bg-rgba-warning p-50 m-0">
+<div class="avatar-content">
+<i class="feather icon-smartphone text-warning font-medium-5"></i>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="col-xl-3 col-md-6">
+<div class="card card-stats">
+<!-- Card body -->
+<div class="card-body">
+<div class="row">
+<div class="col">
+<span class="h3 font-weight-bold mb-0">¥ 0.00</span>
+<h5 class="card-title text-uppercase text-muted mb-0 font-small-4">账户余额</h5>
+</div>
+<div class="avatar bg-rgba-success p-50 m-0">
+<div class="avatar-content">
+<i class="feather icon-credit-card text-success font-medium-5"></i>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="card card-stats">
+<!-- Card body -->
+<div class="card-body">
+<div class="row">
+<div class="col">
+<span class="h3 font-weight-bold mb-0">不限</span>
+<h5 class="card-title text-uppercase text-muted mb-0 font-small-4">宽带速率</h5>
+</div>
+<div class="avatar bg-gradient-info p-50 m-0">
+<div class="avatar-content">
+<i class="feather icon-bar-chart-2 text-gradient-info font-medium-5"></i>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-md-6 col-12">
+<div class="card">
+<div class="card-header">
+<h4 class="text-bold-500">公告</h4>
+</div>
+<hr />
+<div class="card-content">
+<div class="card-body pt-0">
+<div class="row pb-50">
+<div class="col-lg-12 col-12 d-flex justify-content-between flex-column order-lg-1 order-2">
+<h5 class="font-medium-1">
+<h4 class="text-bold-400"></h4>
+<p><h3 id="h3--naikocloud-"><a name="欢迎阁下来到 NaikoCloud！" class="reference-link"></a><span class="header-link octicon octicon-link"></span>欢迎阁下来到 NaikoCloud！</h3><p>我们为您提供优质的网络服务，拥有以下显著特点：</p>
+<ul>
+<li><strong>全平台兼容</strong>：无论是 PC、手机还是其他设备，我们都全面支持。</li><li><strong>全节点IEPL专线</strong>：享受专属高速网络通道，稳定且无拥塞。</li><li><strong>节点负载均衡</strong>：智能分配网络负载，保障始终如一的优质体验。</li><li><strong>多协议支持</strong>：支持 SS、SSR 和 Trojan 协议，灵活应对各种网络需求。</li><li><strong>解锁所在地流媒体</strong>：无缝访问节点所在地的流媒体内容，畅享全球资源。</li><li><strong>Emby媒体库</strong>：免视频会员，海量剧集随心看！点击网站侧边栏了解更多。</li></ul></br>
+<h4 id="h4--strong-naiko-strong-"><a name="<strong>新用户专享优惠码：naiko</strong>" class="reference-link"></a><span class="header-link octicon octicon-link"></span><strong>新用户专享优惠码：naiko</strong></h4><hr>
+<h4 id="h4-u5FEBu901Fu4E0Au624B"><a name="快速上手" class="reference-link"></a><span class="header-link octicon octicon-link"></span>快速上手</h4><p>如果您是首次使用 NaikoCloud，请前往我们的网站 <a href="https://doc.naiko.org" target="_blank">文档中心</a> 查看详细的使用教程。</p>
+<h4 id="h4--strong-strong-"><a name="<strong>邀请有礼</strong>" class="reference-link"></a><span class="header-link octicon octicon-link"></span><strong>邀请有礼</strong></h4><p>邀请好友注册，即可获得 <strong>10%</strong> 的返佣奖励！详情请查看 <a href="邀请返利">邀请返利</a> 页面。</p>
+<h4 id="h4--strong-strong-"><a name="<strong>重要链接</strong>" class="reference-link"></a><span class="header-link octicon octicon-link"></span><strong>重要链接</strong></h4><ul>
+<li><strong>永久访问地址</strong>：<a href="https://naiko.cloud" target="_blank">naiko.cloud</a> （中国大陆用户请使用科学上网方式访问）</li><li><strong>加入 Telegram 通知频道</strong>：<a href="https://t.me/joinchat/MxCmGxKOby0xMThh" target="_blank">点击加入</a></li><li><strong>客户端订阅转换</strong>：<a href="https://sub.naiko.org" target="_blank">点击转换</a> 支持在线转换订阅，轻松无忧。</li></ul>
+<p>期待您的加入，体验 NaikoCloud 的极致网络服务！</p>
+</p>
+</h5>
+</div>
+</div><hr />
+<div class="row avg-sessions pt-50">
+<div class="col-12">
+<p><b><span class="float-right">更新时间：2024-09-11 23:30:38</span></b></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-header">
+<h4 class="text-bold-500 mb-25">使用教程</h4>
+</div>
+<hr />
+<div class="card-content">
+<div class="card-body">
+<ul class="dashboard-tabs nav nav-pills row nav-primary row-paddingless m-0 p-0" role="tablist">
+<li class="nav-item d-flex col flex-grow-1 flex-shrink-0 mb-3 mb-lg-0 cursor_onclick"> <a class="nav-link border d-flex flex-grow-1 rounded flex-column align-items-center active" data-toggle="pill" href="#tab_windows"> <span class="nav-icon py-2 w-auto"><i class="fab fa-windows icon-3x"></i></span> <span class="nav-text font-size-lg py-2 font-weight-bold text-center">Windows</span> </a> </li>
+
+<li class="nav-item d-flex col flex-grow-1 flex-shrink-0 mb-3 mb-lg-0 cursor_onclick"> <a class="nav-link border d-flex flex-grow-1 rounded flex-column align-items-center" data-toggle="pill" href="#tab_android"> <span class="nav-icon py-2 w-auto"><i class="fab fa-android icon-3x"></i></span> <span class="nav-text font-size-lg py-2 font-weight-bold text-center">Android</span> </a> </li>
+
+<li class="nav-item d-flex col flex-grow-1 flex-shrink-0 mb-3 mb-lg-0 cursor_onclick"> <a class="nav-link border d-flex flex-grow-1 rounded flex-column align-items-center" data-toggle="pill" href="#tab_ios"> <span class="nav-icon py-2 w-auto"><i class="fab fa-apple icon-3x"></i></span> <span class="nav-text font-size-lg py-2 font-weight-bold text-center">IOS</span> </a> </li>
+
+<li class="nav-item d-flex col flex-grow-1 flex-shrink-0 mb-3 mb-lg-0 cursor_onclick"> <a class="nav-link border d-flex flex-grow-1 rounded flex-column align-items-center" data-toggle="pill" href="#tab_macos"> <span class="nav-icon py-2 w-auto"><i class="fab fa-apple icon-3x"></i></span> <span class="nav-text font-size-lg py-2 font-weight-bold text-center">macOS</span> </a> </li>
+</ul>
+<div class="separator separator-dashed p-1"></div>
+<div class="tab-content ml-1 p-0">
+<div class="tab-pane active" id="tab_windows" role="tabpanel">
+<div class="card-body pb-0 pl-0">
+<div class="flex-grow-1 card-spacer-x">
+<div class="d-flex align-items-center justify-content-between mb-3">
+<div class="d-flex align-items-center mr-2">
+<div class="symbol symbol-60 symbol-light flex-shrink-0">
+<div class="symbol-label">
+<img src="/theme/cool/assets/images/tutorial/clashr-ico.png" alt="" class="h-50" />
+</div>
+</div>
+<div class="ml-1">
+<span class="font-size-h5 text-primary font-weight-bolder">Clash</span>
+<div class="font-size-sm text-muted font-weight-bold mt-1">
+Lastest
+</div>
+</div>
+</div>
+<div class='d-flex'>
+<a href="https://download.naiko.org/Clash-Windows.exe" class="btn btn-primary font-weight-bold btn-pill mr-1">立即下载</a>
+<a href="https://doc.naiko.org/#/ClashForWindows" class="btn btn-primary font-weight-bold btn-pill">安装教程</a>
+</div>
+</div>
+<div class="separator separator-dashed mb-3"></div>
+<div class="d-flex align-items-center justify-content-between mb-3">
+<div class="d-flex align-items-center mr-2">
+<div class="symbol symbol-60 symbol-light flex-shrink-0">
+<div class="symbol-label">
+<img src="/theme/cool/assets/images/tutorial/clashvergerev.png" alt="" class="h-50" />
+</div>
+</div>
+<div class="ml-1">
+<span class="font-size-h5 text-primary font-weight-bolder">Clash Verge Rev</span>
+<div class="font-size-sm text-muted font-weight-bold mt-1">
+Lastest
+</div>
+</div>
+</div>
+<div class='d-flex'>
+<a href="https://download.naiko.org/Clash.Verge_x64.exe" class="btn btn-primary font-weight-bold btn-pill mr-1">立即下载</a>
+<a href="https://doc.naiko.org/#/ClashVergeRevWin" class="btn btn-primary font-weight-bold btn-pill">安装教程</a>
+</div>
+</div>
+<div class="separator separator-dashed mb-3"></div>
+<div class="d-flex align-items-center justify-content-between mb-3">
+<div class="d-flex align-items-center mr-2">
+<div class="symbol symbol-60 symbol-light flex-shrink-0">
+<div class="symbol-label">
+<img src="/theme/cool/assets/images/tutorial/ssr-ico.png" alt="" class="h-50" />
+</div>
+</div>
+<div class="ml-1">
+<span class="font-size-h5 text-primary font-weight-bolder">SSR</span>
+<div class="font-size-sm text-muted font-weight-bold mt-1">
+Lastest
+</div>
+</div>
+</div>
+<div class='d-flex'>
+<a href="https://download.naiko.org/ssr-win.7z" class="btn btn-primary font-weight-bold btn-pill mr-1">立即下载</a>
+<a href="https://doc.naiko.org/#/ShadowsocksR" class="btn btn-primary font-weight-bold btn-pill">安装教程</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="tab-pane" id="tab_android" role="tabpanel">
+<div class="card-body pb-0 pl-0">
+<div class="flex-grow-1 card-spacer-x">
+<div class="d-flex align-items-center justify-content-between mb-3">
+<div class="d-flex align-items-center mr-2">
+<div class="symbol symbol-60 symbol-light flex-shrink-0">
+<div class="symbol-label">
+<img src="/theme/cool/assets/images/tutorial/clashr-ico.png" alt="" class="h-50" />
+</div>
+</div>
+<div class="ml-1">
+<span class="font-size-h5 text-primary font-weight-bolder">Clash</span>
+<div class="font-size-sm text-muted font-weight-bold mt-1">
+Lastest
+</div>
+</div>
+</div>
+<div class='d-flex'>
+<a href="https://download.naiko.org/CMFA-android-universal-release.apk" class="btn btn-primary font-weight-bold btn-pill mr-1">立即下载</a>
+<a href="https://doc.naiko.org/#/ClashForAndroid" class="btn btn-primary font-weight-bold btn-pill">安装教程</a>
+</div>
+</div>
+<div class="separator separator-dashed mb-3"></div>
+<div class="d-flex align-items-center justify-content-between mb-3">
+<div class="d-flex align-items-center mr-2">
+<div class="symbol symbol-60 symbol-light flex-shrink-0">
+<div class="symbol-label">
+<img src="/theme/cool/assets/images/tutorial/ssr-ico.png" alt="" class="h-50" />
+</div>
+</div>
+<div class="ml-1">
+<span class="font-size-h5 text-primary font-weight-bolder">SSR</span>
+<div class="font-size-sm text-muted font-weight-bold mt-1">
+Lastest
+</div>
+</div>
+</div>
+<div class='d-flex'>
+<a href="https://download.naiko.org/ssr-android.apk" class="btn btn-primary font-weight-bold btn-pill mr-1">立即下载</a>
+<a href="https://doc.naiko.org/#/ShadowsocksRA" class="btn btn-primary font-weight-bold btn-pill">安装教程</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="tab-pane" id="tab_ios" role="tabpanel">
+<div class="card-body pb-0 pl-0">
+<div class="flex-grow-1 card-spacer-x">
+<div class="d-flex align-items-center justify-content-between mb-3">
+<div class="d-flex align-items-center mr-2">
+<div class="symbol symbol-60 symbol-light flex-shrink-0">
+<div class="symbol-label">
+<img src="/theme/cool/assets/images/tutorial/shadowrocket-ico.png" alt="" class="h-50" />
+</div>
+</div>
+<div class="ml-1">
+<span class="font-size-h5 text-primary font-weight-bolder">Shadowrocket</span>
+<div class="font-size-sm text-muted font-weight-bold mt-1">
+Lastest
+</div>
+</div>
+</div>
+<div class='d-flex'>
+<a href="https://apps.apple.com/us/app/shadowrocket/id932747118" class="btn btn-primary font-weight-bold btn-pill mr-1">立即下载</a>
+
+<a href="https://doc.naiko.org/#/Shadowrocket" class="btn btn-primary font-weight-bold btn-pill">安装教程</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="tab-pane" id="tab_macos" role="tabpanel">
+<div class="card-body pb-0 pl-0">
+<div class="flex-grow-1 card-spacer-x">
+<div class="d-flex align-items-center justify-content-between mb-3">
+<div class="d-flex align-items-center mr-2">
+<div class="symbol symbol-60 symbol-light flex-shrink-0">
+<div class="symbol-label">
+<img src="/theme/cool/assets/images/tutorial/clashr-ico.png" alt="" class="h-50" />
+</div>
+</div>
+<div class="ml-1">
+<span class="font-size-h5 text-primary font-weight-bolder">ClashforMac</span>
+<div class="font-size-sm text-muted font-weight-bold mt-1">
+Lastest
+</div>
+</div>
+</div>
+<div class='d-flex'>
+<a href="https://download.naiko.org/Clash-for-Windows-Mac.dmg" class="btn btn-primary font-weight-bold btn-pill mr-1">立即下载</a>
+
+<a href="https://doc.naiko.org/#/ClashforMac" class="btn btn-primary font-weight-bold btn-pill">安装教程</a>
+</div>
+</div>
+<div class="separator separator-dashed mb-3"></div>
+<div class="d-flex align-items-center justify-content-between mb-3">
+<div class="d-flex align-items-center mr-2">
+<div class="symbol symbol-60 symbol-light flex-shrink-0">
+<div class="symbol-label">
+<img src="/theme/cool/assets/images/tutorial/clashvergerev.png" alt="" class="h-50" />
+</div>
+</div>
+<div class="ml-1">
+<span class="font-size-h5 text-primary font-weight-bolder">Clash Verge Rev</span>
+<div class="font-size-sm text-muted font-weight-bold mt-1">
+Lastest Apple M
+</div>
+</div>
+</div>
+<div class='d-flex'>
+<a href="https://download.naiko.org/Clash.Verge_aarch64.dmg" class="btn btn-primary font-weight-bold btn-pill mr-1">立即下载</a>
+
+<a href="https://doc.naiko.org/#/ClashVergeRevMac" class="btn btn-primary font-weight-bold btn-pill">安装教程</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="col-12 col-md-6 col-lg-6">
+<div class="card">
+<div class="card-header">
+<h4><i class="fa fa-bolt"></i> 订阅地址</h4>
+<span class="float-right">
+<button type="button" id="checkin" class="btn btn-primary btn-sm waves-effect waves-light float-right"><i class="far fa-calendar-check fa-lg icon-ver"></i>&nbsp;每日签到</button>
+</span>
+</div>
+<hr />
+<div class="card-content">
+<div class="card-body pt-0">
+<div class="dropdown">
+
+
+<!-- SSR订阅 -->
+<div class="btn-group">
+<button type="button" class="btn btn-ssr round dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="cool-ssr"></i>&nbsp;SSR 订阅</button>
+<div class="dropdown-menu dropdown-node dropdown-menu-right" x-placement="bottom-end" style="position: absolute; transform: translate3d(-14px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+<button type="button" class="dropdown-item copy-text" data-clipboard-text="https://naikosub.com/link/i6mSkQSiiyziWrk6?sub=1">复制 SSR 订阅</button>
+<button type="button" class="dropdown-item copy-text" data-clipboard-text="https://sublink.naiko.org/link/i6mSkQSiiyziWrk6?sub=1">复制 Emby 订阅(注册Emby使用)</button>
+<button type="button" class="dropdown-item" href="##" onclick="if (!window.__cfRLUnblockHandlers) return false; importSublink('ssr')" data-cf-modified-0752eb0c16454762d2f27156-="">一键导入 SSR</button>
+</div>
+</div>
+
+<!-- Clash订阅 -->
+<div class="btn-group">
+<button type="button" class="btn btn-clash round dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="cool-clash"></i>&nbsp;Clash 订阅</button>
+<div class="dropdown-menu dropdown-node dropdown-menu-right" x-placement="bottom-end" style="position: absolute; transform: translate3d(-14px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+<button type="button" class="dropdown-item copy-text" data-clipboard-text="https://naikosub.com/link/i6mSkQSiiyziWrk6?clash=1">复制 Clash 订阅</button>
+<button type="button" class="dropdown-item" href="##" onclick="if (!window.__cfRLUnblockHandlers) return false; importSublink('clash')" data-cf-modified-0752eb0c16454762d2f27156-="">一键导入 Clash</button>
+</div>
+</div>
+
+
+<!-- AnXray 订阅
+<div class="btn-group">
+<button type="button" class="btn btn-anxray round waves-effect waves-light copy-text" data-clipboard-text="https://naikosub.com/link/i6mSkQSiiyziWrk6?anxray=1"><i class="cool-anxray"></i>复制 AnXray 订阅</button>
+</div> -->
+
+<!-- trojan订阅 -->
+<div class="btn-group">
+<button type="button" class="btn btn-pill btn-trojan copy-text round" data-clipboard-text="https://naikosub.com/link/i6mSkQSiiyziWrk6?sub=4"><i class="cool-v2rayng text-white"></i>&nbsp;复制 Trojan 订阅&nbsp;&nbsp;</button>
+</div>
+
+<!-- surge -->
+<div class="btn-group">
+<button type="button" class="btn btn-pill btn-surge dropdown-toggle round waves-effect waves-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="cool-surge text-white"></i>&nbsp;Surge 订阅&nbsp;&nbsp;</button>
+<div class="dropdown-menu dropdown-node dropdown-menu-right">
+<button type="button" class="dropdown-item copy-text" data-clipboard-text="https://naikosub.com/link/i6mSkQSiiyziWrk6?list=surge">复制 Surge 节点订阅</button>
+<button type="button" class="dropdown-item copy-text" data-clipboard-text="https://naikosub.com/link/i6mSkQSiiyziWrk6?surge=2">复制 Surge 2 托管订阅</button>
+<button type="button" class="dropdown-item copy-text" data-clipboard-text="https://naikosub.com/link/i6mSkQSiiyziWrk6?surge=3">复制 Surge 3 托管订阅</button>
+<button type="button" class="dropdown-item copy-text" data-clipboard-text="https://naikosub.com/link/i6mSkQSiiyziWrk6?surge=4">复制 Surge 4 托管订阅</button>
+</div>
+</div>
+
+<!-- Shadowrocket订阅 -->
+<div class="btn-group">
+<button type="button" class="btn btn-shadowrocket round dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="cool-shadowrocket"></i>&nbsp;Shadowrocket 订阅</button>
+<div class="dropdown-menu dropdown-node dropdown-menu-right" x-placement="bottom-end" style="position: absolute; transform: translate3d(-14px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+<button type="button" class="dropdown-item copy-text" data-clipboard-text="https://naikosub.com/link/i6mSkQSiiyziWrk6?list=shadowrocket&extend=1">复制 Shadowrocket 订阅</button>
+<button type="button" class="dropdown-item" href="##" onclick="if (!window.__cfRLUnblockHandlers) return false; importSublink('shadowrocket')" data-cf-modified-0752eb0c16454762d2f27156-="">一键导入 Shadowrocket</button>
+</div>
+</div>
+
+<!-- Quantumult X订阅 -->
+<div class="btn-group">
+<button type="button" class="btn btn-pill btn-quantumultx copy-text round" data-clipboard-text="https://naikosub.com/link/i6mSkQSiiyziWrk6?list=quantumultx"><i class="cool-quantumultx text-white"></i>&nbsp;复制 Quantumult X 订阅&nbsp;&nbsp;</button>
+</div>
+
+<!-- Quantumult订阅 -->
+<div class="btn-group">
+<button type="button" class="btn btn-quantumult round dropdown-toggle waves-effect waves-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="cool-quantumult"></i>&nbsp;Quantumult 订阅</button>
+<div class="dropdown-menu dropdown-node dropdown-menu-right" x-placement="bottom-end" style="position: absolute; transform: translate3d(-14px, 38px, 0px); top: 0px; left: 0px; will-change: transform;">
+<button type="button" class="dropdown-item copy-text" data-clipboard-text="https://naikosub.com/link/i6mSkQSiiyziWrk6?sub=1">复制 SSR 订阅</button>
+<!-- 注释
+<button type="button" class="dropdown-item copy-text" data-clipboard-text="https://naikosub.com/link/i6mSkQSiiyziWrk6?list=quantumult">复制 V2ray 订阅</button>
+-->
+<div class="dropdown-divider"></div>
+<button type="button" class="dropdown-item" href="##" onclick="if (!window.__cfRLUnblockHandlers) return false; importSublink('quantumult')" data-cf-modified-0752eb0c16454762d2f27156-="">一键导入 SSR 节点订阅</button>
+<!-- 注释
+<button type="button" class="dropdown-item" href="##" onclick="importSublink('quantumult_v2')">一键导入 V2ray 节点订阅</button>
+-->
+</div>
+</div>
+
+<!-- surfboard订阅 -->
+<div class="btn-group">
+<button type="button" class="btn btn-pill btn-surfboard copy-text round" data-clipboard-text="https://naikosub.com/link/i6mSkQSiiyziWrk6?surfboard=1"><i class="cool-surfboard text-white"></i>&nbsp;复制 Surfboard 订阅</button>
+</div>
+
+
+
+
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="card">
+<div class="card-body">
+<h4 class="card-title mb-50">流量报表</h4>
+<p class="card-text font-small-3">下次流量重置日期：无流量重置</p>
+<hr />
+<div id="donut-chart"></div>
+<div class="mt-1" style="border-radius: 5px">
+<li class="list-group-item d-flex justify-content-between traffic-info">
+<div class="series-info">
+<i class="fa fa-circle font-small-3" style="color:#5ED2C0"></i>
+<span class="text-bold-600">剩余流量 ：
+97%
+</span>
+</div>
+<div class="product-result">
+<span>8.52TB</span>
+</div>
+</li>
+<li class="list-group-item d-flex justify-content-between traffic-info">
+<div class="series-info">
+<i class="fa fa-circle font-small-3 text-danger"></i>
+<span class="text-bold-600">今日使用 ：
+0%
+</span>
+</div>
+<div class="product-result">
+<span>24.04GB</span>
+</div>
+</li>
+<li class="list-group-item d-flex justify-content-between traffic-info">
+<div class="series-info">
+<i class="fa fa-circle font-small-3 text-warning"></i>
+<span class="text-bold-600">历史使用 ：
+3%
+</span>
+</div>
+<div class="product-result">
+<span>256.21GB</span>
+</div>
+</li>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="modal fade" id="qrcode-sublink-modal" tabindex="-1" role="dialog" aria-labelledby="deleteidModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" role="document">
+<div class="modal-content">
+<div class="modal-header">
+<h5 class="modal-title">扫码二维码添加订阅</h5>
+<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+<span aria-hidden="true">×</span>
+</button>
+</div>
+<div class="modal-body" id="qrcode-sublink-content"></div>
+<div class="modal-footer">
+<button class="btn btn-secondary waves-effect waves-float waves-light" type="button" data-dismiss="modal">关闭</button>
+</div>
+</div>
+</div>
+</div>
+
+</select>
+</div>
+</div>
+</div>
+<!-- END: Content-->
+
+<!-- BEGIN: Footer-->
+<footer class="footer footer-static footer-light">
+<p class="clearfix blue-grey lighten-2 mb-0">
+<span class="float-md-left d-block d-md-inline-block mt-25">Copyright &copy; 2025 NaikoCloud • Powered by <a class="text-bold-800 grey darken-2" href="/staff" target="_blank">SSPANEL</a></span>
+<!-- 本模板作者 TG号：@Cool_WuKong -->
+<span class="float-md-right d-none d-md-block">Theme for<a class="text-bold-800 grey darken-2">Cool</a><i class="feather icon-heart pink"></i></span>
+<button class="btn btn-primary btn-icon scroll-top waves-effect waves-light" type="button" style="margin-bottom: 2.5rem"><i class="feather icon-arrow-up"></i></button>
+</p>
+</footer>
+
+<!-- BEGIN: Vendor JS-->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://fastly.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js" type="0752eb0c16454762d2f27156-text/javascript"></script>
+<script src="/theme/cool/assets/vendors/js/vendors.min.js" type="0752eb0c16454762d2f27156-text/javascript"></script>
+<script src="https://fastly.jsdelivr.net/npm/jquery.cookie@1.4.1/jquery.cookie.js" type="0752eb0c16454762d2f27156-text/javascript"></script>
+<script src="https://fastly.jsdelivr.net/npm/jquery-validation@1.19.1/dist/jquery.validate.min.js" type="0752eb0c16454762d2f27156-text/javascript"></script>
+<!-- BEGIN Vendor JS-->
+
+<!-- BEGIN: Theme JS-->
+<script src="/theme/cool/assets/js/scripts/clipboard.min.js" type="0752eb0c16454762d2f27156-text/javascript"></script>
+<script src="/theme/cool/assets/js/scripts/sweetalert2.min.js" type="0752eb0c16454762d2f27156-text/javascript"></script>
+<script src="/theme/cool/assets/js/cool.js?1.1" type="0752eb0c16454762d2f27156-text/javascript"></script>
+<!-- END: Theme JS-->
+
+<!-- BEGIN: Page JS-->
+<script src="/theme/cool/assets/js/core/app.js" type="0752eb0c16454762d2f27156-text/javascript"></script>
+<script src="/theme/cool/assets/js/core/app-menu.js" type="0752eb0c16454762d2f27156-text/javascript"></script>
+<!-- BEGIN: Page JS-->
+
+<!-- Chat -->
+<!-- Crisp Chat -->
+<script type="0752eb0c16454762d2f27156-text/javascript">
+window.$crisp = [];
+window.CRISP_WEBSITE_ID = "aad5c7f6-9297-45e3-b270-7b10adc0ce40";
+(function () {
+d = document;
+s = d.createElement("script");
+s.src = "https://client.crisp.chat/l.js";
+s.async = 1;
+d.getElementsByTagName("head")[0].appendChild(s);
+})();
+$crisp.push(["set","user:nickname", "kdaisywendy"],
+["set","user:email","kdaisywendy@gmail.com"],
+["set", "session:data",
+[[
+["ID","46016"],
+["Email","kdaisywendy@gmail.com"],
+["Class","2"],
+["vip-time","2026-02-21 09:27:38"],
+["last-use","2025-08-26 17:13:12"],
+["traffic","8.52TB"],
+["online-IP","5/15"],
+["money","0.00元"]
+]]
+]);
+</script>
+<script type="0752eb0c16454762d2f27156-text/javascript">
+function importSublink(client) {
+if (client == 'ssr') {
+oneclickImport('ssr', 'https://naikosub.com/link/i6mSkQSiiyziWrk6?sub=1');
+};
+if (client == 'clash') {
+oneclickImport('clashx','https://naikosub.com/link/i6mSkQSiiyziWrk6?clash=1')
+};
+if (client == 'clashr') {
+oneclickImport('clashr','https://naikosub.com/link/i6mSkQSiiyziWrk6?clash=2')
+};
+if (client == 'shadowrocket') {
+oneclickImport('shadowrocket','https://naikosub.com/link/i6mSkQSiiyziWrk6?list=shadowrocket')
+};
+if (client == 'quantumult') {
+oneclickImport('quantumult','https://naikosub.com/link/i6mSkQSiiyziWrk6?sub=1')
+};
+if (client == 'quantumult_v2') {
+oneclickImport('quantumult_v2','https://naikosub.com/link/i6mSkQSiiyziWrk6?list=quantumult')
+};
+}
+</script>
+<!-- END: Footer-->
+
+<!-- C3 Chart -->
+<script src="/theme/cool/assets/vendors/js/charts/apexcharts.min.js" type="0752eb0c16454762d2f27156-text/javascript"></script>
+<script src="/theme/cool/assets/vendors/js/charts/flatpickr.min.js" type="0752eb0c16454762d2f27156-text/javascript"></script>
+<script src="/theme/cool/assets/vendors/js/charts/chart-apex.js" type="0752eb0c16454762d2f27156-text/javascript"></script>
+<script type="0752eb0c16454762d2f27156-text/javascript">
+var donutChartEl = document.querySelector('#donut-chart'),
+donutChartConfig = {
+chart: {
+height: 350,
+type: 'donut'
+},
+legend: {
+show: true,
+position: 'bottom'
+},
+labels: ['可用', '历史使用', '今日使用'],
+series: [
+97,
+3,
+0
+],
+colors: ['#5ED2C0', '#FF9F43', '#EA5455'],
+dataLabels: {
+enabled: true,
+formatter: function(val, opt) {
+return parseInt(val) + '%';
+}
+},
+plotOptions: {
+pie: {
+donut: {
+labels: {
+show: true,
+name: {
+fontSize: '2rem',
+fontFamily: "Nunito",
+},
+value: {
+fontSize: '1rem',
+fontFamily: "Nunito",
+formatter: function(val) {
+return parseInt(val) + '%';
+}
+},
+}
+}
+}
+},
+};
+</script>
+
+<script type="0752eb0c16454762d2f27156-text/javascript" src="/theme/cool/assets/js/scripts/jquery.qrcode.min.js"></script>
+<script type="0752eb0c16454762d2f27156-text/javascript">
+function qrcodeSublink(client) {
+if (client == 'shadowrocket') {
+qrcodeImport('shadowrocket', 'https://naikosub.com/link/i6mSkQSiiyziWrk6?list=shadowrocket');
+}
+}
+</script>
+
+<script type="0752eb0c16454762d2f27156-text/javascript">
+$("#notice_ann_modal").modal();
+</script>
+<script src="/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="0752eb0c16454762d2f27156-|49" defer></script><script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"c9eb9b00494b47f28b7098e503996d16","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>

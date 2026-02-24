@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>节点转换工具 - Node to Clash Converter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .converter-section {
+            display: grid;
+            grid-template-columns: 1fr 80px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .input-section, .output-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            border: 2px solid #e9ecef;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-section:focus-within, .output-section:focus-within {
+            border-color: #4facfe;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .protocol-selector {
+            margin-bottom: 20px;
+        }
+
+        .protocol-selector label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .protocol-selector select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            transition: border-color 0.3s ease;
+        }
+
+        .protocol-selector select:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        .input-area, .output-area {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-area:focus, .output-area:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        .output-area {
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .convert-button-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .convert-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            min-width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .convert-btn:active {
+            transform: translateY(0);
+        }
+
+        .supported-protocols {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #4facfe;
+        }
+
+        .supported-protocols h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .protocol-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .protocol-tag {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 10px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 10px;
+            border: 1px solid #c3e6cb;
+        }
+
+        @media (max-width: 768px) {
+            .converter-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .convert-button-container {
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 节点转换工具</h1>
+            <p>支持多种协议的双向转换 - Node ⇄ Clash Config</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="converter-section">
+                <div class="input-section">
+                    <div class="section-title">
+                        📥 输入区域
+                    </div>
+                    <div class="protocol-selector">
+                        <label for="inputType">输入类型:</label>
+                        <select id="inputType">
+                            <option value="node">节点链接</option>
+                            <option value="clash">Clash 配置</option>
+                        </select>
+                    </div>
+                    <textarea id="inputArea" class="input-area" placeholder="请输入节点链接或Clash配置内容..."></textarea>
+                    <div id="inputError" class="error-message" style="display: none;"></div>
+                </div>
+                
+                <div class="convert-button-container">
+                    <button id="convertBtn" class="convert-btn" title="转换">
+                        ⇄
+                    </button>
+                </div>
+                
+                <div class="output-section">
+                    <div class="section-title">
+                        📤 输出区域
+                    </div>
+                    <div class="protocol-selector">
+                        <label for="outputType">输出类型:</label>
+                        <select id="outputType">
+                            <option value="clash">Clash 配置</option>
+                            <option value="node">节点链接</option>
+                        </select>
+                    </div>
+                    <textarea id="outputArea" class="output-area" readonly placeholder="转换结果将显示在这里..."></textarea>
+                    <button id="copyBtn" class="copy-btn" style="display: none;">📋 复制结果</button>
+                    <div id="outputSuccess" class="success-message" style="display: none;"></div>
+                </div>
+            </div>
+            
+            <div class="supported-protocols">
+                <h3>🔧 支持的协议</h3>
+                <div class="protocol-list">
+                    <span class="protocol-tag">Shadowsocks</span>
+                    <span class="protocol-tag">ShadowsocksR</span>
+                    <span class="protocol-tag">SOCKS5</span>
+                    <span class="protocol-tag">HTTP</span>
+                    <span class="protocol-tag">VMess</span>
+                    <span class="protocol-tag">Trojan</span>
+                    <span class="protocol-tag">VLESS</span>
+                    <span class="protocol-tag">Hysteria</span>
+                    <span class="protocol-tag">Hysteria2</span>
+                    <span class="protocol-tag">Telegram</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 协议解析器
+        class ProtocolParser {
+            // 解析Shadowsocks链接
+            static parseShadowsocks(url) {
+                // 处理标准SS格式: ss://method:password@server:port#name
+                let match = url.match(/^ss:\/\/([^@]+)@([^:]+):(\d+)(?:#(.+))?$/);
+                if (match) {
+                    const [, auth, server, port, name] = match;
+                    try {
+                        const decoded = atob(auth);
+                        const [method, password] = decoded.split(':');
+                        
+                        return {
+                            name: name ? decodeURIComponent(name) : 'Shadowsocks',
+                            type: 'ss',
+                            server,
+                            port: parseInt(port),
+                            cipher: method,
+                            password
+                        };
+                    } catch (e) {
+                        return null;
+                    }
+                }
+                
+                // 处理另一种SS格式: ss://base64(method:password@server:port)#name
+                match = url.match(/^ss:\/\/([^#]+)#(.+)$/);
+                if (match) {
+                    const [, mainPart, name] = match;
+                    try {
+                        const decoded = atob(mainPart);
+                        const parts = decoded.split('@');
+                        if (parts.length === 2) {
+                            const [methodPassword, serverPort] = parts;
+                            const [method, password] = methodPassword.split(':');
+                            const [server, port] = serverPort.split(':');
+                            
+                            return {
+                                name: decodeURIComponent(name),
+                                type: 'ss',
+                                server,
+                                port: parseInt(port),
+                                cipher: method,
+                                password
+                            };
+                        }
+                    } catch (e) {
+                        return null;
+                    }
+                }
+                
+                return null;
+            }
+            
+            // 解析SSR链接
+            static parseSsr(url) {
+                try {
+                    const data = url.replace('ssr://', '');
+                    const decoded = atob(data);
+                    const parts = decoded.split('/');
+                    const serverInfo = parts[0];
+                    const [server, port, protocol, method, obfs, passwordB64] = serverInfo.split(':');
+                    const password = atob(passwordB64.replace(/_/g, '/').replace(/-/g, '+'));
+                    
+                    // 解析参数
+                    const params = new URLSearchParams(parts[1] || '');
+                    const name = params.get('remarks') ? atob(params.get('remarks')) : 'SSR';
+                    
+                    return {
+                        name: name,
+                        type: 'ssr',
+                        server,
+                        port: parseInt(port),
+                        protocol,
+                        cipher: method,
+                        obfs,
+                        password
+                    };
+                } catch (e) {
+                    return null;
+                }
+            }
+            
+            // 解析Hysteria链接
+            static parseHysteria(url) {
+                const match = url.match(/^hysteria:\/\/([^:]+):(\d+)\?(.+)#(.+)$/);
+                if (!match) return null;
+                
+                const [, server, port, params, name] = match;
+                const urlParams = new URLSearchParams(params);
+                
+                return {
+                    name: decodeURIComponent(name),
+                    type: 'hysteria',
+                    server,
+                    port: parseInt(port),
+                    auth_str: urlParams.get('auth') || '',
+                    protocol: urlParams.get('protocol') || 'udp',
+                    up: parseInt(urlParams.get('upmbps')) || 50,
+                    down: parseInt(urlParams.get('downmbps')) || 250,
+                    alpn: urlParams.get('alpn') || 'h3',
+                    sni: urlParams.get('peer') || server,
+                    'skip-cert-verify': urlParams.get('insecure') === '1'
+                };
+            }
+            
+            // 解析Hysteria2链接
+            static parseHysteria2(url) {
+                const match = url.match(/^hysteria2:\/\/([^@]+)@([^:]+):(\d+)\?(.+)#(.+)$/);
+                if (!match) return null;
+                
+                const [, auth, server, port, params, name] = match;
+                const urlParams = new URLSearchParams(params);
+                
+                return {
+                    name: decodeURIComponent(name),
+                    type: 'hysteria2',
+                    server,
+                    port: parseInt(port),
+                    password: auth,
+                    sni: urlParams.get('sni') || server,
+                    'skip-cert-verify': urlParams.get('insecure') === '1',
+                    mport: urlParams.get('mport') || '',
+                    udp: true
+                };
+            }
+            
+            // 解析Telegram链接
+            static parseTelegram(url) {
+                const match = url.match(/https:\/\/t\.me\/socks\?server=([^&]+)&port=(\d+)&user=([^&]+)&pass=([^&]+)/);
+                if (!match) return null;
+                
+                const [, server, port, username, password] = match;
+                
+                return {
+                    name: 'telegram_proxy',
+                    type: 'socks5',
+                    server,
+                    port: parseInt(port),
+                    username,
+                    password
+                };
+            }
+            
+            // 解析VMess链接
+            static parseVmess(url) {
+                // 处理Shadowrocket格式的base64编码
+                if (url.includes('?remarks=') || url.includes('&remarks=')) {
+                    try {
+                        const parts = url.split('://');
+                        if (parts.length !== 2) return null;
+                        
+                        const decoded = atob(parts[1].split('?')[0]);
+                        const [userInfo, serverInfo] = decoded.split('@');
+                        const [server, port] = serverInfo.split(':');
+                        
+                        const urlObj = new URL(url);
+                        const params = urlObj.searchParams;
+                        
+                        // 处理UUID，可能包含method前缀
+                        let uuid = userInfo;
+                        if (userInfo.includes(':')) {
+                            uuid = userInfo.split(':')[1] || userInfo.split(':')[0];
+                        }
+                        
+                        return {
+                            name: params.get('remarks') ? decodeURIComponent(params.get('remarks')) : 'VMess',
+                            type: 'vmess',
+                            server,
+                            port: parseInt(port),
+                            uuid: uuid,
+                            alterId: parseInt(params.get('alterId')) || 0,
+                            cipher: params.get('cipher') || 'auto',
+                            network: params.get('obfs') === 'websocket' ? 'ws' : (params.get('obfs') === 'http' ? 'http' : 'tcp'),
+                            tls: params.get('tls') === '1' || params.get('security') === 'tls',
+                            'ws-opts': params.get('obfs') === 'websocket' ? {
+                                path: params.get('path') || '/'
+                            } : undefined,
+                            'http-opts': params.get('obfs') === 'http' ? {
+                                path: [params.get('path') || '/']
+                            } : undefined,
+                            'skip-cert-verify': true
+                        };
+                    } catch (e) {
+                        // 如果base64解码失败，尝试标准格式
+                    }
+                }
+                
+                // 标准VMess格式
+                try {
+                    const data = JSON.parse(atob(url.replace('vmess://', '')));
+                    return {
+                        name: data.ps || 'VMess',
+                        type: 'vmess',
+                        server: data.add,
+                        port: parseInt(data.port),
+                        uuid: data.id,
+                        alterId: parseInt(data.aid) || 0,
+                        cipher: data.scy || 'auto',
+                        network: data.net || 'tcp',
+                        tls: data.tls === 'tls',
+                        'ws-opts': data.net === 'ws' ? {
+                            path: data.path || '/',
+                            headers: data.host ? { Host: data.host } : {}
+                        } : undefined,
+                        'skip-cert-verify': true
+                    };
+                } catch (e) {
+                    return null;
+                }
+            }
+            
+            // 解析Trojan链接
+            static parseTrojan(url) {
+                const match = url.match(/^trojan:\/\/([^@]+)@([^:]+):(\d+)(?:\?([^#]+))?(?:#(.+))?$/);
+                if (!match) return null;
+                
+                const [, password, server, port, params, name] = match;
+                const urlParams = new URLSearchParams(params || '');
+                
+                return {
+                    name: name ? decodeURIComponent(name) : 'Trojan',
+                    type: 'trojan',
+                    server,
+                    port: parseInt(port),
+                    password,
+                    sni: urlParams.get('sni') || server,
+                    'skip-cert-verify': urlParams.get('allowInsecure') === '1'
+                };
+            }
+            
+            // 解析VLESS链接
+            static parseVless(url) {
+                // 处理Shadowrocket格式的base64编码
+                if (url.includes('?remarks=') || url.includes('&remarks=')) {
+                    try {
+                        const parts = url.split('://');
+                        if (parts.length !== 2) return null;
+                        
+                        const decoded = atob(parts[1].split('?')[0]);
+                        const [userInfo, serverInfo] = decoded.split('@');
+                        const [server, port] = serverInfo.split(':');
+                        
+                        const urlObj = new URL(url);
+                        const params = urlObj.searchParams;
+                        
+                        // 处理UUID，可能包含method前缀
+                        let uuid = userInfo;
+                        if (userInfo.includes(':')) {
+                            uuid = userInfo.split(':')[1] || userInfo.split(':')[0];
+                        }
+                        
+                        return {
+                            name: params.get('remarks') ? decodeURIComponent(params.get('remarks')) : 'VLESS',
+                            type: 'vless',
+                            server,
+                            port: parseInt(port),
+                            uuid: uuid,
+                            flow: params.get('flow') || '',
+                            network: params.get('obfs') === 'websocket' ? 'ws' : (params.get('type') || 'tcp'),
+                            tls: params.get('tls') === '1' || params.get('security') === 'tls' || parseInt(port) === 443,
+                            'ws-opts': params.get('obfs') === 'websocket' ? {
+                                path: params.get('path') || '/'
+                            } : undefined,
+                            'skip-cert-verify': true
+                        };
+                    } catch (e) {
+                        // 如果base64解码失败，尝试标准格式
+                    }
+                }
+                
+                // 标准VLESS格式
+                const match = url.match(/^vless:\/\/([^@]+)@([^:]+):(\d+)(?:\?([^#]+))?(?:#(.+))?$/);
+                if (!match) return null;
+                
+                const [, uuid, server, port, params, name] = match;
+                const urlParams = new URLSearchParams(params || '');
+                
+                return {
+                    name: name ? decodeURIComponent(name) : 'VLESS',
+                    type: 'vless',
+                    server,
+                    port: parseInt(port),
+                    uuid,
+                    flow: urlParams.get('flow') || '',
+                    network: urlParams.get('type') || 'tcp',
+                    tls: urlParams.get('security') === 'tls',
+                    'skip-cert-verify': true
+                };
+            }
+            
+            // 解析SOCKS5链接
+            static parseSocks5(url) {
+                const match = url.match(/^socks5:\/\/(?:([^:]+):([^@]+)@)?([^:]+):(\d+)(?:#(.+))?$/);
+                if (!match) return null;
+                
+                const [, username, password, server, port, name] = match;
+                
+                return {
+                    name: name ? decodeURIComponent(name) : 'SOCKS5',
+                    type: 'socks5',
+                    server,
+                    port: parseInt(port),
+                    username: username || '',
+                    password: password || ''
+                };
+            }
+            
+            // 解析HTTP链接
+            static parseHttp(url) {
+                // 处理反引号包围的链接
+                const cleanUrl = url.replace(/`/g, '');
+                const match = cleanUrl.match(/^https?:\/\/(?:([^:]+):([^@]+)@)?([^:]+):(\d+)(?:#(.+))?$/);
+                if (!match) return null;
+                
+                const [, username, password, server, port, name] = match;
+                
+                return {
+                    name: name ? decodeURIComponent(name) : 'http_proxy',
+                    type: 'http',
+                    server,
+                    port: parseInt(port),
+                    username: username || '',
+                    password: password || ''
+                };
+            }
+        }
+        
+        // Clash配置生成器
+        class ClashGenerator {
+            static generateConfig(proxies) {
+                const proxyNames = proxies.map(p => p.name);
+                
+                const config = {
+                    'mixed-port': 7890,
+                    'allow-lan': true,
+                    mode: 'Rule',
+                    'log-level': 'info',
+                    'external-controller': '0.0.0.0:9090',
+                    dns: {
+                        enabled: true,
+                        nameserver: [
+                            '119.29.29.29',
+                            '223.5.5.5'
+                        ],
+                        fallback: [
+                            '8.8.8.8',
+                            '8.8.4.4',
+                            'tls://1.0.0.1:853',
+                            'tls://dns.google:853'
+                        ]
+                    },
+                    proxies: proxies,
+                    'proxy-groups': [
+                        {
+                            name: '🚀 节点选择',
+                            type: 'select',
+                            proxies: ['♻️ 自动选择', '🎯 全球直连', '🇭🇰 香港节点', '🇯🇵 日本节点', '🇺🇲 美国节点', '🇸🇬 狮城节点', '🇰🇷 韩国节点', '🚩 其它节点']
+                        },
+                        {
+                            name: '♻️ 自动选择',
+                            type: 'url-test',
+                            proxies: proxyNames,
+                            url: 'http://www.gstatic.com/generate_204',
+                            interval: 300,
+                            tolerance: 50
+                        },
+                        {
+                            name: '🛑 全球拦截',
+                            type: 'select',
+                            proxies: ['REJECT', '🎯 全球直连']
+                        },
+                        {
+                            name: '🍃 应用净化',
+                            type: 'select',
+                            proxies: ['REJECT', '🎯 全球直连']
+                        },
+                        {
+                             name: '🌍 国外媒体',
+                             type: 'select',
+                             proxies: ['🚀 节点选择', '♻️ 自动选择', '🎯 全球直连', '🇭🇰 香港节点', '🇯🇵 日本节点', '🇺🇲 美国节点', '🇸🇬 狮城节点', '🇰🇷 韩国节点', '🚩 其它节点']
+                         },
+                         {
+                            name: '📲 电报信息',
+                            type: 'select',
+                            proxies: ['🚀 节点选择', '🎯 全球直连', '🇭🇰 香港节点', '🇯🇵 日本节点', '🇺🇲 美国节点', '🇸🇬 狮城节点', '🇰🇷 韩国节点', '🚩 其它节点']
+                        },
+                        {
+                            name: 'Ⓜ️ 微软服务',
+                            type: 'select',
+                            proxies: ['🎯 全球直连', '🚀 节点选择', '🇭🇰 香港节点', '🇯🇵 日本节点', '🇺🇲 美国节点', '🇸🇬 狮城节点', '🇰🇷 韩国节点', '🚩 其它节点']
+                        },
+                        {
+                            name: '🍎 苹果服务',
+                            type: 'select',
+                            proxies: ['🚀 节点选择', '🎯 全球直连', '🇭🇰 香港节点', '🇯🇵 日本节点', '🇺🇲 美国节点', '🇸🇬 狮城节点', '🇰🇷 韩国节点', '🚩 其它节点']
+                        },
+                        {
+                            name: '🇭🇰 香港节点',
+                            type: 'url-test',
+                            proxies: proxyNames.filter(name => name.includes('香港') || name.includes('HK') || name.includes('Hong')),
+                            url: 'http://www.gstatic.com/generate_204',
+                            interval: 300,
+                            tolerance: 50
+                        },
+                        {
+                            name: '🇯🇵 日本节点',
+                            type: 'url-test',
+                            proxies: proxyNames.filter(name => name.includes('日本') || name.includes('JP') || name.includes('Japan')),
+                            url: 'http://www.gstatic.com/generate_204',
+                            interval: 300,
+                            tolerance: 50
+                        },
+                        {
+                            name: '🇺🇲 美国节点',
+                            type: 'url-test',
+                            proxies: proxyNames.filter(name => name.includes('美国') || name.includes('US') || name.includes('United')),
+                            url: 'http://www.gstatic.com/generate_204',
+                            interval: 300,
+                            tolerance: 50
+                        },
+                        {
+                            name: '🇸🇬 狮城节点',
+                            type: 'url-test',
+                            proxies: proxyNames.filter(name => name.includes('新加坡') || name.includes('狮城') || name.includes('SG') || name.includes('Singapore')),
+                            url: 'http://www.gstatic.com/generate_204',
+                            interval: 300,
+                            tolerance: 50
+                        },
+                        {
+                            name: '🇰🇷 韩国节点',
+                            type: 'url-test',
+                            proxies: proxyNames.filter(name => name.includes('韩国') || name.includes('KR') || name.includes('Korea')),
+                            url: 'http://www.gstatic.com/generate_204',
+                            interval: 300,
+                            tolerance: 50
+                        },
+                        {
+                            name: '🚩 其它节点',
+                            type: 'select',
+                            proxies: proxyNames.filter(name => 
+                                !name.includes('香港') && !name.includes('HK') && !name.includes('Hong') &&
+                                !name.includes('日本') && !name.includes('JP') && !name.includes('Japan') &&
+                                !name.includes('美国') && !name.includes('US') && !name.includes('United') &&
+                                !name.includes('新加坡') && !name.includes('狮城') && !name.includes('SG') && !name.includes('Singapore') &&
+                                !name.includes('韩国') && !name.includes('KR') && !name.includes('Korea')
+                            )
+                        },
+                        {
+                            name: '🎯 全球直连',
+                            type: 'select',
+                            proxies: ['DIRECT', '🚀 节点选择']
+                        },
+                        {
+                            name: '🛑 全球拦截',
+                            type: 'select',
+                            proxies: ['REJECT', 'DIRECT']
+                        },
+                        {
+                            name: '🍃 应用净化',
+                            type: 'select',
+                            proxies: ['REJECT', 'DIRECT']
+                        },
+                        {
+                            name: '🐟 漏网之鱼',
+                            type: 'select',
+                            proxies: ['🚀 节点选择', '🎯 全球直连', '♻️ 自动选择', '🇭🇰 香港节点', '🇯🇵 日本节点', '🇺🇲 美国节点', '🇸🇬 狮城节点', '🇰🇷 韩国节点', '🚩 其它节点']
+                        }
+                    ].filter(group => {
+                        // 过滤掉没有节点的地区组
+                        if (['🇭🇰 香港节点', '🇯🇵 日本节点', '🇺🇲 美国节点', '🇸🇬 狮城节点', '🇰🇷 韩国节点', '🚩 其它节点'].includes(group.name)) {
+                            return group.proxies && group.proxies.length > 0;
+                        }
+                        return true;
+                    }),
+                    rules: [
+                         // 本地网络直连
+                         'DOMAIN-SUFFIX,acl4.ssr,🎯 全球直连',
+                         'DOMAIN-SUFFIX,ip6-localhost,🎯 全球直连',
+                         'DOMAIN-SUFFIX,ip6-loopback,🎯 全球直连',
+                         'DOMAIN-SUFFIX,lan,🎯 全球直连',
+                         'DOMAIN-SUFFIX,local,🎯 全球直连',
+                         'DOMAIN-SUFFIX,localhost,🎯 全球直连',
+                         'IP-CIDR,0.0.0.0/8,🎯 全球直连,no-resolve',
+                         'IP-CIDR,10.0.0.0/8,🎯 全球直连,no-resolve',
+                         'IP-CIDR,100.64.0.0/10,🎯 全球直连,no-resolve',
+                         'IP-CIDR,127.0.0.0/8,🎯 全球直连,no-resolve',
+                         'IP-CIDR,172.16.0.0/12,🎯 全球直连,no-resolve',
+                         'IP-CIDR,192.168.0.0/16,🎯 全球直连,no-resolve',
+                         'IP-CIDR,198.18.0.0/16,🎯 全球直连,no-resolve',
+                         'IP-CIDR,224.0.0.0/4,🎯 全球直连,no-resolve',
+                         'IP-CIDR6,::1/128,🎯 全球直连,no-resolve',
+                         'IP-CIDR6,fc00::/7,🎯 全球直连,no-resolve',
+                         'IP-CIDR6,fe80::/10,🎯 全球直连,no-resolve',
+                         'IP-CIDR6,fd00::/8,🎯 全球直连,no-resolve',
+                         
+                         // 应用净化
+                         'DOMAIN,safebrowsing.urlsec.qq.com,🍃 应用净化',
+                         'DOMAIN,safebrowsing.googleapis.com,🍃 应用净化',
+                         'DOMAIN-SUFFIX,doubleclick.net,🍃 应用净化',
+                         'DOMAIN-SUFFIX,googleadservices.com,🍃 应用净化',
+                         'DOMAIN-SUFFIX,googlesyndication.com,🍃 应用净化',
+                         'DOMAIN-SUFFIX,googletagservices.com,🍃 应用净化',
+                         
+                         // 全球拦截
+                         'DOMAIN-SUFFIX,ads.yahoo.com,🛑 全球拦截',
+                         'DOMAIN-SUFFIX,facebook.com,🛑 全球拦截',
+                         'DOMAIN-SUFFIX,googlevideo.com,🛑 全球拦截',
+                         
+                         // 电报信息
+                         'DOMAIN-SUFFIX,t.me,📲 电报信息',
+                         'DOMAIN-SUFFIX,tdesktop.com,📲 电报信息',
+                         'DOMAIN-SUFFIX,telegra.ph,📲 电报信息',
+                         'DOMAIN-SUFFIX,telegram.me,📲 电报信息',
+                         'DOMAIN-SUFFIX,telegram.org,📲 电报信息',
+                         'DOMAIN-SUFFIX,telesco.pe,📲 电报信息',
+                         'IP-CIDR,91.108.4.0/22,📲 电报信息,no-resolve',
+                         'IP-CIDR,91.108.8.0/22,📲 电报信息,no-resolve',
+                         'IP-CIDR,91.108.12.0/22,📲 电报信息,no-resolve',
+                         'IP-CIDR,91.108.16.0/22,📲 电报信息,no-resolve',
+                         'IP-CIDR,91.108.56.0/22,📲 电报信息,no-resolve',
+                         'IP-CIDR,149.154.160.0/20,📲 电报信息,no-resolve',
+                         
+                         // 国外媒体
+                         'DOMAIN-SUFFIX,netflix.com,🌍 国外媒体',
+                         'DOMAIN-SUFFIX,youtube.com,🌍 国外媒体',
+                         'DOMAIN-SUFFIX,googlevideo.com,🌍 国外媒体',
+                         'DOMAIN-SUFFIX,twitter.com,🌍 国外媒体',
+                         'DOMAIN-SUFFIX,instagram.com,🌍 国外媒体',
+                         'DOMAIN-SUFFIX,facebook.com,🌍 国外媒体',
+                         
+                         // 苹果服务
+                         'DOMAIN,testflight.apple.com,🍎 苹果服务',
+                         'DOMAIN-SUFFIX,apple.com,🍎 苹果服务',
+                         'DOMAIN-SUFFIX,icloud.com,🍎 苹果服务',
+                         'DOMAIN-SUFFIX,itunes.com,🍎 苹果服务',
+                         'DOMAIN-SUFFIX,me.com,🍎 苹果服务',
+                         
+                         // 微软服务
+                         'DOMAIN-SUFFIX,live.com,Ⓜ️ 微软服务',
+                         'DOMAIN-SUFFIX,microsoft.com,Ⓜ️ 微软服务',
+                         'DOMAIN-SUFFIX,office.com,Ⓜ️ 微软服务',
+                         'DOMAIN-SUFFIX,outlook.com,Ⓜ️ 微软服务',
+                         'DOMAIN-SUFFIX,skype.com,Ⓜ️ 微软服务',
+                         'DOMAIN-SUFFIX,windows.com,Ⓜ️ 微软服务',
+                         
+                         // 路由器管理界面
+                         'DOMAIN,instant.arubanetworks.com,🎯 全球直连',
+                         'DOMAIN,setmeup.arubanetworks.com,🎯 全球直连',
+                         'DOMAIN,router.asus.com,🎯 全球直连',
+                         'DOMAIN,www.asusrouter.com,🎯 全球直连',
+                         'DOMAIN-SUFFIX,hiwifi.com,🎯 全球直连',
+                         'DOMAIN-SUFFIX,leike.cc,🎯 全球直连',
+                         'DOMAIN-SUFFIX,miwifi.com,🎯 全球直连',
+                         'DOMAIN-SUFFIX,tendawifi.com,🎯 全球直连',
+                         'DOMAIN-SUFFIX,zte.com.cn,🎯 全球直连',
+                         
+                         // 中国直连
+                         'DOMAIN-SUFFIX,cn,🎯 全球直连',
+                         'DOMAIN-KEYWORD,-cn,🎯 全球直连',
+                         'GEOIP,CN,🎯 全球直连',
+                         
+                         // 最终规则
+                         'MATCH,🐟 漏网之鱼'
+                     ]
+                };
+                
+                return config;
+            }
+            
+            // 格式化输出
+            static formatOutput(config, format = 'json') {
+                if (format === 'yaml') {
+                    return ClashGenerator.toYaml(config);
+                } else {
+                    return JSON.stringify(config, null, 2);
+                }
+            }
+            
+            static toYaml(obj, indent = 0) {
+                if (!obj || typeof obj !== 'object') {
+                    return '';
+                }
+                
+                const now = new Date();
+                const timestamp = now.getFullYear() + '-' + 
+                    String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                    String(now.getDate()).padStart(2, '0') + ' ' +
+                    String(now.getHours()).padStart(2, '0') + ':' +
+                    String(now.getMinutes()).padStart(2, '0') + ':' +
+                    String(now.getSeconds()).padStart(2, '0');
+                
+                const proxyCount = (obj.proxies && Array.isArray(obj.proxies)) ? obj.proxies.length : 0;
+                let yaml = `#\n#-------------------------------------------------------------#\n#  创建者： \`https://v2rayse.com\`\n#  创建时间：${timestamp}\n#  模版：ACL4SSR_NoAuto\n#  节点数量：${proxyCount}\n#-------------------------------------------------------------#\n#\n`;
+                
+                const spaces = '  '.repeat(indent);
+                
+                for (const [key, value] of Object.entries(obj)) {
+                    if (key === 'proxies' && Array.isArray(value)) {
+                        yaml += `${spaces}${key}:\n`;
+                        for (const proxy of value) {
+                            yaml += `${spaces}  - name: "${proxy.name || 'Unknown'}"\n`;
+                            yaml += `${spaces}    type: ${proxy.type || 'ss'}\n`;
+                            yaml += `${spaces}    server: ${proxy.server || 'localhost'}\n`;
+                            yaml += `${spaces}    port: ${proxy.port || 8080}\n`;
+                            
+                            // 根据代理类型添加特定字段
+                            for (const [proxyKey, proxyValue] of Object.entries(proxy)) {
+                                if (!['name', 'type', 'server', 'port'].includes(proxyKey)) {
+                                    if (typeof proxyValue === 'object' && proxyValue !== null) {
+                                        yaml += `${spaces}    ${proxyKey}:\n`;
+                                        yaml += ClashGenerator.objectToYaml(proxyValue, indent + 3);
+                                    } else if (typeof proxyValue === 'boolean') {
+                                        yaml += `${spaces}    ${proxyKey}: ${proxyValue}\n`;
+                                    } else if (proxyValue !== undefined && proxyValue !== null) {
+                                        yaml += `${spaces}    ${proxyKey}: ${proxyValue}\n`;
+                                    }
+                                }
+                            }
+                        }
+                    } else if (Array.isArray(value)) {
+                        yaml += `${spaces}${key}:\n`;
+                        for (const item of value) {
+                            if (typeof item === 'object' && item !== null) {
+                                yaml += `${spaces}  - `;
+                                const itemYaml = ClashGenerator.objectToYaml(item, 0);
+                                const lines = itemYaml.split('\n');
+                                yaml += lines[0] + '\n';
+                                for (let i = 1; i < lines.length; i++) {
+                                    if (lines[i].trim()) {
+                                        yaml += `${spaces}    ${lines[i]}\n`;
+                                    }
+                                }
+                            } else {
+                                yaml += `${spaces}  - ${item}\n`;
+                            }
+                        }
+                    } else if (typeof value === 'object' && value !== null) {
+                        yaml += `${spaces}${key}:\n`;
+                        yaml += ClashGenerator.toYaml(value, indent + 1);
+                    } else if (value !== undefined && value !== null) {
+                        yaml += `${spaces}${key}: ${value}\n`;
+                    }
+                }
+                
+                return yaml;
+            }
+            
+            static objectToYaml(obj, indent = 0) {
+                if (!obj || typeof obj !== 'object') {
+                    return '';
+                }
+                
+                const spaces = '  '.repeat(indent);
+                let result = '';
+                
+                for (const [key, value] of Object.entries(obj)) {
+                    if (Array.isArray(value)) {
+                        result += `${spaces}${key}:\n`;
+                        for (const item of value) {
+                            if (typeof item === 'object' && item !== null) {
+                                result += `${spaces}  - `;
+                                const itemLines = ClashGenerator.objectToYaml(item, 0).split('\n');
+                                result += itemLines[0] + '\n';
+                                for (let i = 1; i < itemLines.length; i++) {
+                                    if (itemLines[i].trim()) {
+                                        result += `${spaces}    ${itemLines[i]}\n`;
+                                    }
+                                }
+                            } else {
+                                result += `${spaces}  - ${item}\n`;
+                            }
+                        }
+                    } else if (typeof value === 'object' && value !== null) {
+                        result += `${spaces}${key}:\n`;
+                        result += ClashGenerator.objectToYaml(value, indent + 1);
+                    } else if (value !== undefined && value !== null) {
+                        if (typeof value === 'string' && (value.includes(' ') || value.includes(':') || value.includes('#'))) {
+                            result += `${spaces}${key}: "${value}"\n`;
+                        } else {
+                            result += `${spaces}${key}: ${value}\n`;
+                        }
+                    }
+                }
+                
+                return result.trim();
+            }
+        }
+        
+        // 节点链接生成器
+        class NodeGenerator {
+            static generateShadowsocks(proxy) {
+                const auth = btoa(`${proxy.cipher}:${proxy.password}`);
+                const name = encodeURIComponent(proxy.name);
+                return `ss://${auth}@${proxy.server}:${proxy.port}#${name}`;
+            }
+            
+            static generateVmess(proxy) {
+                const config = {
+                    v: '2',
+                    ps: proxy.name,
+                    add: proxy.server,
+                    port: proxy.port.toString(),
+                    id: proxy.uuid,
+                    aid: (proxy.alterId || 0).toString(),
+                    net: proxy.network || 'tcp',
+                    type: 'none',
+                    host: proxy['ws-opts']?.headers?.Host || '',
+                    path: proxy['ws-opts']?.path || '/',
+                    tls: proxy.tls ? 'tls' : ''
+                };
+                return 'vmess://' + btoa(JSON.stringify(config));
+            }
+            
+            static generateTrojan(proxy) {
+                const name = encodeURIComponent(proxy.name);
+                let url = `trojan://${proxy.password}@${proxy.server}:${proxy.port}`;
+                const params = new URLSearchParams();
+                if (proxy.sni && proxy.sni !== proxy.server) {
+                    params.set('sni', proxy.sni);
+                }
+                if (proxy['skip-cert-verify']) {
+                    params.set('allowInsecure', '1');
+                }
+                if (params.toString()) {
+                    url += '?' + params.toString();
+                }
+                url += '#' + name;
+                return url;
+            }
+            
+            static generateVless(proxy) {
+                const name = encodeURIComponent(proxy.name);
+                let url = `vless://${proxy.uuid}@${proxy.server}:${proxy.port}`;
+                const params = new URLSearchParams();
+                if (proxy.flow) {
+                    params.set('flow', proxy.flow);
+                }
+                if (proxy.network && proxy.network !== 'tcp') {
+                    params.set('type', proxy.network);
+                }
+                if (proxy.tls) {
+                    params.set('security', 'tls');
+                }
+                if (params.toString()) {
+                    url += '?' + params.toString();
+                }
+                url += '#' + name;
+                return url;
+            }
+            
+            static generateSocks5(proxy) {
+                const name = encodeURIComponent(proxy.name);
+                let url = 'socks5://';
+                if (proxy.username && proxy.password) {
+                    url += `${proxy.username}:${proxy.password}@`;
+                }
+                url += `${proxy.server}:${proxy.port}#${name}`;
+                return url;
+            }
+            
+            static generateHttp(proxy) {
+                const name = encodeURIComponent(proxy.name);
+                let url = 'http://';
+                if (proxy.username && proxy.password) {
+                    url += `${proxy.username}:${proxy.password}@`;
+                }
+                url += `${proxy.server}:${proxy.port}#${name}`;
+                return url;
+            }
+            
+            static generateSsr(proxy) {
+                const serverInfo = `${proxy.server}:${proxy.port}:${proxy.protocol}:${proxy.cipher}:${proxy.obfs}:${btoa(proxy.password)}`;
+                const params = new URLSearchParams();
+                params.set('remarks', btoa(proxy.name));
+                const data = serverInfo + '/?' + params.toString();
+                return 'ssr://' + btoa(data);
+            }
+            
+            static generateHysteria(proxy) {
+                const name = encodeURIComponent(proxy.name);
+                const params = new URLSearchParams();
+                params.set('protocol', proxy.protocol || 'udp');
+                params.set('auth', proxy.auth_str || '');
+                params.set('peer', proxy.sni || proxy.server);
+                params.set('insecure', proxy['skip-cert-verify'] ? '1' : '0');
+                params.set('upmbps', proxy.up || '50');
+                params.set('downmbps', proxy.down || '250');
+                params.set('alpn', proxy.alpn || 'h3');
+                
+                return `hysteria://${proxy.server}:${proxy.port}?${params.toString()}#${name}`;
+            }
+            
+            static generateHysteria2(proxy) {
+                const name = encodeURIComponent(proxy.name);
+                const params = new URLSearchParams();
+                params.set('sni', proxy.sni || proxy.server);
+                params.set('insecure', proxy['skip-cert-verify'] ? '1' : '0');
+                if (proxy.mport) {
+                    params.set('mport', proxy.mport);
+                }
+                
+                return `hysteria2://${proxy.password}@${proxy.server}:${proxy.port}?${params.toString()}#${name}`;
+            }
+        }
+        
+        // 主转换器
+        class Converter {
+            static nodeToClash(nodeUrls) {
+                const proxies = [];
+                const urls = nodeUrls.split('\n').filter(url => url.trim());
+                let counter = 1;
+                
+                for (const url of urls) {
+                    const trimmedUrl = url.trim();
+                    let proxy = null;
+                    
+                    if (trimmedUrl.startsWith('ss://')) {
+                        proxy = ProtocolParser.parseShadowsocks(trimmedUrl);
+                    } else if (trimmedUrl.startsWith('ssr://')) {
+                        proxy = ProtocolParser.parseSsr(trimmedUrl);
+                    } else if (trimmedUrl.startsWith('vmess://')) {
+                        proxy = ProtocolParser.parseVmess(trimmedUrl);
+                    } else if (trimmedUrl.startsWith('trojan://')) {
+                        proxy = ProtocolParser.parseTrojan(trimmedUrl);
+                    } else if (trimmedUrl.startsWith('vless://')) {
+                        proxy = ProtocolParser.parseVless(trimmedUrl);
+                    } else if (trimmedUrl.startsWith('socks5://')) {
+                        proxy = ProtocolParser.parseSocks5(trimmedUrl);
+                    } else if (trimmedUrl.startsWith('hysteria://')) {
+                        proxy = ProtocolParser.parseHysteria(trimmedUrl);
+                    } else if (trimmedUrl.startsWith('hysteria2://')) {
+                        proxy = ProtocolParser.parseHysteria2(trimmedUrl);
+                    } else if (trimmedUrl.includes('t.me/socks')) {
+                        proxy = ProtocolParser.parseTelegram(trimmedUrl);
+                    } else if (trimmedUrl.startsWith('http://') || trimmedUrl.startsWith('https://') || trimmedUrl.includes('`http')) {
+                        proxy = ProtocolParser.parseHttp(trimmedUrl);
+                    }
+                    
+                    if (proxy) {
+                        // 为节点添加序号后缀
+                        if (proxy.name === 'v2rayse_test' || proxy.name.includes('v2rayse_test')) {
+                            proxy.name = `v2rayse_test_${counter}`;
+                            counter++;
+                        }
+                        
+                        // 确保名称唯一
+                        let finalName = proxy.name;
+                        let nameCounter = 1;
+                        while (proxies.some(p => p.name === finalName)) {
+                            nameCounter++;
+                            finalName = `${proxy.name}_${nameCounter}`;
+                        }
+                        proxy.name = finalName;
+                        
+                        // 添加必要的字段
+                        if (proxy.type === 'trojan' || proxy.type === 'vless' || proxy.type === 'hysteria' || proxy.type === 'hysteria2') {
+                            proxy.udp = true;
+                            proxy['skip-cert-verify'] = true;
+                        }
+                        if (proxy.type === 'http' || proxy.type === 'socks5') {
+                            proxy.udp = true;
+                        }
+                        if (proxy.type === 'hysteria') {
+                            proxy.recv_window = 104857600;
+                            proxy.recv_window_conn = 26214400;
+                            proxy.disable_mtu_discovery = true;
+                        }
+                        if (proxy.type === 'hysteria2') {
+                            // Hysteria2特有字段已在parseHysteria2中设置
+                        }
+                        
+                        proxies.push(proxy);
+                    }
+                }
+                
+                if (proxies.length === 0) {
+                    throw new Error('未找到有效的节点链接');
+                }
+                
+                return ClashGenerator.generateConfig(proxies);
+            }
+            
+            static clashToNode(clashConfig) {
+                try {
+                    const config = typeof clashConfig === 'string' ? JSON.parse(clashConfig) : clashConfig;
+                    const proxies = config.proxies || config.Proxy || [];
+                    const nodeUrls = [];
+                    
+                    for (const proxy of proxies) {
+                        let url = null;
+                        
+                        switch (proxy.type) {
+                            case 'ss':
+                                url = NodeGenerator.generateShadowsocks(proxy);
+                                break;
+                            case 'ssr':
+                                url = NodeGenerator.generateSsr(proxy);
+                                break;
+                            case 'vmess':
+                                url = NodeGenerator.generateVmess(proxy);
+                                break;
+                            case 'trojan':
+                                url = NodeGenerator.generateTrojan(proxy);
+                                break;
+                            case 'vless':
+                                url = NodeGenerator.generateVless(proxy);
+                                break;
+                            case 'socks5':
+                                url = NodeGenerator.generateSocks5(proxy);
+                                break;
+                            case 'http':
+                                url = NodeGenerator.generateHttp(proxy);
+                                break;
+                            case 'hysteria':
+                                url = NodeGenerator.generateHysteria(proxy);
+                                break;
+                            case 'hysteria2':
+                                url = NodeGenerator.generateHysteria2(proxy);
+                                break;
+                        }
+                        
+                        if (url) {
+                            nodeUrls.push(url);
+                        }
+                    }
+                    
+                    if (nodeUrls.length === 0) {
+                        throw new Error('未找到有效的代理配置');
+                    }
+                    
+                    return nodeUrls.join('\n');
+                } catch (e) {
+                    throw new Error('Clash配置格式错误: ' + e.message);
+                }
+            }
+        }
+        
+        // UI控制器
+        class UIController {
+            constructor() {
+                this.inputType = document.getElementById('inputType');
+                this.outputType = document.getElementById('outputType');
+                this.inputArea = document.getElementById('inputArea');
+                this.outputArea = document.getElementById('outputArea');
+                this.convertBtn = document.getElementById('convertBtn');
+                this.copyBtn = document.getElementById('copyBtn');
+                this.inputError = document.getElementById('inputError');
+                this.outputSuccess = document.getElementById('outputSuccess');
+                
+                this.bindEvents();
+            }
+            
+            bindEvents() {
+                this.convertBtn.addEventListener('click', () => this.convert());
+                this.copyBtn.addEventListener('click', () => this.copyResult());
+                
+                this.inputType.addEventListener('change', () => {
+                    this.outputType.value = this.inputType.value === 'node' ? 'clash' : 'node';
+                    this.updatePlaceholders();
+                });
+                
+                this.outputType.addEventListener('change', () => {
+                    this.inputType.value = this.outputType.value === 'node' ? 'clash' : 'node';
+                    this.updatePlaceholders();
+                });
+                
+                this.inputArea.addEventListener('input', () => {
+                    this.hideError();
+                    this.hideSuccess();
+                });
+            }
+            
+            updatePlaceholders() {
+                if (this.inputType.value === 'node') {
+                    this.inputArea.placeholder = '请输入节点链接，每行一个...\n\n示例:\nss://YWVzLTI1Ni1nY206cGFzc3dvcmQ@192.168.1.1:8388#节点1\nvmess://eyJ2IjoiMiIsInBzIjoi...';
+                } else {
+                    this.inputArea.placeholder = '请输入Clash配置内容...\n\n示例:\n{\n  "proxies": [\n    {\n      "name": "节点1",\n      "type": "ss",\n      "server": "192.168.1.1",\n      "port": 8388,\n      "cipher": "aes-256-gcm",\n      "password": "password"\n    }\n  ]\n}';
+                }
+            }
+            
+            convert() {
+                const input = this.inputArea.value.trim();
+                if (!input) {
+                    this.showError('请输入要转换的内容');
+                    return;
+                }
+                
+                try {
+                    let result;
+                    
+                    if (this.inputType.value === 'node') {
+                         const clashConfig = Converter.nodeToClash(input);
+                         result = ClashGenerator.formatOutput(clashConfig, 'yaml');
+                     } else {
+                         result = Converter.clashToNode(input);
+                     }
+                    
+                    this.outputArea.value = result;
+                    this.copyBtn.style.display = 'inline-block';
+                    this.hideError();
+                    this.showSuccess('转换成功！');
+                } catch (error) {
+                    this.showError(error.message);
+                    this.outputArea.value = '';
+                    this.copyBtn.style.display = 'none';
+                }
+            }
+            
+            copyResult() {
+                this.outputArea.select();
+                document.execCommand('copy');
+                this.showSuccess('已复制到剪贴板！');
+            }
+            
+            showError(message) {
+                this.inputError.textContent = message;
+                this.inputError.style.display = 'block';
+            }
+            
+            hideError() {
+                this.inputError.style.display = 'none';
+            }
+            
+            showSuccess(message) {
+                this.outputSuccess.textContent = message;
+                this.outputSuccess.style.display = 'block';
+                setTimeout(() => this.hideSuccess(), 3000);
+            }
+            
+            hideSuccess() {
+                this.outputSuccess.style.display = 'none';
+            }
+        }
+        
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', () => {
+            new UIController();
+        });
+    </script>
+</body>
+</html>

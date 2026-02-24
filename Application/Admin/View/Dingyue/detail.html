@@ -1,0 +1,1102 @@
+<extend name="Public:base" />
+<block name="title">用户详情 - {$data.qq}</block>
+<block name="content">
+    <style>
+        /* 面包屑导航设计 */
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .breadcrumb-item a {
+            color: #1677ff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s ease;
+        }
+        
+        .breadcrumb-item a:hover {
+            color: #0958d9;
+            text-decoration: none;
+        }
+        
+        .breadcrumb-item.active {
+            color: #8c8c8c;
+        }
+        
+        .breadcrumb-item i {
+            font-size: 14px;
+        }
+        
+        .breadcrumb-item:not(:last-child)::after {
+            content: '/';
+            color: #d9d9d9;
+            margin-left: 8px;
+            font-size: 12px;
+        }
+        
+        /* 选项卡样式 - 并排排列 */
+        .nav-tabs {
+            border-bottom: none;
+            margin-bottom: 20px;
+            background: transparent;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+        
+        .nav-tabs .nav-item {
+            margin-right: 8px;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            color: #595959;
+            padding: 12px 20px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background: #1677ff;
+            color: white;
+            border: none;
+            box-shadow: 0 2px 8px rgba(22, 119, 255, 0.3);
+        }
+        
+        .nav-tabs .nav-link:hover {
+            background: #e6f7ff;
+            color: #1677ff;
+            transform: translateY(-1px);
+        }
+        
+        /* 页面导航路径 */
+        .page-navigation {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .page-navigation .nav-item {
+            display: flex;
+            align-items: center;
+            color: #6c757d;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .page-navigation .nav-item:hover {
+            color: #1677ff;
+            text-decoration: none;
+        }
+        
+        .page-navigation .nav-item.active {
+            color: #1677ff;
+            font-weight: 500;
+        }
+        
+        .page-navigation .nav-separator {
+            color: #dee2e6;
+            margin: 0 4px;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background: #fafafa;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 16px 20px;
+            font-weight: 500;
+        }
+        
+        /* 响应式处理 */
+        @media (max-width: 768px) {
+            .breadcrumb {
+                display: none !important;
+            }
+            
+            .page-navigation {
+                font-size: 12px;
+                padding: 8px 12px;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+    
+    <!-- 面包屑导航 -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Index/index')}">
+                    <i class="fa fa-home"></i>
+                    首页
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Index/index')}">
+                    后台管理
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Dingyue/list')}">
+                    订阅列表
+                </a>
+            </li>
+            <li class="breadcrumb-item active">
+                用户详情
+            </li>
+        </ol>
+    </nav>
+    
+    <!-- 页面导航路径 -->
+    <div class="page-navigation">
+        <a href="{:U('Admin/Index/index')}" class="nav-item">
+            <i class="fa fa-home"></i>
+            首页
+        </a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/Index/index')}" class="nav-item">
+            后台管理
+        </a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/Dingyue/list')}" class="nav-item">
+            订阅管理
+        </a>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">
+            用户详情
+        </div>
+    </div>
+    
+    <div class="page-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-start">
+                    <ul class="nav nav-tabs border-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{:U('Admin/Dingyue/list')}">订阅列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{:U('Admin/Dingyue/add')}">添加订阅</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+                <style>
+                    .user-detail-container {
+                        background: #fff;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                        margin-bottom: 20px;
+                    }
+                    .detail-header {
+                        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+                        color: white;
+                        padding: 20px;
+                        border-radius: 8px 8px 0 0;
+                        text-align: center;
+                    }
+                    .detail-header h2 {
+                        margin: 0;
+                        font-size: 28px;
+                        font-weight: 600;
+                    }
+                    .detail-header .status-badge {
+                        display: inline-block;
+                        padding: 8px 16px;
+                        border-radius: 20px;
+                        font-size: 14px;
+                        margin-top: 8px;
+                        background: rgba(255,255,255,0.2);
+                    }
+        .detail-content {
+            padding: 20px;
+        }
+        .info-section {
+            margin-bottom: 30px;
+        }
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .info-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #333;
+            min-width: 120px;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        .info-value {
+            flex: 1;
+            color: #333;
+            font-size: 16px;
+        }
+        .qrcode-container {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .qrcode-container img {
+            max-width: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .subscription-urls {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .url-item {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+        }
+        .url-label {
+            font-weight: bold;
+            color: #666;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .url-value {
+            word-break: break-all;
+            color: #428bca;
+        }
+        
+        /* 客户后台功能模块样式 */
+        .client-backend-modules {
+            margin-top: 30px;
+        }
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .module-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .module-card:hover {
+            transform: translateY(-2px);
+        }
+        .module-header {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .module-content {
+            padding: 20px;
+        }
+        .module-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .module-item:last-child {
+            border-bottom: none;
+        }
+        .module-label {
+            font-weight: 500;
+            color: #555;
+        }
+        .module-value {
+            color: #333;
+            word-break: break-all;
+            max-width: 200px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .btn-custom {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        .btn-info:hover {
+            background: #117a8b;
+        }
+        .copy-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .copy-btn:hover {
+            background: #545b62;
+        }
+        .qr-display {
+            text-align: center;
+            margin: 15px 0;
+        }
+        .qr-display img {
+            max-width: 150px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        .download-item {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+        .download-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            display: block;
+        }
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            z-index: 9999;
+            display: none;
+        }
+        
+        /* 响应式设计 */
+        /* 客户后台功能模块样式 */
+        .client-backend-modules {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+        }
+        
+        .section-title i {
+            margin-right: 8px;
+            color: #007bff;
+        }
+        
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .module-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .module-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .module-header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .module-header i {
+            margin-right: 8px;
+        }
+        
+        .module-content {
+            padding: 20px;
+        }
+        
+        .module-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .module-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .module-label {
+            font-weight: 500;
+            color: #495057;
+            flex: 1;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .download-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .download-item:hover {
+            background: #e9ecef;
+        }
+        
+        .download-icon {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .stat-number {
+            display: block;
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .qr-display {
+            text-align: center;
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .qr-display img {
+            max-width: 120px;
+            height: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .module-grid {
+                grid-template-columns: 1fr;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .download-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .btn-group {
+                justify-content: center;
+            }
+            
+            .module-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .btn-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .btn-custom {
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .remaining-days {
+            font-size: 16px;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .remaining-days.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .remaining-days.danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .remaining-days.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+            .btn-custom {
+                text-align: center;
+            }
+        }
+    </style>
+    
+    <div class="page-header">
+        <h1><i class="fa fa-home"></i> 首页 &gt; 后台管理 &gt; 订阅列表 &gt; 用户详情</h1>
+    </div>
+    
+    <div class="col-xs-12">
+        <div class="user-detail-container">
+            <div class="detail-header">
+                <h2>用户详情 - {$data.qq}</h2>
+                <span class="status-badge">
+                    账号状态：{$data.status_text} | 邮件状态：{$data.ispush_text}
+                </span>
+                <if condition="$data.remaining_days gt 0">
+                    <div class="remaining-days <if condition='$data.remaining_days lt 7'>danger<elseif condition='$data.remaining_days lt 30'/>warning<else/>success</if>">
+                        剩余天数：{$data.remaining_days} 天
+                    </div>
+                <elseif condition="$data.endtime eq '永久'"/>
+                    <div class="remaining-days success">
+                        永久订阅
+                    </div>
+                <else/>
+                    <div class="remaining-days danger">
+                        订阅已过期
+                    </div>
+                </if>
+            </div>
+            
+            <div class="detail-content">
+                <!-- 基本信息 -->
+                <div class="info-section">
+                    <div class="section-title"><i class="fa fa-user"></i> 基本信息</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">QQ号码：</span>
+                            <span class="info-value">{$data.qq}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">添加时间：</span>
+                            <span class="info-value">{$data.addtime}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">到期时间：</span>
+                            <span class="info-value">{$data.endtime}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">账号状态：</span>
+                            <span class="info-value">
+                                <if condition="$data.status eq 1">
+                                    <span style="color: #28a745;">✓ 启用</span>
+                                <else/>
+                                    <span style="color: #dc3545;">✗ 禁用</span>
+                                </if>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">邮件状态：</span>
+                            <span class="info-value">
+                                <if condition="$data.ispush eq 1">
+                                    <span style="color: #28a745;">✓ 已发送</span>
+                                <else/>
+                                    <span style="color: #dc3545;">✗ 未发送</span>
+                                </if>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 使用统计 -->
+                <div class="info-section">
+                    <div class="section-title"><i class="fa fa-bar-chart"></i> 使用统计</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">请求次数：</span>
+                            <span class="info-value">{$data.count}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Clash请求次数：</span>
+                            <span class="info-value">{$data.clashcount}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 订阅地址 -->
+                <div class="info-section">
+                    <div class="section-title"><i class="fa fa-link"></i> 订阅地址</div>
+                    <div class="subscription-urls">
+                        <div class="url-item">
+                            <span class="url-label">手机订阅地址：</span>
+                            <div class="url-value">{$data.mobileshorturl}</div>
+                        </div>
+                        <div class="url-item">
+                            <span class="url-label">Clash订阅地址：</span>
+                            <div class="url-value">{$data.clashshorturl}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 二维码 -->
+                <div class="info-section">
+                    <div class="section-title"><i class="fa fa-qrcode"></i> 订阅二维码</div>
+                    <div class="qrcode-container">
+                        <img src="data:image/png;base64,{$data.qrcodeUrl}" alt="订阅二维码" />
+                        <p style="margin-top: 10px; color: #666;">扫描二维码快速订阅</p>
+                    </div>
+                </div>
+                
+                <!-- 用户账号信息 -->
+                <if condition="isset($data.user_info)">
+                <div class="info-section">
+                    <div class="section-title"><i class="fa fa-user-circle"></i> 账号信息</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">用户名：</span>
+                            <span class="info-value">{$data.user_info.username}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">邮箱：</span>
+                            <span class="info-value">{$data.user_info.email|default='未设置'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">注册时间：</span>
+                            <span class="info-value">{$data.user_info.regtime}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">最后登录：</span>
+                            <span class="info-value">{$data.user_info.lastlogintime}</span>
+                        </div>
+                    </div>
+                </div>
+                </if>
+                
+                <!-- 客户后台功能模块 -->
+                <div class="client-backend-modules">
+                    <div class="section-title"><i class="fa fa-dashboard"></i> 客户后台功能</div>
+                    
+                    <div class="module-grid">
+                        <!-- 订阅管理模块 -->
+                        <div class="module-card">
+                            <div class="module-header">
+                                <i class="fa fa-link"></i> 订阅管理
+                            </div>
+                            <div class="module-content">
+                                <div class="module-item">
+                                    <span class="module-label">手机订阅地址</span>
+                                    <div class="btn-group">
+                                        <button class="copy-btn" onclick="copyToClipboard('{$data.mobileshorturl}')">复制</button>
+                                        <a href="sub://{$data.mobileshorturl|base64_encode}" class="btn-custom btn-primary">一键导入</a>
+                                    </div>
+                                </div>
+                                <div class="module-item">
+                                    <span class="module-label">Clash订阅地址</span>
+                                    <div class="btn-group">
+                                        <button class="copy-btn" onclick="copyToClipboard('{$data.clashshorturl}')">复制</button>
+                                        <a href="clash://install-config?url={$data.clashshorturl|urlencode}" class="btn-custom btn-primary">一键导入</a>
+                                    </div>
+                                </div>
+                                <div class="qr-display">
+                                    <img src="data:image/png;base64,{$data.qrcodeUrl}" alt="订阅二维码" />
+                                    <div style="font-size: 12px; color: #666; margin-top: 5px;">扫码订阅</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 客户端下载模块 -->
+                        <div class="module-card">
+                            <div class="module-header">
+                                <i class="fa fa-download"></i> 客户端下载
+                            </div>
+                            <div class="module-content">
+                                <div class="download-grid">
+                                    <div class="download-item">
+                                        <span class="download-icon">🖥️</span>
+                                        <div style="font-size: 12px; font-weight: bold;">Windows</div>
+                                        <a href="#" class="btn-custom btn-info" style="font-size: 10px; padding: 4px 8px; margin-top: 5px;">下载</a>
+                                    </div>
+                                    <div class="download-item">
+                                        <span class="download-icon">📱</span>
+                                        <div style="font-size: 12px; font-weight: bold;">Android</div>
+                                        <a href="#" class="btn-custom btn-info" style="font-size: 10px; padding: 4px 8px; margin-top: 5px;">下载</a>
+                                    </div>
+                                    <div class="download-item">
+                                        <span class="download-icon">🍎</span>
+                                        <div style="font-size: 12px; font-weight: bold;">Mac</div>
+                                        <a href="#" class="btn-custom btn-info" style="font-size: 10px; padding: 4px 8px; margin-top: 5px;">下载</a>
+                                    </div>
+                                    <div class="download-item">
+                                        <span class="download-icon">📲</span>
+                                        <div style="font-size: 12px; font-weight: bold;">iOS</div>
+                                        <a href="#" class="btn-custom btn-info" style="font-size: 10px; padding: 4px 8px; margin-top: 5px;">下载</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 账号管理模块 -->
+                        <div class="module-card">
+                            <div class="module-header">
+                                <i class="fa fa-user-cog"></i> 账号管理
+                            </div>
+                            <div class="module-content">
+                                <div class="module-item">
+                                    <span class="module-label">重置密码</span>
+                                    <button class="btn-custom btn-warning" onclick="resetUserPassword()">重置</button>
+                                </div>
+                                <div class="module-item">
+                                    <span class="module-label">账号设置</span>
+                                    <button class="btn-custom btn-info" onclick="openAccountSettings()">设置</button>
+                                </div>
+                                <div class="module-item">
+                                    <span class="module-label">登录用户后台</span>
+                                    <a href="{:U('Admin/Dingyue/loginAsUser',array('id'=>$data['id']))}" class="btn-custom btn-success" target="_blank">登录</a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 使用统计模块 -->
+                        <div class="module-card">
+                            <div class="module-header">
+                                <i class="fa fa-chart-bar"></i> 使用统计
+                            </div>
+                            <div class="module-content">
+                                <div class="stats-grid">
+                                    <div class="stat-item">
+                                        <span class="stat-number">{$data.count}</span>
+                                        <span class="stat-label">总请求次数</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-number">{$data.clashcount}</span>
+                                        <span class="stat-label">Clash请求次数</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-number">{$data.remaining_days|default=0}</span>
+                                        <span class="stat-label">剩余天数</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 操作按钮 -->
+                <div class="action-buttons">
+                    <a href="{:U('Admin/Dingyue/list')}" class="btn btn-default btn-custom">
+                        <i class="fa fa-arrow-left"></i> 返回列表
+                    </a>
+                    <a href="{:U('Admin/Dingyue/edit',array('id'=>$data['id']))}" class="btn btn-warning btn-custom">
+                        <i class="fa fa-edit"></i> 修改订阅
+                    </a>
+                    <a href="{:U('Admin/Dingyue/sendmail',array('id'=>$data['id']))}" class="btn btn-info btn-custom">
+                        <i class="fa fa-envelope"></i> 发送邮件
+                    </a>
+                    <a href="{:U('Admin/Dingyue/resetSubscription',array('id'=>$data['id']))}" 
+                       class="btn btn-primary btn-custom" 
+                       onclick="return confirm('确定重置该用户的订阅地址吗？');">
+                        <i class="fa fa-refresh"></i> 重置订阅地址
+                    </a>
+                    <a href="{:U('Admin/Dingyue/loginAsUser',array('id'=>$data['id']))}" 
+                       class="btn btn-success btn-custom" target="_blank">
+                        <i class="fa fa-sign-in"></i> 进入用户后台
+                    </a>
+                    <if condition="isset($data.user_info)">
+                    <a href="{:U('Admin/Users/edit',array('id'=>$data.user_info.id))}" class="btn btn-warning btn-custom">
+                        <i class="fa fa-user-edit"></i> 修改用户信息
+                    </a>
+                    <a href="javascript:void(0);" class="btn btn-secondary btn-custom" onclick="resetPassword()">
+                        <i class="fa fa-key"></i> 重置密码
+                    </a>
+                    <if condition="$data.user_info.status eq 1">
+                        <a href="javascript:void(0);" class="btn btn-warning btn-custom" onclick="toggleUserStatus(0)">
+                            <i class="fa fa-ban"></i> 禁用账号
+                        </a>
+                    <else/>
+                        <a href="javascript:void(0);" class="btn btn-success btn-custom" onclick="toggleUserStatus(1)">
+                            <i class="fa fa-check"></i> 启用账号
+                        </a>
+                    </if>
+                    </if>
+                    <a href="{:U('Admin/Dingyue/del',array('id'=>$data['id']))}" 
+                       class="btn btn-danger btn-custom" 
+                       onclick="return confirm('确定删除该用户的订阅吗？此操作不可恢复！');">
+                        <i class="fa fa-trash"></i> 删除订阅
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    function resetPassword() {
+        if(confirm('确定要重置该用户的密码吗？新密码将发送到用户邮箱。')) {
+            // 这里可以添加重置密码的AJAX请求
+            alert('密码重置功能需要在后端实现');
+        }
+    }
+    
+    function toggleUserStatus(status) {
+        var action = status == 1 ? '启用' : '禁用';
+        if(confirm('确定要' + action + '该用户账号吗？')) {
+            // 这里可以添加切换用户状态的AJAX请求
+            alert('用户状态切换功能需要在后端实现');
+        }
+    }
+    
+    // 通用复制到剪贴板函数
+    function copyToClipboard(text) {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(function() {
+                showToast('复制成功！');
+            }, function(err) {
+                console.error('复制失败: ', err);
+                fallbackCopyTextToClipboard(text);
+            });
+        } else {
+            fallbackCopyTextToClipboard(text);
+        }
+    }
+    
+    function fallbackCopyTextToClipboard(text) {
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.position = "fixed";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        try {
+            var successful = document.execCommand('copy');
+            if (successful) {
+                showToast('复制成功！');
+            } else {
+                showToast('复制失败，请手动复制');
+            }
+        } catch (err) {
+            console.error('复制失败: ', err);
+            showToast('复制失败，请手动复制');
+        }
+        
+        document.body.removeChild(textArea);
+    }
+    
+    // 显示提示框
+    function showToast(message) {
+        // 创建提示框元素
+        var toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            z-index: 9999;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        `;
+        
+        document.body.appendChild(toast);
+        
+        // 3秒后自动移除
+        setTimeout(function() {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 3000);
+    }
+    
+    // 重置用户密码
+    function resetUserPassword() {
+        if (confirm('确定要重置该用户的密码吗？重置后将生成新的随机密码。')) {
+            showToast('密码重置功能需要后端支持');
+        }
+    }
+    
+    // 账号设置
+    function openAccountSettings() {
+        showToast('账号设置功能开发中...');
+    }
+    
+    // 复制订阅地址功能
+    document.addEventListener('click', function(e) {
+        if(e.target.classList.contains('url-value')) {
+            var text = e.target.textContent;
+            copyToClipboard(text);
+        }
+    });
+    </script>
+            </div>
+        </div>
+    </div>
+</block>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>上传</title>
+    <webuploadercss />
+</head>
+
+<body>
+    <form action="{:U('Admin/Dingyue/webuploader')}" method="post">
+        <webuploader name="files" url="{:U('Admin/Dingyue/ajax_upload')}"/>
+        <input type="submit" value="提交"></form>
+    <webuploaderjs />
+</body>
+
+</html>

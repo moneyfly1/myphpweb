@@ -1,0 +1,781 @@
+<extend name="Public:base" />
+<block name="title">配置文件管理</block>
+<block name="content">
+    <!-- 面包屑导航 -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Index/index')}">
+                    <i class="fa fa-home"></i>
+                    首页
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Index/index')}">
+                    后台管理
+                </a>
+            </li>
+            <li class="breadcrumb-item active">
+                配置文件管理
+            </li>
+        </ol>
+    </nav>
+    
+    <!-- 页面导航路径 -->
+    <div class="page-navigation">
+        <a href="{:U('Admin/Index/index')}" class="nav-item">
+            <i class="fa fa-home"></i>
+            首页
+        </a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/Index/index')}" class="nav-item">
+            后台管理
+        </a>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">
+            配置文件管理
+        </div>
+    </div>
+
+    <div class="config-page">
+        <!-- 警告信息 -->
+        <div class="config-alert">
+            <i class="fa fa-exclamation-triangle"></i>
+            <div>
+                <strong>重要提醒：</strong>修改配置文件后请谨慎保存，内容格式错误可能导致服务异常。建议在修改前备份原始配置。
+            </div>
+        </div>
+
+        <form method="post" action="{:U('Admin/ConfigFile/save')}" class="config-form">
+            <!-- 配置文件容器 -->
+            <div class="config-grid">
+                <!-- xr 配置文件 -->
+                <div class="config-item">
+                    <div class="config-header">
+                        <h3><i class="fa fa-file-code-o"></i> xr 配置文件</h3>
+                        <span class="config-path">Upload/true/xr</span>
+                    </div>
+                    <div class="config-body">
+                        <textarea 
+                            name="xr_content" 
+                            id="xr_content"
+                            class="config-textarea" 
+                            placeholder="请输入 xr 配置文件内容..."
+                            rows="15"
+                        >{$xr_content|htmlspecialchars}</textarea>
+                        <div class="config-help">
+                            <i class="fa fa-info-circle"></i>
+                            此文件用于 xr 客户端的配置，请确保格式正确
+                        </div>
+                        <div class="config-actions-individual">
+                            <button type="button" class="config-btn config-btn-primary" id="save-xr-btn">
+                                <i class="fa fa-save"></i>
+                                保存 xr 配置
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- clash.yaml 配置文件 -->
+                <div class="config-item">
+                    <div class="config-header">
+                        <h3><i class="fa fa-file-code-o"></i> clash.yaml 配置文件</h3>
+                        <span class="config-path">Upload/true/clash.yaml</span>
+                    </div>
+                    <div class="config-body">
+                        <textarea 
+                            name="clash_content" 
+                            id="clash_content"
+                            class="config-textarea" 
+                            placeholder="请输入 clash.yaml 配置文件内容..."
+                            rows="15"
+                        >{$clash_content|htmlspecialchars}</textarea>
+                        <div class="config-help">
+                            <i class="fa fa-info-circle"></i>
+                            此文件用于 Clash 客户端的配置，请确保 YAML 格式正确
+                        </div>
+                        <div class="config-actions-individual">
+                            <button type="button" class="config-btn config-btn-primary" id="save-clash-btn">
+                                <i class="fa fa-save"></i>
+                                保存 clash.yaml 配置
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- work 配置文件 -->
+                <div class="config-item">
+                    <div class="config-header">
+                        <h3><i class="fa fa-file-code-o"></i> work 配置文件</h3>
+                        <span class="config-path">Upload/true/work</span>
+                    </div>
+                    <div class="config-body">
+                        <textarea 
+                            name="work_content" 
+                            id="work_content"
+                            class="config-textarea" 
+                            placeholder="请输入 work 配置文件内容..."
+                            rows="15"
+                        >{$work_content|htmlspecialchars}</textarea>
+                        <div class="config-help">
+                            <i class="fa fa-info-circle"></i>
+                            此文件用于 work 客户端的配置，请确保格式正确
+                        </div>
+                        <div class="config-actions-individual">
+                            <button type="button" class="config-btn config-btn-primary" id="save-work-btn">
+                                <i class="fa fa-save"></i>
+                                保存 work 配置
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="config-actions">
+                <button type="submit" class="config-btn config-btn-primary" id="save-btn">
+                    <i class="fa fa-save"></i>
+                    保存配置
+                </button>
+                <button type="reset" class="config-btn config-btn-secondary" id="reset-btn">
+                    <i class="fa fa-undo"></i>
+                    重置内容
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <style>
+        /* 面包屑导航设计 */
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .breadcrumb-item a {
+            color: #1677ff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s ease;
+        }
+        
+        .breadcrumb-item a:hover {
+            color: #0958d9;
+            text-decoration: none;
+        }
+        
+        .breadcrumb-item.active {
+            color: #8c8c8c;
+        }
+        
+        .breadcrumb-item i {
+            font-size: 14px;
+        }
+        
+        .breadcrumb-item:not(:last-child)::after {
+            content: '/';
+            color: #d9d9d9;
+            margin-left: 8px;
+            font-size: 12px;
+        }
+        
+
+        
+        /* 页面导航路径 */
+        .page-navigation {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .page-navigation .nav-item {
+            display: flex;
+            align-items: center;
+            color: #6c757d;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .page-navigation .nav-item:hover {
+            color: #1677ff;
+            text-decoration: none;
+        }
+        
+        .page-navigation .nav-item.active {
+            color: #1677ff;
+            font-weight: 500;
+        }
+        
+        .page-navigation .nav-separator {
+            color: #dee2e6;
+            margin: 0 4px;
+        }
+
+        /* 基础样式重置和页面布局 */
+        .config-page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+            min-height: calc(100vh - 200px);
+        }
+
+        /* 警告信息 */
+        .config-alert {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            color: #856404;
+        }
+
+        .config-alert i {
+            font-size: 18px;
+            color: #ffc107;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        /* 配置文件网格布局 */
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* 配置文件项 */
+        .config-item {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .config-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 配置文件头部 */
+        .config-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 24px;
+        }
+
+        .config-header h3 {
+            margin: 0 0 8px 0;
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .config-path {
+            font-size: 13px;
+            opacity: 0.9;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* 配置文件主体 */
+        .config-body {
+            padding: 24px;
+        }
+
+        /* 配置文本框 */
+        .config-textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            background: #f8f9fa;
+            color: #495057;
+            transition: all 0.3s ease;
+            resize: vertical;
+            outline: none;
+        }
+
+        .config-textarea:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: #ffffff;
+        }
+
+        .config-textarea::placeholder {
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        /* 帮助信息 */
+        .config-help {
+            margin-top: 12px;
+            padding: 12px 16px;
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 6px;
+            color: #1976d2;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 独立操作按钮区域 */
+        .config-actions-individual {
+            margin-top: 16px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-start;
+        }
+
+        .config-actions-individual .config-btn {
+            padding: 8px 16px;
+            font-size: 13px;
+            min-width: 120px;
+        }
+
+        /* 操作按钮区域 */
+        .config-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            padding: 24px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e9ecef;
+        }
+
+        /* 按钮样式 */
+        .config-btn {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 140px;
+            justify-content: center;
+            outline: none;
+        }
+
+        .config-btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .config-btn-primary:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .config-btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+        }
+
+        .config-btn-secondary:hover {
+            background: linear-gradient(135deg, #545b62 0%, #343a40 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(108, 117, 125, 0.4);
+        }
+
+        .config-btn-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+        }
+
+        .config-btn-info:hover {
+            background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(23, 162, 184, 0.4);
+        }
+
+        /* 加载状态 */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .config-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .config-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .config-page {
+                padding: 16px;
+            }
+        }
+
+        /* 响应式处理 */
+        @media (max-width: 768px) {
+            .breadcrumb {
+                display: none !important;
+            }
+            
+            .page-navigation {
+                font-size: 12px;
+                padding: 8px 12px;
+                margin-bottom: 15px;
+            }
+
+            .config-page {
+                padding: 12px;
+            }
+
+            .config-alert {
+                padding: 12px 16px;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .config-header {
+                padding: 16px 20px;
+            }
+
+            .config-header h3 {
+                font-size: 16px;
+            }
+
+            .config-body {
+                padding: 20px;
+            }
+
+            .config-textarea {
+                min-height: 250px;
+                padding: 12px;
+                font-size: 13px;
+            }
+
+            .config-actions {
+                flex-direction: column;
+                gap: 12px;
+                padding: 20px;
+            }
+
+            .config-btn {
+                width: 100%;
+                padding: 14px 20px;
+                font-size: 15px;
+            }
+        }
+    </style>
+
+    <script>
+        // 等待页面加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('页面加载完成，开始绑定事件');
+            
+            // 主保存按钮：改为 Ajax 提交，统一 loading 与错误提示
+            var saveBtn = document.getElementById('save-btn');
+            var configForm = document.querySelector('.config-form');
+            if (saveBtn && configForm) {
+                saveBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (!confirm('确定要保存所有配置文件吗？格式错误可能导致服务异常。')) return;
+                    var originalText = this.innerHTML;
+                    this.innerHTML = '<span class="loading"></span> 保存中...';
+                    this.disabled = true;
+                    var formData = new FormData(configForm);
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', configForm.getAttribute('action') || '{:U("Admin/ConfigFile/save")}', true);
+                    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState !== 4) return;
+                        saveBtn.innerHTML = originalText;
+                        saveBtn.disabled = false;
+                        if (xhr.status === 200) {
+                            try {
+                                var data = JSON.parse(xhr.responseText);
+                                if (data.status === 1) {
+                                    alert(data.info || data.message || '保存成功');
+                                } else {
+                                    var msg = (data.info || data.message || '未知错误');
+                                    alert('保存失败：' + (typeof msg === 'string' ? msg : '未知错误'));
+                                }
+                            } catch (err) {
+                                alert('保存失败：响应格式错误');
+                            }
+                        } else {
+                            alert('请求失败，请重试');
+                        }
+                    };
+                    xhr.send(new URLSearchParams(formData).toString());
+                });
+            }
+            
+            // 重置按钮点击事件
+            var resetBtn = document.getElementById('reset-btn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    if (confirm('确定要重置所有内容吗？这将恢复原始配置。')) {
+                        // 重置表单
+                        document.querySelector('.config-form').reset();
+                    }
+                });
+            }
+
+            // 单独保存 xr 配置
+            var saveXrBtn = document.getElementById('save-xr-btn');
+            if (saveXrBtn) {
+                saveXrBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('xr保存按钮被点击');
+                    
+                    var content = document.getElementById('xr_content').value;
+                    
+                    if (!content.trim()) {
+                        alert('xr 配置文件内容不能为空！');
+                        return;
+                    }
+                    
+                    if (confirm('确定要保存 xr 配置文件吗？')) {
+                        var originalText = this.innerHTML;
+                        
+                        // 显示加载状态
+                        this.innerHTML = '<span class="loading"></span> 保存中...';
+                        this.disabled = true;
+                        
+                        // 发送AJAX请求
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', '{:U("Admin/ConfigFile/saveXr")}', true);
+                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                        
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4) {
+                                // 恢复按钮状态
+                                saveXrBtn.innerHTML = originalText;
+                                saveXrBtn.disabled = false;
+                                
+                                if (xhr.status === 200) {
+                                    try {
+                                        var data = JSON.parse(xhr.responseText);
+                                        console.log('xr保存响应:', data);
+                                        if (data.status == 1) {
+                                            alert('xr 配置文件保存成功！');
+                                        } else {
+                                            alert('保存失败：' + (data.info || '未知错误'));
+                                        }
+                                    } catch (e) {
+                                        console.log('xr保存响应解析失败:', xhr.responseText);
+                                        alert('保存失败：响应格式错误');
+                                    }
+                                } else {
+                                    console.log('xr保存失败:', xhr.status, xhr.responseText);
+                                    alert('请求失败：状态码 ' + xhr.status);
+                                }
+                            }
+                        };
+                        
+                        xhr.send('content=' + encodeURIComponent(content));
+                    }
+                });
+            }
+
+            // 单独保存 clash.yaml 配置
+            var saveClashBtn = document.getElementById('save-clash-btn');
+            if (saveClashBtn) {
+                saveClashBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('clash保存按钮被点击');
+                    
+                    var content = document.getElementById('clash_content').value;
+                    
+                    if (!content.trim()) {
+                        alert('clash.yaml 配置文件内容不能为空！');
+                        return;
+                    }
+                    
+                    if (confirm('确定要保存 clash.yaml 配置文件吗？')) {
+                        var originalText = this.innerHTML;
+                        
+                        // 显示加载状态
+                        this.innerHTML = '<span class="loading"></span> 保存中...';
+                        this.disabled = true;
+                        
+                        // 发送AJAX请求
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', '{:U("Admin/ConfigFile/saveClash")}', true);
+                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                        
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4) {
+                                // 恢复按钮状态
+                                saveClashBtn.innerHTML = originalText;
+                                saveClashBtn.disabled = false;
+                                
+                                if (xhr.status === 200) {
+                                    try {
+                                        var data = JSON.parse(xhr.responseText);
+                                        console.log('clash保存响应:', data);
+                                        if (data.status == 1) {
+                                            alert('clash.yaml 配置文件保存成功！');
+                                        } else {
+                                            alert('保存失败：' + (data.info || '未知错误'));
+                                        }
+                                    } catch (e) {
+                                        console.log('clash保存响应解析失败:', xhr.responseText);
+                                        alert('保存失败：响应格式错误');
+                                    }
+                                } else {
+                                    console.log('clash保存失败:', xhr.status, xhr.responseText);
+                                    alert('请求失败：状态码 ' + xhr.status);
+                                }
+                            }
+                        };
+                        
+                        xhr.send('content=' + encodeURIComponent(content));
+                    }
+                });
+            }
+
+            // 单独保存 work 配置
+            var saveWorkBtn = document.getElementById('save-work-btn');
+            if (saveWorkBtn) {
+                saveWorkBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('work保存按钮被点击');
+                    
+                    var content = document.getElementById('work_content').value;
+                    
+                    if (!content.trim()) {
+                        alert('work 配置文件内容不能为空！');
+                        return;
+                    }
+                    
+                    if (confirm('确定要保存 work 配置文件吗？')) {
+                        var originalText = this.innerHTML;
+                        
+                        // 显示加载状态
+                        this.innerHTML = '<span class="loading"></span> 保存中...';
+                        this.disabled = true;
+                        
+                        // 发送AJAX请求
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', '{:U("Admin/ConfigFile/saveWork")}', true);
+                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                        
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4) {
+                                // 恢复按钮状态
+                                saveWorkBtn.innerHTML = originalText;
+                                saveWorkBtn.disabled = false;
+                                
+                                if (xhr.status === 200) {
+                                    try {
+                                        var data = JSON.parse(xhr.responseText);
+                                        console.log('work保存响应:', data);
+                                        if (data.status == 1) {
+                                            alert('work 配置文件保存成功！');
+                                        } else {
+                                            alert('保存失败：' + (data.info || '未知错误'));
+                                        }
+                                    } catch (e) {
+                                        console.log('work保存响应解析失败:', xhr.responseText);
+                                        alert('保存失败：响应格式错误');
+                                    }
+                                } else {
+                                    console.log('work保存失败:', xhr.status, xhr.responseText);
+                                    alert('请求失败：状态码 ' + xhr.status);
+                                }
+                            }
+                        };
+                        
+                        xhr.send('content=' + encodeURIComponent(content));
+                    }
+                });
+            }
+            
+            // 表单提交前验证
+            var configForm = document.querySelector('.config-form');
+            if (configForm) {
+                configForm.addEventListener('submit', function(e) {
+                    var xrContent = document.querySelector('textarea[name="xr_content"]').value.trim();
+                    var clashContent = document.querySelector('textarea[name="clash_content"]').value.trim();
+                    var workContent = document.querySelector('textarea[name="work_content"]').value.trim();
+                    
+                    if (!xrContent && !clashContent && !workContent) {
+                        alert('请至少填写一个配置文件的内容！');
+                        e.preventDefault();
+                        return false;
+                    }
+                    
+                    return true;
+                });
+            }
+
+            // 文本框自动调整高度
+            var textareas = document.querySelectorAll('.config-textarea');
+            textareas.forEach(function(textarea) {
+                textarea.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
+                });
+            });
+            
+            console.log('所有事件绑定完成');
+        });
+    </script>
+</block>

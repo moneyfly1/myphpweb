@@ -1,0 +1,49 @@
+/**
+ * 页面骨架：.page、.page-header、.page-body、栅格
+ * 依赖：design-tokens.css, base.css
+ */
+.page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-main {
+    flex: 1;
+    padding-top: var(--header-height, 56px);
+}
+
+.page-header {
+    padding: var(--space-4) var(--space-4) var(--space-2);
+    margin-bottom: var(--space-4);
+}
+
+.page-body {
+    padding: 0 var(--space-4) var(--space-8);
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* 简单栅格 */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -var(--space-2);
+    margin-right: -var(--space-2);
+}
+
+.row > * {
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
+}
+
+.col-12 { width: 100%; }
+@media (min-width: 768px) {
+    .col-md-6 { width: 50%; }
+    .col-md-4 { width: 33.333%; }
+}
+
+@media (max-width: 767px) {
+    .page-body { padding-left: var(--space-3); padding-right: var(--space-3); }
+}

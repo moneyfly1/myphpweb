@@ -1,0 +1,549 @@
+<extend name="Public:base"/>
+<block name="title">分配权限</block>
+<block name="content">
+    <style>
+        /* 面包屑导航设计 */
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .breadcrumb-item a {
+            color: #1677ff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s ease;
+        }
+        
+        .breadcrumb-item a:hover {
+            color: #0958d9;
+            text-decoration: none;
+        }
+        
+        .breadcrumb-item.active {
+            color: #8c8c8c;
+        }
+        
+        .breadcrumb-item i {
+            font-size: 14px;
+        }
+        
+        .breadcrumb-item:not(:last-child)::after {
+            content: '/';
+            color: #d9d9d9;
+            margin-left: 8px;
+            font-size: 12px;
+        }
+        
+        /* 选项卡样式 - 并排排列 */
+        .nav-tabs {
+            border-bottom: none;
+            margin-bottom: 20px;
+            background: transparent;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+        
+        .nav-tabs .nav-item {
+            margin-right: 8px;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            color: #595959;
+            padding: 12px 20px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background: #1677ff;
+            color: white;
+            border: none;
+            box-shadow: 0 2px 8px rgba(22, 119, 255, 0.3);
+        }
+        
+        .nav-tabs .nav-link:hover {
+            background: #e6f7ff;
+            color: #1677ff;
+            transform: translateY(-1px);
+        }
+        
+        /* 页面导航路径 */
+        .page-navigation {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .page-navigation .nav-item {
+            display: flex;
+            align-items: center;
+            color: #6c757d;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .page-navigation .nav-item:hover {
+            color: #1677ff;
+            text-decoration: none;
+        }
+        
+        .page-navigation .nav-item.active {
+            color: #1677ff;
+            font-weight: 500;
+        }
+        
+        .page-navigation .nav-separator {
+            color: #dee2e6;
+            margin: 0 4px;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background: #fafafa;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 16px 20px;
+            font-weight: 500;
+        }
+        
+        /* 响应式处理 */
+        @media (max-width: 768px) {
+            .breadcrumb {
+                display: none !important;
+            }
+            
+            .page-navigation {
+                font-size: 12px;
+                padding: 8px 12px;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+    
+    <!-- 面包屑导航 -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Index/index')}">
+                    <i class="fa fa-home"></i>
+                    首页
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Index/index')}">
+                    后台管理
+                </a>
+            </li>
+            <li class="breadcrumb-item active">
+                分配权限
+            </li>
+        </ol>
+    </nav>
+    
+    <!-- 页面导航路径 -->
+    <div class="page-navigation">
+        <a href="{:U('Admin/Index/index')}" class="nav-item">
+            <i class="fa fa-home"></i>
+            首页
+        </a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/Index/index')}" class="nav-item">
+            后台管理
+        </a>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">
+            分配权限
+        </div>
+    </div>
+
+    <div class="page-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-start">
+                    <ul class="nav nav-tabs border-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#home" data-toggle="tab">菜单列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="javascript:;" onclick="add()">添加菜单</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="permission-header">
+                    <h2 class="text-center">为 <span class="group-name">{$group_data['title']}</span> 分配权限</h2>
+                </div>
+                
+                <form action="" method="post" class="permission-form">
+                    <input type="hidden" name="id" value="{$group_data['id']}">
+                    
+                    <div class="permission-content">
+                        <foreach name="rule_data" item="v">
+                            <empty name="v['_data']">
+                                <div class="permission-group">
+                                    <div class="permission-group-header">
+                                        <label class="permission-checkbox">
+                                            <input type="checkbox" name="rule_ids[]" value="{$v['id']}" 
+                                                   <if condition="in_array($v['id'],$group_data['rules'])"> checked="checked"</if> 
+                                                   onclick="checkAll(this)">
+                                            <span class="permission-title">{$v['title']}</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            <else/>
+                                <div class="permission-group">
+                                    <div class="permission-group-header">
+                                        <label class="permission-checkbox">
+                                            <input type="checkbox" name="rule_ids[]" value="{$v['id']}" 
+                                                   <if condition="in_array($v['id'],$group_data['rules'])"> checked="checked"</if> 
+                                                   onclick="checkAll(this)">
+                                            <span class="permission-title">{$v['title']}</span>
+                                        </label>
+                                    </div>
+                                    <div class="permission-children">
+                                        <foreach name="v['_data']" item="n">
+                                            <div class="permission-subgroup">
+                                                <div class="permission-subgroup-header">
+                                                    <label class="permission-checkbox">
+                                                        <input type="checkbox" name="rule_ids[]" value="{$n['id']}" 
+                                                               <if condition="in_array($n['id'],$group_data['rules'])"> checked="checked"</if> 
+                                                               onclick="checkAll(this)">
+                                                        <span class="permission-title">{$n['title']}</span>
+                                                    </label>
+                                                </div>
+                                                <notempty name="n['_data']">
+                                                    <div class="permission-items">
+                                                        <volist name="n['_data']" id="c">
+                                                            <label class="permission-item">
+                                                                <input type="checkbox" name="rule_ids[]" value="{$c['id']}" 
+                                                                       <if condition="in_array($c['id'],$group_data['rules'])"> checked="checked"</if>>
+                                                                <span class="permission-item-title">{$c['title']}</span>
+                                                            </label>
+                                                        </volist>
+                                                    </div>
+                                                </notempty>
+                                            </div>
+                                        </foreach>
+                                    </div>
+                                </div>
+                            </empty>
+                        </foreach>
+                    </div>
+                    
+                    <div class="permission-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-save"></i>
+                            提交权限设置
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* 页面样式 */
+        .page-header {
+            margin-bottom: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .breadcrumb {
+            background: transparent;
+            padding: 0.75rem 1rem;
+            margin: 0;
+            border-radius: 0.5rem;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .breadcrumb li {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .breadcrumb li a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+        }
+
+        .breadcrumb li.active {
+            color: #fff;
+        }
+
+        .page-content {
+            padding: 0 1rem;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* 导航标签样式 */
+        .nav-tabs {
+            display: flex;
+            background: transparent;
+            border-bottom: none;
+            margin-bottom: 0;
+            border-radius: 0;
+            overflow: hidden;
+        }
+
+        .nav-tabs li {
+            margin: 0;
+        }
+
+        .nav-tabs li a {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.8);
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tabs li.active a {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border-bottom-color: #fff;
+        }
+
+        .nav-tabs li a:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* 权限设置样式 */
+        .permission-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .permission-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #495057;
+            margin: 0;
+        }
+
+        .group-name {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .permission-content {
+            margin-bottom: 2rem;
+        }
+
+        .permission-group {
+            margin-bottom: 1.5rem;
+            border: 1px solid #e9ecef;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        .permission-group-header {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .permission-subgroup {
+            margin-bottom: 1rem;
+            border-left: 3px solid #667eea;
+            background: #fff;
+        }
+
+        .permission-subgroup-header {
+            background: #f8f9fa;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .permission-children {
+            padding: 1rem;
+        }
+
+        .permission-items {
+            padding: 0.75rem 1rem;
+            background: #f8f9fa;
+            border-radius: 0.25rem;
+            margin-top: 0.5rem;
+        }
+
+        .permission-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .permission-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .permission-title {
+            font-weight: 600;
+        }
+
+        .permission-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.25rem 1rem 0.25rem 0;
+            font-size: 13px;
+            color: #6c757d;
+            cursor: pointer;
+        }
+
+        .permission-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .permission-item-title {
+            font-weight: 500;
+        }
+
+        .permission-actions {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .page-content {
+                padding: 0 0.5rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .nav-tabs li a {
+                padding: 0.5rem 1rem;
+                font-size: 13px;
+            }
+
+            .permission-header h2 {
+                font-size: 1.25rem;
+            }
+
+            .permission-group-header,
+            .permission-subgroup-header {
+                padding: 0.75rem 1rem;
+            }
+
+            .permission-children {
+                padding: 0.75rem;
+            }
+
+            .permission-items {
+                padding: 0.5rem 0.75rem;
+            }
+
+            .permission-checkbox {
+                font-size: 13px;
+            }
+
+            .permission-item {
+                font-size: 12px;
+                margin: 0.25rem 0.5rem 0.25rem 0;
+            }
+        }
+    </style>
+
+    <script>
+        function checkAll(obj){
+            $(obj).parents('.permission-group').eq(0).find("input[type='checkbox']").prop('checked', $(obj).prop('checked'));
+        }
+    </script>
+</block>

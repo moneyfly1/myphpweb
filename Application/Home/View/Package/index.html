@@ -1,0 +1,248 @@
+<extend name="Public:layout" />
+<block name="title">套餐购买 - 订阅服务</block>
+<block name="head">
+    <script src="/Public/statics/js/wechat-detect.js"></script>
+    <style>
+        .page-home { background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-active) 100%); }
+        .page-main { padding-top: var(--header-height); }
+        .site-footer { border-top: none; color: rgba(255,255,255,.6); }
+        .site-footer a { color: rgba(255,255,255,.6); }
+
+        .pkg-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .pkg-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .pkg-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .pkg-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .current-subscription {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .subscription-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            text-align: center;
+        }
+
+        .info-item {
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-active));
+            color: white;
+            border-radius: 10px;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .package-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .package-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .package-card.recommended {
+            border: 3px solid var(--color-warning);
+            transform: scale(1.05);
+        }
+
+        .package-card.recommended::before {
+            content: "推荐";
+            position: absolute;
+            top: 1rem;
+            right: -2rem;
+            background: var(--color-warning);
+            color: white;
+            padding: 0.5rem 3rem;
+            transform: rotate(45deg);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .package-header { text-align: center; margin-bottom: 2rem; }
+        .package-name { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--color-text); }
+        .package-description { color: #666; font-size: 0.95rem; }
+        .package-price { text-align: center; margin: 2rem 0; }
+        .price-amount { font-size: 3rem; font-weight: 700; color: var(--color-primary); }
+        .price-currency { font-size: 1.2rem; vertical-align: top; }
+        .price-period { color: #666; font-size: 0.9rem; margin-top: 0.5rem; }
+        .package-features { margin: 2rem 0; }
+        .feature-item { display: flex; align-items: center; margin-bottom: 1rem; font-size: 0.95rem; }
+        .feature-icon {
+            width: 20px; height: 20px;
+            background: var(--color-success);
+            border-radius: 50%;
+            margin-right: 1rem;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 0.8rem;
+        }
+
+        .buy-btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-active));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .buy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: white;
+            text-decoration: none;
+        }
+
+        .navigation { text-align: center; margin-top: 2rem; }
+        .pkg-nav-btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .pkg-nav-btn:hover { background: rgba(255,255,255,0.3); color: white; text-decoration: none; }
+
+        @media (max-width: 768px) {
+            .pkg-container { padding: 1rem; }
+            .pkg-header h1 { font-size: 2rem; }
+            .packages-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+            .package-card.recommended { transform: none; }
+            .subscription-info { grid-template-columns: 1fr; }
+        }
+    </style>
+</block>
+<block name="content">
+    <div class="pkg-container">
+        <div class="pkg-header">
+            <h1>选择您的套餐</h1>
+            <p>选择最适合您的订阅套餐，享受高速稳定的网络服务</p>
+        </div>
+
+        <div class="current-subscription">
+            <h3 style="margin-bottom: 1.5rem; text-align: center; color: var(--color-text);">当前订阅状态</h3>
+            <div class="subscription-info">
+                <div class="info-item">
+                    <div class="info-label">用户账号</div>
+                    <div class="info-value">{$user.username}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">订阅状态</div>
+                    <div class="info-value">
+                        <if condition="$subscription.endtime gt time()">有效<else/>已过期</if>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">到期时间</div>
+                    <div class="info-value">
+                        <if condition="$subscription.endtime gt 0">{$subscription.endtime|date="Y-m-d H:i:s",###}<else/>未激活</if>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">剩余天数</div>
+                    <div class="info-value">
+                        <if condition="$subscription.endtime gt time()">{$subscription.endtime-time()|floor=###/86400} 天<else/>0 天</if>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="packages-grid">
+            <volist name="packages" id="package">
+                <div class="package-card <if condition='$package.recommended eq 1'>recommended</if>">
+                    <div class="package-header">
+                        <div class="package-name">{$package.name}</div>
+                        <div class="package-description">{$package.description}</div>
+                    </div>
+
+                    <div class="package-price">
+                        <div class="price-amount">
+                            <span class="price-currency">¥</span>{$package.price}
+                        </div>
+                        <div class="price-period">{$package.duration} 天有效期</div>
+                    </div>
+
+                    <div class="package-features">
+                        <volist name="package.features" id="feature">
+                            <div class="feature-item">
+                                <div class="feature-icon">✓</div>
+                                <span>{$feature}</span>
+                            </div>
+                        </volist>
+                    </div>
+
+                    <a href="/Package/buy/id/{$package.id}" class="buy-btn">立即购买</a>
+                </div>
+            </volist>
+        </div>
+
+        <div class="navigation">
+            <a href="/" class="pkg-nav-btn">返回首页</a>
+            <a href="/Package/orders" class="pkg-nav-btn">我的订单</a>
+        </div>
+    </div>
+</block>
+<block name="footer">
+    <script>
+        $(document).ready(function() {
+            $('.package-card').hover(
+                function() { $(this).find('.buy-btn').css('transform', 'scale(1.05)'); },
+                function() { $(this).find('.buy-btn').css('transform', 'scale(1)'); }
+            );
+        });
+    </script>
+</block>

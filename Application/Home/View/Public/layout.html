@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <title><block name="title">首页</block></title>
+    <link rel="stylesheet" href="/Public/design-tokens.css">
+    <link rel="stylesheet" href="/Public/css/base.css">
+    <link rel="stylesheet" href="/Public/css/layout.css">
+    <link rel="stylesheet" href="/Public/css/components.css">
+    <link rel="stylesheet" href="/Public/css/home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <block name="head"></block>
+</head>
+<body class="page page-home">
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="/" class="logo">订阅服务</a>
+            <nav class="nav-desktop">
+                <a href="/">首页</a>
+                <a href="/Node">节点</a>
+                <a href="/tc">套餐订阅</a>
+                <a href="/Help">帮助</a>
+                <if condition="session('users')">
+                <div class="user-menu">
+                    <div class="user-menu-btn" id="userMenuBtn">
+                        <span>{$_SESSION['users']['username']}</span>
+                        <i class="fas fa-caret-down"></i>
+                    </div>
+                    <div class="dropdown-menu" id="userMenu">
+                        <a href="/resetpass"><i class="fas fa-key"></i> 重置密码</a>
+                        <a href="/outlogin"><i class="fas fa-sign-out-alt"></i> 退出账户</a>
+                    </div>
+                </div>
+                <else />
+                <a href="/login">登录</a>
+                <a href="/reg">注册</a>
+                </if>
+            </nav>
+            <button class="nav-toggle" id="nav-toggle" type="button" aria-label="菜单">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <nav class="nav-mobile" id="nav-mobile">
+            <a href="/">首页</a>
+            <a href="/Node">节点</a>
+            <a href="/tc">套餐订阅</a>
+            <a href="/Help">帮助</a>
+            <if condition="session('users')">
+            <a href="/resetpass"><i class="fas fa-key"></i> 重置密码</a>
+            <a href="/outlogin"><i class="fas fa-sign-out-alt"></i> 退出账户</a>
+            <else />
+            <a href="/login">登录</a>
+            <a href="/reg">注册</a>
+            </if>
+        </nav>
+    </header>
+    <main class="page-main">
+        <block name="content"></block>
+    </main>
+    <footer class="site-footer">
+        <p>&copy; 订阅服务 · 请勿传播订阅链接</p>
+    </footer>
+    <script src="/Public/statics/js/jquery-3.6.0.min.js"></script>
+    <script src="/Public/js/app.js"></script>
+    <block name="footer"></block>
+</body>
+</html>

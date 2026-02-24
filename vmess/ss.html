@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SS链接转换工具(全加密支持)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            font-family: monospace;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result-container {
+            margin-top: 20px;
+        }
+        .result-box {
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        pre {
+            white-space: pre-wrap;
+            font-family: monospace;
+            overflow-x: auto;
+            margin: 0;
+        }
+        .copy-btn {
+            background-color: #2196F3;
+        }
+        .copy-btn:hover {
+            background-color: #0b7dda;
+        }
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            border-radius: 4px 4px 0 0;
+            margin-top: 20px;
+        }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            color: black;
+            margin-right: 0;
+            border-radius: 0;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+        }
+        .container {
+            margin-bottom: 20px;
+        }
+        .info-box {
+            background-color: #e7f3fe;
+            border-left: 6px solid #2196F3;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>SS链接转换工具(全加密支持)</h1>
+    
+    <div class="info-box">
+        <p><strong>支持加密方式：</strong> aes-256-gcm, aes-128-gcm, chacha20-ietf-poly1305, chacha20-poly1305, rc4-md5 等所有标准SS加密方式</p>
+    </div>
+    
+    <div class="container">
+        <h2>输入SS链接</h2>
+        <p>每行输入一个SS链接（支持带标签的链接）：</p>
+        <textarea id="ssLinks" placeholder="例如：
+ss://Y2hhY2hhMjAtaWV0Zi1wb2x5MTMwNTpkdGpkZnRhbHJkbA%3D%3D@asia.vpn52.xyz:50939#S1%7C%2B%E9%A6%99%E6%B8%AF%2B01
+ss://YWVzLTEyOC1nY206NDg0ZjQ0ZDktMTlmMi00ZThlLWE1YzAtYTFiNDgzYWY3N2U3@wy.xnh98d9c32om.com:24551#%F0%9F%87%AD%F0%9F%87%B0%20IPLC%7C%E9%A6%99%E6%B8%AF01"></textarea>
+        <button id="convertBtn">转换所有</button>
+    </div>
+    
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'outbounds')" id="defaultOpen">Outbounds 配置</button>
+        <button class="tablinks" onclick="openTab(event, 'rules')">Rules 配置</button>
+    </div>
+    
+    <div id="outbounds" class="tabcontent">
+        <div class="result-box">
+            <pre id="outboundsResult">等待转换...</pre>
+        </div>
+        <button class="copy-btn" onclick="copyToClipboard('outboundsResult')">复制Outbounds</button>
+    </div>
+    
+    <div id="rules" class="tabcontent">
+        <div class="result-box">
+            <pre id="rulesResult">等待转换...</pre>
+        </div>
+        <button class="copy-btn" onclick="copyToClipboard('rulesResult')">复制Rules</button>
+    </div>
+
+    <script>
+        document.getElementById('convertBtn').addEventListener('click', convertAll);
+        
+        // 添加tab切换函数
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        // 页面加载时打开默认标签页
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById("defaultOpen").click();
+        });
+
+        function convertAll() {
+            const ssLinks = document.getElementById('ssLinks').value.trim();
+            const lines = ssLinks.split('\n');
+            const outbounds = [];
+            const rules = {
+                "domainStrategy": "IPOnDemand",
+                "rules": []
+            };
+
+            // 添加基础配置
+            outbounds.push({
+                "tag": "IPv4_out",
+                "protocol": "freedom",
+                "settings": {}
+            });
+
+            outbounds.push({
+                "protocol": "blackhole",
+                "tag": "block"
+            });
+
+            // 用于追踪每个国家代码的计数
+            const countryCount = {};
+
+            let successCount = 0;
+            let errorCount = 0;
+            const errorMessages = [];
+
+            lines.forEach((line, index) => {
+                line = line.trim();
+                if (!line) return;
+
+                try {
+                    const decoded = decodeSSLink(line);
+                    let countryCode = getCountryCodeFromTag(decoded.tag);
+
+                    // 如果 countryCode 为 'new'，则使用 'new' 加上一个唯一的数字
+                    if (countryCode === 'new') {
+                        countryCode = 'new' + index; // 或者使用其他唯一标识符
+                    }
+
+                    countryCount[countryCode] = (countryCount[countryCode] || 0) + 1;
+                    const count = countryCount[countryCode];
+                    const tag = `${countryCode}${count}`;
+                    decoded.tag = tag;
+
+                    const port = 32001 + index;
+
+                    // 添加到outbounds
+                    outbounds.push(decoded);
+
+                    // 添加到rules，使用正确的格式
+                    rules.rules.push({
+                        "type": "field",
+                        "inboundTag": [`Shadowsocks_0.0.0.0_${port}`],
+                        "outboundTag": tag
+                    });
+
+                    successCount++;
+                } catch (e) {
+                    errorCount++;
+                    errorMessages.push(`第 ${index + 1} 行解析失败: ${e.message}`);
+                    console.error("解析失败:", line, e);
+                }
+            });
+
+            // 按特定顺序排序rules
+            const countryOrder = ['hk', 'tw', 'jp', 'sg', 'kr', 'us', 'my', 'ua']; // 可以根据需要添加更多国家代码
+            rules.rules.sort((a, b) => {
+                const tagA = a.outboundTag;
+                const tagB = b.outboundTag;
+                const codeA = tagA.replace(/\d+$/, '');
+                const codeB = tagB.replace(/\d+$/, '');
+
+                const indexA = countryOrder.indexOf(codeA);
+                const indexB = countryOrder.indexOf(codeB);
+
+                if (indexA === indexB) {
+                    // 如果国家代码相同，按数字排序
+                    const numA = parseInt(tagA.match(/\d+$/)[0]);
+                    const numB = parseInt(tagB.match(/\d+$/)[0]);
+                    return numA - numB;
+                }
+
+                if (indexA === -1) return 1;
+                if (indexB === -1) return -1;
+                return indexA - indexB;
+            });
+
+            // 显示结果
+            document.getElementById('outboundsResult').textContent = JSON.stringify(outbounds, null, 2);
+            document.getElementById('rulesResult').textContent = JSON.stringify(rules, null, 2);
+
+            // 显示转换统计
+            if (errorCount > 0) {
+                alert(`转换完成！\n成功: ${successCount} 个\n失败: ${errorCount} 个\n\n错误详情:\n${errorMessages.join('\n')}`);
+            } else {
+                alert(`转换完成！共成功转换 ${successCount} 个SS链接`);
+            }
+        }
+
+        function decodeSSLink(ssLink) {
+            // 提取标签（#后面的部分）
+            let tag = "";
+            const hashIndex = ssLink.indexOf('#');
+            if (hashIndex > -1) {
+                tag = decodeURIComponent(ssLink.substring(hashIndex + 1));
+                ssLink = ssLink.substring(0, hashIndex);
+            }
+            
+            // 去掉ss://前缀
+            if (ssLink.startsWith('ss://')) {
+                ssLink = ssLink.substring(5);
+            }
+            
+            // 处理可能的URI编码
+            ssLink = decodeURIComponent(ssLink);
+            
+            // 分离认证部分和服务器信息
+            const atIndex = ssLink.indexOf('@');
+            if (atIndex === -1) {
+                throw new Error("无效的SS链接格式 - 缺少@符号");
+            }
+            
+            const authPart = ssLink.substring(0, atIndex);
+            const serverPart = ssLink.substring(atIndex + 1);
+            
+            // 解析服务器地址和端口
+            const colonIndex = serverPart.lastIndexOf(':');
+            if (colonIndex === -1) {
+                throw new Error("无效的SS链接格式 - 缺少端口号");
+            }
+            
+            const address = serverPart.substring(0, colonIndex);
+            const port = parseInt(serverPart.substring(colonIndex + 1));
+            if (isNaN(port)) {
+                throw new Error("无效的端口号");
+            }
+            
+            // 解析认证信息（base64解码）
+            let method, password;
+            try {
+                // 处理base64url编码
+                const base64 = authPart.replace(/-/g, '+').replace(/_/g, '/');
+                // 添加必要的padding
+                const padded = base64.padEnd(base64.length + (4 - base64.length % 4) % 4, '=');
+                const authStr = atob(padded);
+                
+                const colonPos = authStr.indexOf(':');
+                if (colonPos === -1) {
+                    throw new Error("认证信息格式错误 - 缺少冒号分隔符");
+                }
+                method = authStr.substring(0, colonPos);
+                password = authStr.substring(colonPos + 1);
+                
+                // 验证加密方法
+                const validMethods = [
+                    'aes-256-gcm', 'aes-128-gcm', 'chacha20-ietf-poly1305',
+                    'chacha20-poly1305', 'rc4-md5', 'xchacha20-poly1305',
+                    'bf-cfb', 'camellia-128-cfb', 'camellia-256-cfb',
+                    'salsa20', 'aes-128-cfb', 'aes-192-cfb', 'aes-256-cfb'
+                ];
+                
+                if (!validMethods.includes(method.toLowerCase())) {
+                    console.warn(`警告: 不常见的加密方法 '${method}'`);
+                }
+            } catch (e) {
+                throw new Error(`认证信息解码失败: ${e.message}`);
+            }
+            
+            // 构建JSON对象
+            return {
+                "tag": tag || `SS节点@${address}:${port}`,
+                "protocol": "shadowsocks",
+                "settings": {
+                    "servers": [{
+                        "address": address,
+                        "port": port,
+                        "method": method,
+                        "password": password
+                    }]
+                }
+            };
+        }
+        
+        function getCountryCodeFromTag(tag) {
+            // 国家/地区代码映射
+            const countryMapping = {
+                // 亚洲
+                '香港': 'hk', 'HK': 'hk', 'Hong Kong': 'hk',
+                '台湾': 'tw', 'TW': 'tw', 'Taiwan': 'tw',
+                '日本': 'jp', 'JP': 'jp', 'Japan': 'jp',
+                '新加坡': 'sg', 'SG': 'sg', 'Singapore': 'sg',
+                '韩国': 'kr', 'KR': 'kr', 'Korea': 'kr',
+                '印度': 'in', 'IN': 'in', 'India': 'in',
+                '马来西亚': 'my', 'MY': 'my', 'Malaysia': 'my',
+                '泰国': 'th', 'TH': 'th', 'Thailand': 'th',
+                '越南': 'vn', 'VN': 'vn', 'Vietnam': 'vn',
+                '菲律宾': 'ph', 'PH': 'ph', 'Philippines': 'ph',
+                '印尼': 'id', 'ID': 'id', 'Indonesia': 'id',
+                '巴基斯坦': 'pk', 'PK': 'pk', 'Pakistan': 'pk',
+                '阿联酋': 'ae', 'AE': 'ae', 'UAE': 'ae',
+                '以色列': 'il', 'IL': 'il', 'Israel': 'il',
+                '伊朗': 'ir', 'IR': 'ir', 'Iran': 'ir',
+                '沙特': 'sa', 'SA': 'sa', 'Saudi': 'sa',
+                '土耳其': 'tr', 'TR': 'tr', 'Turkey': 'tr',
+
+                // 欧洲
+                '英国': 'uk', 'UK': 'uk', 'United Kingdom': 'uk',
+                '德国': 'de', 'DE': 'de', 'Germany': 'de',
+                '法国': 'fr', 'FR': 'fr', 'France': 'fr',
+                '意大利': 'it', 'IT': 'it', 'Italy': 'it',
+                '西班牙': 'es', 'ES': 'es', 'Spain': 'es',
+                '葡萄牙': 'pt', 'PT': 'pt', 'Portugal': 'pt',
+                '俄罗斯': 'ru', 'RU': 'ru', 'Russia': 'ru',
+                '荷兰': 'nl', 'NL': 'nl', 'Netherlands': 'nl',
+                '瑞典': 'se', 'SE': 'se', 'Sweden': 'se',
+                '挪威': 'no', 'NO': 'no', 'Norway': 'no',
+                '芬兰': 'fi', 'FI': 'fi', 'Finland': 'fi',
+                '丹麦': 'dk', 'DK': 'dk', 'Denmark': 'dk',
+                '瑞士': 'ch', 'CH': 'ch', 'Switzerland': 'ch',
+                '奥地利': 'at', 'AT': 'at', 'Austria': 'at',
+                '波兰': 'pl', 'PL': 'pl', 'Poland': 'pl',
+                '乌克兰': 'ua', 'UA': 'ua', 'Ukraine': 'ua',
+                '希腊': 'gr', 'GR': 'gr', 'Greece': 'gr',
+                '捷克': 'cz', 'CZ': 'cz', 'Czech': 'cz',
+                '爱尔兰': 'ie', 'IE': 'ie', 'Ireland': 'ie',
+
+                // 北美洲
+                '美国': 'us', 'US': 'us', 'USA': 'us', 'United States': 'us',
+                '加拿大': 'ca', 'CA': 'ca', 'Canada': 'ca',
+                '墨西哥': 'mx', 'MX': 'mx', 'Mexico': 'mx',
+
+                // 南美洲
+                '巴西': 'br', 'BR': 'br', 'Brazil': 'br',
+                '阿根廷': 'ar', 'AR': 'ar', 'Argentina': 'ar',
+                '智利': 'cl', 'CL': 'cl', 'Chile': 'cl',
+                '哥伦比亚': 'co', 'CO': 'co', 'Colombia': 'co',
+                '秘鲁': 'pe', 'PE': 'pe', 'Peru': 'pe',
+
+                // 大洋洲
+                '澳大利亚': 'au', 'AU': 'au', 'Australia': 'au',
+                '新西兰': 'nz', 'NZ': 'nz', 'New Zealand': 'nz',
+
+                // 非洲
+                '南非': 'za', 'ZA': 'za', 'South Africa': 'za',
+                '埃及': 'eg', 'EG': 'eg', 'Egypt': 'eg',
+                '尼日利亚': 'ng', 'NG': 'ng', 'Nigeria': 'ng',
+                '肯尼亚': 'ke', 'KE': 'ke', 'Kenya': 'ke',
+                '摩洛哥': 'ma', 'MA': 'ma', 'Morocco': 'ma',
+
+                // 特殊地区
+                '澳门': 'mo', 'MO': 'mo', 'Macao': 'mo',
+                '内地': 'cn', 'CN': 'cn', 'China': 'cn',
+                '中国': 'cn', '大陆': 'cn', 'Mainland': 'cn'
+            };
+            
+            // 尝试匹配标签中的国家/地区关键词
+            for (const [keyword, code] of Object.entries(countryMapping)) {
+                if (tag.toLowerCase().includes(keyword.toLowerCase())) {
+                    return code;
+                }
+            }
+            
+            return 'new';  // 如果没有匹配到任何国家/地区，返回new
+        }
+        
+        function copyToClipboard(elementId) {
+            const result = document.getElementById(elementId);
+            const range = document.createRange();
+            range.selectNode(result);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(range);
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    alert("已复制到剪贴板！");
+                } else {
+                    alert("复制失败，请手动选择文本后复制");
+                }
+            } catch (err) {
+                alert("复制失败，请手动选择文本后复制");
+            }
+            
+            window.getSelection().removeAllRanges();
+        }
+    </script>
+</body>
+</html>

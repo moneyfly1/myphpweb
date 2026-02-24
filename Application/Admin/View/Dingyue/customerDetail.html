@@ -1,0 +1,872 @@
+<extend name="Public:base" />
+<block name="title">客户详情 - {$data.qq}</block>
+<block name="content">
+    <style>
+        /* 面包屑导航设计 */
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .breadcrumb-item a {
+            color: #1677ff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s ease;
+        }
+        
+        .breadcrumb-item a:hover {
+            color: #0958d9;
+            text-decoration: none;
+        }
+        
+        .breadcrumb-item.active {
+            color: #8c8c8c;
+        }
+        
+        .breadcrumb-item i {
+            font-size: 14px;
+        }
+        
+        .breadcrumb-item:not(:last-child)::after {
+            content: '/';
+            color: #d9d9d9;
+            margin-left: 8px;
+            font-size: 12px;
+        }
+        
+        /* 选项卡样式 - 并排排列 */
+        .nav-tabs {
+            border-bottom: none;
+            margin-bottom: 20px;
+            background: transparent;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+        
+        .nav-tabs .nav-item {
+            margin-right: 8px;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            color: #595959;
+            padding: 12px 20px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background: #1677ff;
+            color: white;
+            border: none;
+            box-shadow: 0 2px 8px rgba(22, 119, 255, 0.3);
+        }
+        
+        .nav-tabs .nav-link:hover {
+            background: #e6f7ff;
+            color: #1677ff;
+            transform: translateY(-1px);
+        }
+        
+        /* 页面导航路径 */
+        .page-navigation {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        
+        .page-navigation .nav-item {
+            display: flex;
+            align-items: center;
+            color: #6c757d;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .page-navigation .nav-item:hover {
+            color: #1677ff;
+            text-decoration: none;
+        }
+        
+        .page-navigation .nav-item.active {
+            color: #1677ff;
+            font-weight: 500;
+        }
+        
+        .page-navigation .nav-separator {
+            color: #dee2e6;
+            margin: 0 4px;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background: #fafafa;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 16px 20px;
+            font-weight: 500;
+        }
+        
+        /* 响应式处理 */
+        @media (max-width: 768px) {
+            .breadcrumb {
+                display: none !important;
+            }
+            
+            .page-navigation {
+                font-size: 12px;
+                padding: 8px 12px;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+    
+    <!-- 面包屑导航 -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Index/index')}">
+                    <i class="fa fa-home"></i>
+                    首页
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Index/index')}">
+                    后台管理
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Dingyue/list')}">
+                    订阅列表
+                </a>
+            </li>
+            <li class="breadcrumb-item active">
+                客户详情
+            </li>
+        </ol>
+    </nav>
+    
+    <!-- 页面导航路径 -->
+    <div class="page-navigation">
+        <a href="{:U('Admin/Index/index')}" class="nav-item">
+            <i class="fa fa-home"></i>
+            首页
+        </a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/Index/index')}" class="nav-item">
+            后台管理
+        </a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/Dingyue/list')}" class="nav-item">
+            订阅管理
+        </a>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">
+            客户详情
+        </div>
+    </div>
+    
+    <div class="page-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-start">
+                    <ul class="nav nav-tabs border-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{:U('Admin/Dingyue/list')}">订阅列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{:U('Admin/Dingyue/add')}">添加订阅</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+                <style>
+                    .user-detail-container {
+                        background: #fff;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                        margin: 20px auto;
+                        max-width: 1200px;
+                        overflow: hidden;
+                    }
+                    
+                    .detail-header {
+                        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+                        color: white;
+                        padding: 30px;
+                        text-align: center;
+                        position: relative;
+                    }
+                    
+                    .detail-header h2 {
+                        margin: 0;
+                        font-size: 28px;
+                        font-weight: 600;
+                        position: relative;
+                        z-index: 1;
+                    }
+                    
+                    .detail-header .status-badge {
+                        display: inline-block;
+                        padding: 8px 16px;
+                        border-radius: 25px;
+                        font-size: 14px;
+                        margin-top: 10px;
+                        background: rgba(255,255,255,0.15);
+                        backdrop-filter: blur(10px);
+                        border: 1px solid rgba(255,255,255,0.2);
+                        position: relative;
+                        z-index: 1;
+                    }
+        
+        .detail-content {
+            padding: 40px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .info-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 25px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .info-card h3 {
+            margin: 0 0 20px 0;
+            color: #333;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-card h3::before {
+            content: '📋';
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #333;
+            min-width: 100px;
+            font-size: 16px;
+        }
+        
+        .info-value {
+            color: #6c757d;
+            text-align: right;
+            flex: 1;
+            font-size: 16px;
+        }
+        
+        .subscription-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .subscription-section h3 {
+            margin: 0 0 25px 0;
+            color: #333;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .subscription-section h3::before {
+            content: '🔗';
+            margin-right: 10px;
+            font-size: 22px;
+        }
+        
+        .url-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .url-item {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .url-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .url-label::before {
+            content: '📱';
+            margin-right: 8px;
+        }
+        
+        .url-item:nth-child(2) .url-label::before {
+            content: '⚔️';
+        }
+        
+        .url-value {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            word-break: break-all;
+            color: #495057;
+            margin-bottom: 10px;
+        }
+        
+        .copy-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            margin-right: 8px;
+        }
+        
+        .copy-btn:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+        
+        .copy-link {
+            cursor: pointer;
+            color: #42a5f5;
+            text-decoration: underline;
+            word-break: break-all;
+        }
+        
+        .copy-link:active {
+            color: #1976d2;
+        }
+        
+        .qrcode-container {
+            text-align: center;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .qrcode-container h4 {
+            margin: 0 0 15px 0;
+            color: #495057;
+            font-size: 16px;
+        }
+        
+        .qrcode-container img {
+            max-width: 200px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+            padding: 0 10px;
+        }
+        
+        .btn-custom {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            min-width: 120px;
+            height: 44px;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            text-decoration: none;
+        }
+        
+        /* 统一按钮颜色 - 所有按钮使用相同的灰色背景和白色文字 */
+        .btn-default,
+        .btn-warning,
+        .btn-success,
+        .btn-primary,
+        .btn-info {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-default:hover,
+        .btn-warning:hover,
+        .btn-success:hover,
+        .btn-primary:hover,
+        .btn-info:hover {
+            background: #5a6268;
+            color: white;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* 图片预览模态框样式 */
+        .qrcode-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .qrcode-modal img {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+            background-color: white;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        
+        @media (max-width: 768px) {
+            .detail-content {
+                padding: 20px;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .url-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .actions {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .btn-custom {
+                min-width: 200px;
+                height: 48px;
+                font-size: 15px;
+                padding: 12px 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .detail-header {
+                padding: 20px;
+            }
+            
+            .detail-header h2 {
+                font-size: 22px;
+            }
+            
+            .btn-custom {
+                min-width: 180px;
+                height: 46px;
+                font-size: 14px;
+                padding: 10px 14px;
+            }
+            
+            .actions {
+                gap: 8px;
+            }
+        }
+        
+        /* 手机端导航标签样式优化 */
+        @media (max-width: 768px) {
+            .nav-tabs {
+                display: flex;
+                background: #fff;
+                border-bottom: 2px solid #e9ecef;
+                margin-bottom: 20px;
+                border-radius: 8px 8px 0 0;
+                overflow: hidden;
+            }
+            
+            .nav-tabs li {
+                flex: 1;
+                margin: 0;
+            }
+            
+            .nav-tabs li a {
+                display: block;
+                padding: 15px 10px;
+                text-align: center;
+                font-size: 16px;
+                font-weight: 500;
+                color: #666;
+                background: #f8f9fa;
+                border: none;
+                border-radius: 0;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                border-bottom: 3px solid transparent;
+            }
+            
+            .nav-tabs li.active a {
+                background: #42a5f5;
+                color: #fff;
+                border-bottom-color: #1976d2;
+            }
+            
+            .nav-tabs li a:hover {
+                background: #e3f2fd;
+                color: #1976d2;
+            }
+        }
+    </style>
+    
+    <div class="user-detail-container">
+        <div class="detail-header">
+            <h2>客户详情 - {$data.qq}</h2>
+            <span class="status-badge">
+                账号状态：{$data.status_text} | 邮件状态：{$data.ispush_text}
+            </span>
+        </div>
+        
+        <div class="detail-content">
+            <div class="info-grid">
+                <!-- 基本信息 -->
+                <div class="info-card">
+                    <h3>基本信息</h3>
+                    <div class="info-item">
+                        <span class="info-label">QQ号码:</span>
+                        <span class="info-value">{$data.qq}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">添加时间:</span>
+                        <span class="info-value">{$data.addtime}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">到期时间:</span>
+                        <span class="info-value">{$data.endtime}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">剩余天数:</span>
+                        <span class="info-value">{$data.remaining_days|default='0'} 天</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">状态:</span>
+                        <span class="info-value">
+                            <span class="status-badge {$data.status == 1 ? 'status-active' : 'status-inactive'}">
+                                {$data.status_text}
+                            </span>
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">推送状态:</span>
+                        <span class="info-value">{$data.ispush_text}</span>
+                    </div>
+                </div>
+                
+                <!-- 账号信息 -->
+                <div class="info-card">
+                    <h3>账号信息</h3>
+                    <div class="info-item">
+                        <span class="info-label">用户名:</span>
+                        <span class="info-value">{$data.user_info.username}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">邮箱:</span>
+                        <span class="info-value">{$data.user_info.email}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">注册时间:</span>
+                        <span class="info-value">{$data.user_info.regtime}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">最后登录:</span>
+                        <span class="info-value">{$data.user_info.lastlogintime}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">账号状态:</span>
+                        <span class="info-value">
+                            <span class="status-badge {$data.user_info.status == 1 ? 'status-active' : 'status-inactive'}">
+                                {$data.user_info.status_text}
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 设备订阅记录和UA日志 -->
+            <div class="info-card" style="margin-top:30px;">
+                <h3>设备订阅记录与UA日志 <span style="font-size:14px;color:#888;">（共 {$data.device_count|default=0} 台设备）</span></h3>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>UA</th>
+                            <th>最后活跃时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <volist name="data.device_logs" id="dev">
+                            <tr>
+                                <td style="max-width:320px;word-break:break-all;">
+                                    <div style="margin-bottom:5px;"><strong>标准化UA:</strong> {$dev.ua_normalized}</div>
+                                    <div style="font-size:12px;color:#666;"><strong>原始UA:</strong> {$dev.ua}</div>
+                                </td>
+                                <td>{$dev.last_seen|date='Y-m-d H:i:s',###}</td>
+                            </tr>
+                        </volist>
+                        <if condition="!$data['device_logs']">
+                            <tr><td colspan="2" style="text-align:center;">暂无设备记录</td></tr>
+                        </if>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 订阅信息 -->
+            <div class="subscription-section">
+                <h3>订阅信息</h3>
+                <div class="url-container">
+                    <div class="url-item">
+                        <div class="url-label">手机订阅地址</div>
+                        <div class="url-value">{$Think.server.REQUEST_SCHEME}://{$Think.server.HTTP_HOST}/{$data.mobileshorturl}</div>
+                        <span class="copy-link" data-clipboard-text="{$Think.server.REQUEST_SCHEME}://{$Think.server.HTTP_HOST}/{$data.mobileshorturl}">点击复制完整地址</span>
+                    </div>
+                    <div class="url-item">
+                        <div class="url-label">Clash订阅地址</div>
+                        <div class="url-value">{$Think.server.REQUEST_SCHEME}://{$Think.server.HTTP_HOST}/{$data.clashshorturl}</div>
+                        <span class="copy-link" data-clipboard-text="{$Think.server.REQUEST_SCHEME}://{$Think.server.HTTP_HOST}/{$data.clashshorturl}">点击复制完整地址</span>
+                    </div>
+                </div>
+                
+                <div class="qrcode-container">
+                    <h4>订阅二维码</h4>
+                    <div id="qrcode" style="min-height: 150px; display: flex; justify-content: center; align-items: center;">
+                        <if condition="$data.qrcodeUrl neq ''">
+                            <img src="data:image/png;base64,{$data.qrcodeUrl}" style="max-width: 150px; max-height: 150px; cursor: pointer;" onclick="showQRCode(this.src)" alt="订阅二维码">
+                        <else/>
+                            <p style="color: red;">二维码生成失败</p>
+                        </if>
+                    </div>
+                    <p style="margin-top: 10px; color: #666;">点击二维码可放大查看</p>
+                </div>
+            </div>
+            
+            <!-- 操作按钮 -->
+            <div class="actions">
+                <a href="{:U('Dingyue/list')}" class="btn btn-default btn-custom">
+                    <span>🔙 返回列表</span>
+                </a>
+                <a href="{:U('Users/edit', array('id'=>$data['user_info']['id']))}" class="btn btn-warning btn-custom">
+                    <span>✏️ 编辑用户信息</span>
+                </a>
+                <a href="{:U('Dingyue/sendmail', array('id'=>$data['id']))}" class="btn btn-success btn-custom">
+                    <span>📧 发送邮件</span>
+                </a>
+                <a href="{:U('Dingyue/resetSubscription', array('id'=>$data['id']))}" class="btn btn-primary btn-custom" onclick="return confirm('确定要重置订阅地址吗？')">
+                    <span>🔄 重置订阅</span>
+                </a>
+
+                <a href="{:U('Dingyue/loginAsUser', array('id'=>$data['id']))}" class="btn btn-info btn-custom" target="_blank">
+                    <span>👤 登录用户后台</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 历史订阅地址记录 -->
+    <div class="info-card" style="margin-top:30px;">
+        <h3>历史订阅地址变更记录</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>变更时间</th>
+                    <th>变更类型</th>
+                    <th>原订阅地址</th>
+                    <th>新订阅地址</th>
+                </tr>
+            </thead>
+            <tbody>
+                <volist name="data.history" id="h">
+                <tr>
+                    <td>{$h.change_time|date='Y-m-d H:i:s',###}</td>
+                    <td>{$h.change_type}</td>
+                    <td>{$h.old_url}</td>
+                    <td>{$h.new_url}</td>
+                </tr>
+                </volist>
+                <if condition="!$data['history']">
+                <tr><td colspan="4" style="text-align:center;">暂无历史记录</td></tr>
+                </if>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 用户操作日志 -->
+    <div class="info-card" style="margin-top:30px;">
+        <h3>用户操作日志</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>操作时间</th>
+                    <th>操作类型</th>
+                    <th>详情</th>
+                </tr>
+            </thead>
+            <tbody>
+                <volist name="data.action_log" id="log">
+                <tr>
+                    <td>{$log.action_time|date='Y-m-d H:i:s',###}</td>
+                    <td>{$log.action}</td>
+                    <td>{$log.detail}</td>
+                </tr>
+                </volist>
+                <if condition="!$data['action_log']">
+                <tr><td colspan="3" style="text-align:center;">暂无操作日志</td></tr>
+                </if>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- 二维码预览模态框 -->
+    <div class="qrcode-modal" id="qrcodeModal">
+        <img id="modalQrcode" src="" alt="QR Code">
+    </div>
+    
+    <script src="__PUBLIC__/statics/user/clipboard.min.js"></script>
+    <script>
+        // 复制功能
+        var clipboard = new Clipboard('.copy-link', {
+            text: function(trigger) {
+                return $(trigger).attr('data-clipboard-text');
+            }
+        });
+        clipboard.on('success', function(e) {
+            if(window.layer){
+                layer.open({content: '已复制到剪贴板'});
+            }else{
+                alert('已复制到剪贴板');
+            }
+        });
+        clipboard.on('error', function(e) {
+            alert('复制失败，请手动复制');
+        });
+        
+        // 二维码预览功能
+        $('.qrcode-container img').click(function() {
+            var imgSrc = $(this).attr('src');
+            $('#modalQrcode').attr('src', imgSrc);
+            $('#qrcodeModal').css('display', 'flex');
+        });
+        
+        // 点击模态框关闭
+        $('#qrcodeModal').click(function() {
+            $(this).css('display', 'none');
+        });
+        
+        // 阻止点击图片时关闭模态框
+        $('#modalQrcode').click(function(e) {
+            e.stopPropagation();
+        });
+        
+        // 页面加载完成后的初始化
+        $(document).ready(function() {
+            console.log('页面加载完成，二维码已通过HTML直接显示');
+        });
+        
+        // 显示二维码函数
+        function showQRCode(imgSrc) {
+            $('#modalQrcode').attr('src', imgSrc);
+            $('#qrcodeModal').css('display', 'flex');
+        }
+        
+
+    </script>
+            </div>
+        </div>
+    </div>
+</block>

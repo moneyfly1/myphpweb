@@ -1,0 +1,60 @@
+/**
+ * 全站唯一设计令牌 - 前台/后台统一引用
+ * 颜色、间距、字体、圆角、阴影等均由此文件控制
+ */
+:root {
+    /* 主色（品牌色） */
+    --color-primary: #1677ff;
+    --color-primary-hover: #4096ff;
+    --color-primary-active: #0958d9;
+
+    /* 语义色 */
+    --color-success: #52c41a;
+    --color-warning: #faad14;
+    --color-danger: #ff4d4f;
+    --color-info: #1890ff;
+
+    /* 中性色 */
+    --color-text: #262626;
+    --color-text-secondary: #595959;
+    --color-text-placeholder: #8c8c8c;
+    --color-border: #d9d9d9;
+    --color-bg: #ffffff;
+    --color-bg-page: #f5f7fa;
+
+    /* 间距（4px 基准） */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-6: 24px;
+    --space-8: 32px;
+
+    /* 圆角 */
+    --radius-sm: 4px;
+    --radius: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
+
+    /* 阴影 */
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+    --shadow: 0 2px 8px rgba(0,0,0,.08);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.1);
+
+    /* 字体 */
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    --font-size-sm: 12px;
+    --font-size: 14px;
+    --font-size-lg: 16px;
+
+    /* 布局（后台侧栏等） */
+    --sidebar-width: 250px;
+    --header-height: 56px;
+
+    /* 兼容旧命名，便于逐步替换 */
+    --primary: #1677ff;
+    --primary-color: #1677ff;
+    --success: #52c41a;
+    --warning: #faad14;
+    --danger: #ff4d4f;
+}

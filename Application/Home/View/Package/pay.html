@@ -1,0 +1,159 @@
+<extend name="Public:layout" />
+<block name="title">支付订单 - 订阅服务</block>
+<block name="head">
+    <script src="/Public/statics/js/kjua-0.9.0.min.js"></script>
+    <script src="/Public/statics/js/wechat-detect.js"></script>
+    <style>
+        .page-home { background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-active) 100%); }
+        .page-main { padding-top: var(--header-height); display: flex; align-items: center; justify-content: center; min-height: calc(100vh - var(--header-height)); }
+        .site-footer { border-top: none; color: rgba(255,255,255,.6); }
+
+        .payment-container { max-width: 800px; width: 100%; margin: 2rem; }
+        .payment-card { background: white; border-radius: 20px; box-shadow: var(--shadow-md); overflow: hidden; }
+        .payment-header { background: linear-gradient(135deg, var(--color-primary), var(--color-primary-active)); color: white; padding: 2rem; text-align: center; }
+        .payment-header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .payment-header p { opacity: 0.9; font-size: 1.1rem; }
+        .payment-body { padding: 2rem; }
+
+        .order-info { background: #f8f9fa; border-radius: 15px; padding: 2rem; margin-bottom: 2rem; }
+        .order-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+        .detail-item { text-align: center; }
+        .detail-label { font-size: 0.9rem; color: #666; margin-bottom: 0.5rem; }
+        .detail-value { font-size: 1.2rem; font-weight: 600; color: var(--color-text); }
+        .price-highlight { color: var(--color-danger); font-size: 2rem; }
+
+        .payment-section { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+        .qr-section { text-align: center; }
+        .qr-code { background: white; padding: 1rem; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 1rem; display: inline-block; }
+        .qr-instructions { background: #e3f2fd; border-radius: 10px; padding: 1.5rem; margin-bottom: 1rem; }
+        .instruction-step { display: flex; align-items: center; margin-bottom: 1rem; font-size: 0.95rem; }
+        .step-number { width: 24px; height: 24px; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem; font-size: 0.8rem; font-weight: 600; }
+
+        .payment-status { text-align: center; padding: 2rem; }
+        .status-waiting { color: var(--color-warning); }
+        .status-success { color: var(--color-success); }
+        .countdown { background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 10px; padding: 1rem; margin-bottom: 2rem; text-align: center; }
+        .countdown-time { font-size: 1.5rem; font-weight: 600; color: var(--color-warning); }
+
+        .action-buttons { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; }
+        .pay-btn { padding: 0.8rem 2rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: inline-block; text-align: center; }
+        .pay-btn-primary { background: linear-gradient(135deg, var(--color-primary), var(--color-primary-active)); color: white; }
+        .pay-btn-secondary { background: #6c757d; color: white; }
+        .pay-btn-success { background: var(--color-success); color: white; }
+        .pay-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); color: white; text-decoration: none; }
+
+        @media (max-width: 768px) {
+            .payment-container { margin: 1rem; }
+            .payment-section { grid-template-columns: 1fr; gap: 1.5rem; }
+            .order-details { grid-template-columns: 1fr; }
+            .action-buttons { flex-direction: column; }
+        }
+    </style>
+</block>
+<block name="content">
+    <div class="payment-container">
+        <div class="payment-card">
+            <div class="payment-header">
+                <h1>订单支付</h1>
+                <p>请使用微信或支付宝扫码支付</p>
+            </div>
+            <div class="payment-body">
+                <div class="countdown">
+                    <div>订单将在 <span class="countdown-time" id="countdown">30:00</span> 后过期</div>
+                </div>
+                <div class="order-info">
+                    <h3 style="margin-bottom: 1.5rem; text-align: center;">订单信息</h3>
+                    <div class="order-details">
+                        <div class="detail-item">
+                            <div class="detail-label">订单号</div>
+                            <div class="detail-value">{$order.order_no}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">套餐名称</div>
+                            <div class="detail-value">{$order.package_name}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">有效期</div>
+                            <div class="detail-value">{$order.duration} 天</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">支付金额</div>
+                            <div class="detail-value price-highlight">¥{$order.price}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="payment-section">
+                    <div class="qr-section">
+                        <h4 style="margin-bottom: 1rem; text-align: center;">扫码支付</h4>
+                        <div class="qr-code"><div id="qrcode"></div></div>
+                        <p style="color: #666; font-size: 0.9rem;">请使用微信或支付宝扫描二维码</p>
+                    </div>
+                    <div class="instructions-section">
+                        <h4 style="margin-bottom: 1rem;">支付说明</h4>
+                        <div class="qr-instructions">
+                            <div class="instruction-step"><div class="step-number">1</div><span>打开微信或支付宝扫一扫</span></div>
+                            <div class="instruction-step"><div class="step-number">2</div><span>扫描左侧二维码</span></div>
+                            <div class="instruction-step"><div class="step-number">3</div><span>确认支付金额并完成支付</span></div>
+                            <div class="instruction-step"><div class="step-number">4</div><span>支付成功后自动跳转</span></div>
+                        </div>
+                        <div class="payment-status">
+                            <div class="status-waiting"><i class="fas fa-spinner fa-spin"></i> 等待支付中...</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="pay-btn pay-btn-success" onclick="confirmPayment()">我已完成支付</button>
+                    <a href="/Package/index" class="pay-btn pay-btn-secondary">返回套餐选择</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</block>
+<block name="footer">
+    <script>
+        $(document).ready(function() {
+            var qrcode = kjua({ text: '{$payUrl}', size: 200, fill: '#000', back: '#fff', rounded: 10, quiet: 2, mode: 'plain' });
+            $('#qrcode').append(qrcode);
+        });
+
+        var expireTime = {$order.expire_time};
+        var countdownInterval = setInterval(function() {
+            var now = Math.floor(Date.now() / 1000);
+            var remaining = expireTime - now;
+            if (remaining <= 0) {
+                clearInterval(countdownInterval);
+                $('#countdown').text('00:00');
+                alert('订单已过期，请重新下单');
+                window.location.href = '/Package/index';
+                return;
+            }
+            var minutes = Math.floor(remaining / 60);
+            var seconds = remaining % 60;
+            $('#countdown').text((minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds);
+        }, 1000);
+
+        function confirmPayment() {
+            if (confirm('请确认您已完成支付？')) {
+                $.post('/Package/confirmPay', { order_id: {$order.id} }, function(response) {
+                    if (response.status == 1) {
+                        alert('支付成功！订阅时间已更新');
+                        window.location.href = '/Package/index';
+                    } else {
+                        alert(response.info || '操作失败，请重试');
+                    }
+                }, 'json').fail(function() { alert('网络错误，请重试'); });
+            }
+        }
+
+        var checkPaymentStatus = setInterval(function() {
+            $.get('/Package/checkPaymentStatus', { order_id: {$order.id} }, function(response) {
+                if (response.status == 1) {
+                    clearInterval(checkPaymentStatus);
+                    clearInterval(countdownInterval);
+                    $('.payment-status').html('<div class="status-success"><i class="fas fa-check-circle"></i> 支付成功！</div>');
+                    setTimeout(function() { window.location.href = '/Package/index'; }, 2000);
+                }
+            }, 'json');
+        }, 3000);
+    </script>
+</block>

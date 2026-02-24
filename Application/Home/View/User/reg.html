@@ -1,0 +1,457 @@
+<extend name="Public:layout" />
+
+<block name="title">用户注册</block>
+
+<block name="head">
+<script src="/Public/statics/js/wechat-detect.js"></script>
+<style>
+    /* ---- page-level overrides ---- */
+    .page-home {
+      background: radial-gradient(ellipse at top, var(--color-primary), var(--color-primary-active)),
+                  radial-gradient(ellipse at bottom, var(--color-primary-hover), var(--color-primary));
+      background-attachment: fixed;
+    }
+
+    .page-home::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 2px,
+        rgba(255, 255, 255, 0.03) 2px,
+        rgba(255, 255, 255, 0.03) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .site-header {
+      background: rgba(255, 255, 255, 0.08) !important;
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+      box-shadow: none !important;
+    }
+    .site-header .header-inner a,
+    .site-header .header-inner .logo,
+    .site-header .header-inner .user-menu-btn span,
+    .site-header .header-inner .user-menu-btn i,
+    .site-header .nav-toggle i {
+      color: #ffffff !important;
+    }
+    .nav-mobile {
+      background: rgba(255, 255, 255, 0.1) !important;
+      backdrop-filter: blur(16px);
+    }
+    .nav-mobile a { color: #ffffff !important; }
+
+    .site-footer {
+      background: transparent !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+    }
+    .site-footer p { color: rgba(255, 255, 255, 0.8) !important; }
+
+    /* ---- center the card vertically ---- */
+    .page-main {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: calc(100vh - var(--header-height, 56px));
+      padding-top: var(--header-height, 56px);
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ---- glassmorphism card ---- */
+    .register-container {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 15px 35px rgba(22, 119, 255, 0.5);
+      z-index: 2;
+      animation: slideUp 0.8s ease-out;
+    }
+
+    .register-title {
+      text-align: center;
+      margin-bottom: 40px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .register-title h1 {
+      font-size: 32px;
+      color: #ffffff;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .reg-form-group {
+      margin-bottom: 25px;
+    }
+
+    .reg-form-label {
+      display: block;
+      margin-bottom: 8px;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .reg-input-group {
+      position: relative;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+    }
+
+    .reg-input-group:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(22, 119, 255, 0.37);
+    }
+
+    .reg-input-group input {
+      width: 100%;
+      height: 56px;
+      padding: 0 20px;
+      border: none;
+      background: transparent;
+      font-size: 16px;
+      color: #ffffff;
+      outline: none;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .reg-input-group.with-suffix input {
+      padding-right: 90px;
+    }
+
+    .reg-input-group input::placeholder {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .reg-input-group input:focus {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: scale(1.02);
+    }
+
+    .reg-input-suffix {
+      position: absolute;
+      right: 15px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .reg-error-message {
+      margin-top: 5px;
+      color: #ff6b6b;
+      font-size: 12px;
+      display: none;
+    }
+
+    .reg-error-message.show {
+      display: block;
+      animation: regFadeIn 0.3s ease;
+    }
+
+    .reg-submit-button {
+      width: 100%;
+      height: 56px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--color-primary-hover) 0%, var(--color-primary) 100%);
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 32px rgba(22, 119, 255, 0.37);
+      position: relative;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .reg-submit-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(22, 119, 255, 0.5);
+    }
+
+    .reg-submit-button:active {
+      transform: translateY(-1px);
+    }
+
+    .reg-submit-button:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .reg-login-link {
+      text-align: center;
+      margin-top: 25px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+    }
+
+    .reg-login-link a {
+      color: #ffffff;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border-bottom: 1px solid transparent;
+    }
+
+    .reg-login-link a:hover {
+      border-bottom-color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .reg-loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .reg-loading-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .reg-loader {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid #ffffff;
+      border-radius: 50%;
+      animation: regSpin 1s linear infinite;
+    }
+
+    .reg-loading-text {
+      margin-top: 20px;
+      color: #ffffff;
+      font-size: 16px;
+      text-align: center;
+      max-width: 300px;
+    }
+
+    @keyframes regFadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes regSpin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 480px) {
+      .page-main {
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+
+      .register-container {
+        padding: 2.5rem 2rem;
+        max-width: 100%;
+        border-radius: 20px;
+      }
+
+      .register-title h1 {
+        font-size: 1.75rem;
+        margin-bottom: 2rem;
+      }
+
+      .reg-input-group input {
+        height: 45px;
+        font-size: 0.95rem;
+      }
+
+      .reg-submit-button {
+        height: 45px;
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .register-container {
+        padding: 2rem 1.5rem;
+      }
+
+      .register-title h1 {
+        font-size: 1.5rem;
+      }
+
+      .reg-input-group input {
+        height: 42px;
+        font-size: 0.9rem;
+      }
+
+      .reg-submit-button {
+        height: 42px;
+        font-size: 0.9rem;
+      }
+    }
+</style>
+</block>
+
+<block name="content">
+  <div class="register-container">
+    <div class="register-title">
+      <h1>注册新用户</h1>
+    </div>
+    <form id="regForm">
+      <div class="reg-form-group">
+        <label for="user" class="reg-form-label">用户名 (QQ 号码)</label>
+        <div class="reg-input-group with-suffix">
+          <input id="user" name="user" type="text" maxlength="16" required
+                 placeholder="请输入 QQ 号码">
+          <span class="reg-input-suffix">@qq.com</span>
+        </div>
+        <p id="userError" class="reg-error-message"></p>
+      </div>
+      <div class="reg-form-group">
+        <label for="pwd" class="reg-form-label">密码</label>
+        <div class="reg-input-group">
+          <input id="pwd" name="pwd" type="password" minlength="8" maxlength="16" required
+                 placeholder="8-16 位密码">
+        </div>
+        <p id="pwdError" class="reg-error-message"></p>
+      </div>
+      <div class="reg-form-group">
+        <label class="reg-form-label">验证码</label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input name="verify_code" type="text" maxlength="6" required placeholder="验证码"
+                 style="flex:1;height:56px;padding:0 20px;border:none;background:rgba(255,255,255,0.1);font-size:16px;color:#fff;outline:none;border-radius:12px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2);">
+          <img src="/verify" alt="验证码" id="reg-verify-img"
+               style="height:40px;cursor:pointer;border-radius:6px;" title="点击刷新">
+        </div>
+      </div>
+      <div class="reg-form-group">
+        <button id="submitBtn" type="submit" class="reg-submit-button">
+          注册
+        </button>
+      </div>
+    </form>
+    <p class="reg-login-link">
+      已有账号？<a href="/login">点击登录</a>
+    </p>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="reg-loading-overlay">
+    <div class="reg-loader"></div>
+    <p class="reg-loading-text">正在注册，请检查您的 QQ 邮箱，点击激活链接进行激活</p>
+  </div>
+</block>
+
+<block name="footer">
+<script>
+    const form = document.getElementById('regForm');
+    const overlay = document.getElementById('loadingOverlay');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function validate() {
+      let valid = true;
+      const user = form.user.value.trim();
+      const pwd = form.pwd.value;
+
+      const userErrorEl = document.getElementById('userError');
+      if (!/^\d{5,16}$/.test(user)) {
+        userErrorEl.textContent = '请输入 5-16 位数字用户名';
+        userErrorEl.classList.add('show');
+        valid = false;
+      } else {
+        userErrorEl.classList.remove('show');
+      }
+
+      const pwdErrorEl = document.getElementById('pwdError');
+      if (pwd.length < 8 || pwd.length > 16) {
+        pwdErrorEl.textContent = '密码长度须为 8-16 位';
+        pwdErrorEl.classList.add('show');
+        valid = false;
+      } else {
+        pwdErrorEl.classList.remove('show');
+      }
+
+      return valid;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!validate()) return;
+
+      // 展示加载遮罩并禁用按钮
+      overlay.classList.add('show');
+      submitBtn.disabled = true;
+      submitBtn.textContent = '注册中...';
+
+      const formData = new FormData(form);
+      try {
+        const resp = await fetch(window.location.pathname, {
+          method: 'POST',
+          body: formData,
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        if (resp.ok) {
+          setTimeout(() => window.location.href = '/login', 2000);
+        } else {
+          const text = await resp.text();
+          alert(text || '注册失败，请重试');
+          overlay.classList.remove('show');
+          submitBtn.disabled = false;
+          submitBtn.textContent = '注册';
+        }
+      } catch (err) {
+        console.error(err);
+        alert('网络或服务器错误');
+        overlay.classList.remove('show');
+        submitBtn.disabled = false;
+        submitBtn.textContent = '注册';
+      }
+    });
+    document.getElementById('reg-verify-img').onclick = function(){ this.src = '/verify?t=' + Date.now(); };
+</script>
+</block>

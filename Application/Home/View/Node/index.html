@@ -1,0 +1,973 @@
+<extend name="Public:layout" />
+
+<block name="title">节点列表 - 订阅服务</block>
+
+<block name="head">
+    <script src="/Public/statics/js/wechat-detect.js"></script>
+    <link rel="stylesheet" href="/Public/statics/css/all.min.css">
+    <link rel="stylesheet" href="/Public/statics/user/layui.css">
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 2rem 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .stats-section {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-active));
+            color: white;
+            border-radius: 10px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .nodes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .node-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .node-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .node-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .node-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--color-text);
+        }
+        .node-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.online {
+            background: var(--color-success);
+        }
+
+        .status-dot.offline {
+            background: var(--color-danger);
+            animation: none;
+        }
+
+        .status-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .status-text.online {
+            color: var(--color-success);
+        }
+
+        .status-text.offline {
+            color: var(--color-danger);
+        }
+
+        .node-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .node-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            align-items: center;
+        }
+
+        .config-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-active));
+            color: #fff;
+            text-decoration: none;
+            border: none;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .config-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(22, 119, 255, 0.3);
+        }
+
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: var(--color-bg);
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-active));
+            color: #fff;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close {
+            color: #fff;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+        .config-section {
+            margin-bottom: 20px;
+        }
+
+        .config-section h3 {
+            color: var(--color-primary);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid var(--color-primary);
+            padding-bottom: 5px;
+        }
+
+        .config-item {
+            background: var(--color-bg-page);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .config-label {
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .config-value {
+            font-family: 'Courier New', monospace;
+            background: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            word-break: break-all;
+            flex: 1;
+            margin-left: 15px;
+        }
+
+        .copy-btn {
+            background: var(--color-success);
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #45a049;
+        }
+        .qr-code {
+            text-align: center;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .qr-code canvas {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .expired-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .navigation {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .nav-btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+            }
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .node-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .node-card:nth-child(1) { animation-delay: 0.1s; }
+        .node-card:nth-child(2) { animation-delay: 0.2s; }
+        .node-card:nth-child(3) { animation-delay: 0.3s; }
+        .node-card:nth-child(4) { animation-delay: 0.4s; }
+        .node-card:nth-child(5) { animation-delay: 0.5s; }
+        .node-card:nth-child(6) { animation-delay: 0.6s; }
+
+        @media (max-width: 992px) {
+            .plan-container {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-options {
+                flex-direction: column;
+            }
+
+            .payment-option {
+                width: 100%;
+            }
+
+            .subscription-info {
+                flex-direction: column;
+            }
+
+            .card-header {
+                padding: 15px;
+            }
+
+            .card-body {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .info-card .value {
+                font-size: 2rem;
+            }
+            .container {
+                padding: 20px 1rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .nodes-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .node-info {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+    </style>
+</block>
+
+<block name="content">
+    <div class="container">
+        <div class="header">
+            <h1>节点列表</h1>
+            <p>选择最适合您的高速节点，享受稳定快速的网络连接</p>
+        </div>
+
+        <!-- 统计信息 -->
+        <div class="stats-section">
+            <h3 style="margin-bottom: 1.5rem; text-align: center; color: var(--color-text);">节点统计</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">总节点数</div>
+                    <div class="stat-value">{$data.total_nodes}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">在线节点</div>
+                    <div class="stat-value">{$data.total_nodes}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">平均延迟</div>
+                    <div class="stat-value">{:rand(20, 50)}ms</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">总在线用户</div>
+                    <div class="stat-value">{:rand(50, 100)}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 节点列表 -->
+        <div class="nodes-grid">
+            <volist name="data.nodes" id="node" key="k">
+            <div class="node-card">
+                <div class="node-header">
+                    <div class="node-name">{$node.name}</div>
+                    <div class="node-status">
+                        <div class="status-dot online"></div>
+                        <span class="status-text online">在线</span>
+                    </div>
+                </div>
+
+                <div class="node-info">
+                    <div class="info-item">
+                        <div class="info-label">延迟</div>
+                        <div class="info-value">{:rand(15, 50)}ms</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">在线用户</div>
+                        <div class="info-value">{:rand(10, 100)}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">负载</div>
+                        <div class="info-value">{:rand(30, 200)}%</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">类型</div>
+                        <div class="info-value">{$node.type}</div>
+                    </div>
+                </div>
+
+                <div class="node-actions">
+                    <button class="config-btn" onclick="showNodeConfig('{$node.id}', '{$node.name}', '{$node.server}', '{$node.port}', '{$node.type}')">配置信息</button>
+                </div>
+            </div>
+            </volist>
+        </div>
+    </div>
+
+    <!-- 节点配置模态框 -->
+    <div id="nodeConfigModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">节点配置信息</h2>
+                <button class="close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- 配置信息将在这里动态加载 -->
+            </div>
+        </div>
+    </div>
+</block>
+
+<block name="footer">
+    <script src="/Public/statics/js/kjua-0.9.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // 添加节点卡片悬停效果
+            $('.node-card').hover(
+                function() {
+                    $(this).find('.connect-btn').css('transform', 'scale(1.05)');
+                },
+                function() {
+                    $(this).find('.connect-btn').css('transform', 'scale(1)');
+                }
+            );
+
+            // 导航栏链接点击效果
+            $('.nav-link').click(function(e) {
+                $('.nav-link').removeClass('active');
+                $(this).addClass('active');
+            });
+        });
+
+        // 显示节点配置信息
+        function showNodeConfig(nodeId, nodeName, server, port, type) {
+            // 检查用户是否到期
+            var endtime = {$data.endtime};
+
+            if (endtime <= 0) {
+                showExpiredNotice();
+                return;
+            }
+
+            // 从PHP数据中获取完整的节点信息
+            var allNodes = {$data.nodes|json_encode};
+            var foundNode = null;
+            // 查找对应的节点
+            for (var i = 0; i < allNodes.length; i++) {
+                if (allNodes[i].id == nodeId || allNodes[i].name == nodeName) {
+                    foundNode = allNodes[i];
+                    break;
+                }
+            }
+
+            // 构造节点对象（优先使用从PHP获取的数据）
+            var currentNode = {
+                id: nodeId,
+                name: nodeName,
+                server: server,
+                port: port,
+                type: type,
+                uuid: foundNode ? foundNode.uuid : 'auto-generated-uuid-' + nodeId,
+                network: foundNode ? foundNode.network : 'tcp',
+                ws_host: foundNode ? foundNode.ws_host : '',
+                ws_path: foundNode ? foundNode.ws_path : '/',
+                tls: foundNode ? foundNode.tls : false,
+                cipher: foundNode ? foundNode.cipher : 'aes-256-gcm',
+                password: foundNode ? foundNode.password : 'default-password-' + nodeId,
+                skip_cert_verify: foundNode ? foundNode.skip_cert_verify : false,
+                sni: foundNode ? foundNode.sni : server,
+                // SSR特有配置
+                protocol: foundNode ? foundNode.protocol : 'origin',
+                obfs: foundNode ? foundNode.obfs : 'plain',
+                protocol_param: foundNode ? foundNode.protocol_param : '',
+                obfs_param: foundNode ? foundNode.obfs_param : ''
+            };
+
+            // 生成协议连接
+            var protocolLink = '';
+
+            // 优先使用后端预定义的协议连接
+            if (foundNode && foundNode.protocol_link) {
+                protocolLink = foundNode.protocol_link;
+            } else {
+                // 根据协议类型生成连接
+                switch(type.toLowerCase()) {
+                    case 'vmess':
+                        protocolLink = generateVmessLink(currentNode);
+                        break;
+                    case 'ss':
+                        protocolLink = generateSSLink(currentNode);
+                        break;
+                    case 'ssr':
+                        protocolLink = generateSSRLink(currentNode);
+                        break;
+                    case 'trojan':
+                        protocolLink = generateTrojanLink(currentNode);
+                        break;
+                    case 'vless':
+                        protocolLink = generateVlessLink(currentNode);
+                        break;
+                    case 'hysteria':
+                        protocolLink = generateHysteriaLink(currentNode);
+                        break;
+                    default:
+                        protocolLink = generateSSRLink(currentNode); // 默认使用SSR
+                }
+            }
+
+            var modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="config-section">
+                    <h3>${type.toUpperCase()} 协议连接</h3>
+                    <div class="config-item">
+                        <span class="config-label">${type.toUpperCase()} 连接:</span>
+                        <span class="config-value" style="word-break: break-all; font-size: 12px;">${protocolLink}</span>
+                        <button class="copy-btn" onclick="copyToClipboard('${protocolLink.replace(/'/g, "\\'")}')">复制</button>
+                    </div>
+                    <div class="config-note">
+                        <p style="color: #666; font-size: 14px; margin-top: 10px;">
+                            💡 提示：复制上方${type.toUpperCase()}连接到Shadowrocket、V2rayNG等客户端即可使用
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalTitle').textContent = `${nodeName} - ${type.toUpperCase()}协议连接`;
+            document.getElementById('nodeConfigModal').style.display = 'block';
+
+            console.log('显示节点配置信息:', nodeName, '协议连接:', protocolLink);
+        }
+
+        // 显示详细节点配置（包括二维码和连接）
+        function showNodeDetails(nodeId, nodeName, server, port, type) {
+            // 检查用户是否到期
+            var endtime = {$data.endtime};
+
+            if (endtime <= 0) {
+                showExpiredNotice();
+                return;
+            }
+            // 从PHP数据中获取完整的节点信息
+            var allNodes = {$data.nodes|json_encode};
+            var foundNode = null;
+
+            // 查找对应的节点
+            for (var i = 0; i < allNodes.length; i++) {
+                if (allNodes[i].id == nodeId || allNodes[i].name == nodeName) {
+                    foundNode = allNodes[i];
+                    break;
+                }
+            }
+
+            // 构造节点对象（优先使用从PHP获取的数据）
+            var currentNode = {
+                id: nodeId,
+                name: nodeName,
+                server: server,
+                port: port,
+                type: type,
+                uuid: foundNode ? foundNode.uuid : 'auto-generated-uuid-' + nodeId,
+                network: foundNode ? foundNode.network : 'tcp',
+                ws_host: foundNode ? foundNode.ws_host : '',
+                ws_path: foundNode ? foundNode.ws_path : '/',
+                tls: foundNode ? foundNode.tls : false,
+                cipher: foundNode ? foundNode.cipher : 'aes-256-gcm',
+                password: foundNode ? foundNode.password : 'default-password-' + nodeId,
+                skip_cert_verify: foundNode ? foundNode.skip_cert_verify : false,
+                sni: foundNode ? foundNode.sni : server,
+                // SSR特有配置
+                protocol: foundNode ? foundNode.protocol : 'origin',
+                obfs: foundNode ? foundNode.obfs : 'plain',
+                protocol_param: foundNode ? foundNode.protocol_param : '',
+                obfs_param: foundNode ? foundNode.obfs_param : ''
+            };
+
+            // 协议连接已在后端预定义，直接使用
+
+            var modalBody = document.getElementById('modalBody');
+
+            // 获取协议连接
+            var protocolLink = currentNode.protocol_link || '';
+
+            modalBody.innerHTML = `
+                <div class="config-section">
+                    <h3>节点信息</h3>
+                    <div class="config-item">
+                        <span class="config-label">节点名称:</span>
+                        <span class="config-value">${nodeName}</span>
+                        <button class="copy-btn" onclick="copyToClipboard('${nodeName}')">复制</button>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-label">服务器:</span>
+                        <span class="config-value">${server}</span>
+                        <button class="copy-btn" onclick="copyToClipboard('${server}')">复制</button>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-label">端口:</span>
+                        <span class="config-value">${port}</span>
+                        <button class="copy-btn" onclick="copyToClipboard('${port}')">复制</button>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-label">协议类型:</span>
+                        <span class="config-value">${type}</span>
+                        <button class="copy-btn" onclick="copyToClipboard('${type}')">复制</button>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3>${type.toUpperCase()} 协议连接</h3>
+                    <div class="config-item">
+                        <span class="config-label">${type.toUpperCase()} 连接:</span>
+                        <span class="config-value" style="word-break: break-all; font-size: 12px;">${protocolLink}</span>
+                        <button class="copy-btn" onclick="copyToClipboard('${protocolLink}')">复制</button>
+                    </div>
+                    <div class="config-note">
+                        <p style="color: #666; font-size: 14px; margin-top: 10px;">
+                            💡 提示：复制上方${type.toUpperCase()}连接到Shadowrocket、V2rayNG等客户端即可使用
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalTitle').textContent = `${nodeName} - 详细配置`;
+            document.getElementById('nodeConfigModal').style.display = 'block';
+
+            console.log('显示节点配置信息:', nodeName, '协议连接:', protocolLink);
+        }
+
+        // 显示到期提醒
+        function showExpiredNotice() {
+            var modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="expired-notice">
+                    <h3>⚠️ 订阅已到期</h3>
+                    <p>您的订阅已到期，无法查看节点配置信息。</p>
+                    <p>请续费后再试。</p>
+                    <br>
+                    <a href="/tc" style="color: #007bff; text-decoration: none; font-weight: bold;">立即续费 →</a>
+                </div>
+            `;
+            document.getElementById('modalTitle').textContent = '访问受限';
+            document.getElementById('nodeConfigModal').style.display = 'block';
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('nodeConfigModal').style.display = 'none';
+        }
+
+        // 复制到剪贴板
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                // 显示复制成功提示
+                showToast('已复制到剪贴板');
+            }, function(err) {
+                console.error('复制失败: ', err);
+                // 降级方案
+                var textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('已复制到剪贴板');
+            });
+        }
+
+        // 显示提示消息
+        function showToast(message) {
+            var toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4caf50;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 3000;
+                font-weight: 500;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+        // 生成各种协议链接的函数
+        function generateVmessLink(node) {
+            var config = {
+                v: "2",
+                ps: node.name,
+                add: node.server,
+                port: parseInt(node.port),
+                id: node.uuid || "default-uuid",
+                aid: "0",
+                net: node.network || "tcp",
+                type: "none",
+                host: node.ws_host || "",
+                path: node.ws_path || "",
+                tls: node.tls ? "tls" : ""
+            };
+            return "vmess://" + btoa(JSON.stringify(config));
+        }
+
+        function generateSSLink(node) {
+            var method = node.cipher || "aes-256-gcm";
+            var password = node.password || "default-password";
+            var auth = btoa(method + ":" + password);
+            return `ss://${auth}@${node.server}:${node.port}#${encodeURIComponent(node.name)}`;
+        }
+
+        function generateSSRLink(node) {
+            var server = node.server || "";
+            var port = node.port || "";
+            var protocol = node.protocol || "origin";
+            var method = node.cipher || "chacha20-ietf";
+            var obfs = node.obfs || "plain";
+            var password = node.password || "passwd";
+
+            // Base64编码密码
+            var passwordBase64 = btoa(password);
+
+            // 处理obfs-param和protocol-param
+            var obfsParam = "";
+            var protoParam = "";
+
+            if (node.obfs_param) {
+                obfsParam = btoa(node.obfs_param);
+            }
+
+            if (node.protocol_param) {
+                protoParam = btoa(node.protocol_param);
+            }
+
+            // 生成remarks (节点名称的Base64编码)
+            var remarks = btoa(node.name || "Node");
+            // 生成group (可以为空或设置默认值)
+            var group = btoa("aHR0cHM6Ly92MnJheXNlLmNvbQ=="); // 默认组
+
+            // 构建SSR配置字符串
+            var config = `${server}:${port}:${protocol}:${method}:${obfs}:${passwordBase64}/?group=${group}&obfsparam=${obfsParam}&protoparam=${protoParam}&remarks=${remarks}`;
+
+            return "ssr://" + btoa(config);
+        }
+
+        function generateTrojanLink(node) {
+            var password = node.password || "default-password";
+            var allowInsecure = node.skip_cert_verify ? "1" : "0";
+            var sni = node.sni ? `&sni=${node.sni}` : "";
+            return `trojan://${password}@${node.server}:${node.port}?allowInsecure=${allowInsecure}${sni}#${encodeURIComponent(node.name)}`;
+        }
+
+        function generateVlessLink(node) {
+            var uuid = node.uuid || "default-uuid";
+            var params = [];
+
+            if (node.network && node.network !== 'tcp') {
+                params.push(`type=${node.network}`);
+            }
+
+            if (node.tls) {
+                params.push('security=tls');
+                if (node.sni) {
+                    params.push(`sni=${node.sni}`);
+                }
+            }
+
+            if (node.network === 'ws') {
+                if (node.ws_path) {
+                    params.push(`path=${encodeURIComponent(node.ws_path)}`);
+                }
+                if (node.ws_host) {
+                    params.push(`host=${node.ws_host}`);
+                }
+            }
+
+            var queryString = params.length > 0 ? '?' + params.join('&') : '';
+            return `vless://${uuid}@${node.server}:${node.port}${queryString}#${encodeURIComponent(node.name)}`;
+        }
+
+        function generateHysteriaLink(node) {
+            var auth = node.password || "default-auth";
+            var peer = node.sni || node.server;
+            var insecure = node.skip_cert_verify ? "1" : "0";
+            return `hysteria://${node.server}:${node.port}?protocol=udp&auth=${auth}&peer=${peer}&insecure=${insecure}&upmbps=50&downmbps=200#${encodeURIComponent(node.name)}`;
+        }
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            var modal = document.getElementById('nodeConfigModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // 实时更新节点状态（可选）
+        function updateNodeStatus() {
+            // 这里可以添加定时更新节点状态的逻辑
+            $.ajax({
+                url: '/Node/getStatus',
+                type: 'GET',
+                success: function(data) {
+                    // 更新节点状态
+                    console.log('节点状态已更新');
+                },
+                error: function() {
+                    console.log('更新节点状态失败');
+                }
+            });
+        }
+
+        // 每30秒更新一次节点状态
+        setInterval(updateNodeStatus, 30000);
+
+        // 套餐选择交互
+        $(document).ready(function() {
+            var planCards = document.querySelectorAll('.plan-card');
+            planCards.forEach(function(card) {
+                card.addEventListener('click', function() {
+                    planCards.forEach(function(c) { c.classList.remove('selected'); });
+                    this.classList.add('selected');
+
+                    // 更新支付按钮金额
+                    var price = this.querySelector('.price').textContent.split(' ')[0];
+                    document.querySelector('.btn-block').innerHTML =
+                        '<i class="fas fa-shopping-cart"></i> 确认支付 ' + price;
+                });
+            });
+
+            // 支付方式选择交互
+            var paymentOptions = document.querySelectorAll('.payment-option');
+            paymentOptions.forEach(function(option) {
+                option.addEventListener('click', function() {
+                    paymentOptions.forEach(function(o) { o.classList.remove('selected'); });
+                    this.classList.add('selected');
+                });
+            });
+        });
+    </script>
+</block>

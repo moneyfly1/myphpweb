@@ -1,0 +1,255 @@
+<?php
+// 如果需要长时间运行抓取，可适当调整超时设置
+set_time_limit(120);
+
+function parse_link($link) {
+    if (strpos($link, 'vmess://') === 0) {
+        return parse_vmess($link);
+    } elseif (strpos($link, 'ss://') === 0) {
+        return parse_ss($link);
+    }
+    return false;
+}
+
+function parse_vmess($link) {
+    $base64data = substr($link, 8);
+    $decoded = base64_decode($base64data);
+    $data = json_decode($decoded, true);
+    $data['type'] = 'vmess';
+    return $data;
+}
+
+function parse_ss($link) {
+    // ss://base64部分后接#名称形式有两种写法，这里简单处理常见格式
+    $withoutPrefix = substr($link, 5);
+    // 如果包含@，表示格式为 ss://base64userinfo@host:port#name
+    $parts = parse_url($link);
+    $hostname = $parts['host'];
+    $port = isset($parts['port']) ? $parts['port'] : "";
+    $fragment = isset($parts['fragment']) ? urldecode($parts['fragment']) : "";
+    $data = [
+        'type' => 'ss',
+        'hostname' => $hostname,
+        'port' => $port,
+        'name' => $fragment
+    ];
+    return $data;
+}
+
+/**
+ * 根据完整域名（例如 uk1.vpn52.xyz）提取主域名（vpn52.xyz） 
+ */
+function get_main_domain($domain) {
+    $parts = explode('.', $domain);
+    $n = count($parts);
+    if ($n >= 2) {
+        return $parts[$n-2] . '.' . $parts[$n-1];
+    }
+    return $domain;
+}
+
+/**
+ * 利用crt.sh抓取该主域名下的所有二级域名
+ */
+function get_subdomains($main_domain) {
+    $url = "https://crt.sh/?q=" . urlencode($main_domain);
+    // 抓取页面HTML（注意：有些服务器可能需要设置User-Agent）
+    $context = stream_context_create([
+        'http' => [
+            'header' => "User-Agent: Mozilla/5.0\r\n"
+        ]
+    ]);
+    $html = @file_get_contents($url, false, $context);
+    $subdomains = [];
+    if ($html) {
+        // 提取形如 *.vpn52.xyz 或者 uk1.vpn52.xyz 的内容
+        // 此处正则匹配可能需要根据实际页面内容调整
+        $pattern = '/>([\w\.\-]+?' . preg_quote($main_domain, '/') . ')</';
+        if (preg_match_all($pattern, $html, $matches)) {
+            foreach ($matches[1] as $d) {
+                $subdomains[] = $d;
+            }
+        }
+    }
+    // 去重并返回
+    return array_unique($subdomains);
+}
+
+/**
+ * 根据域名获取对应的国家代码
+ * 使用 geoip_country_code_by_name 如果可用，否则返回"未知"
+ */
+function get_country($domain) {
+    $ip = gethostbyname($domain);
+    if ($ip == $domain) { // 解析失败
+        return "未知";
+    }
+    if (function_exists('geoip_country_code_by_name')) {
+        $country = geoip_country_code_by_name($ip);
+        return $country ? $country : "未知";
+    } else {
+        // 如果无 geoip，尝试通过whois（简单示例，不保证稳定）
+        $whois = shell_exec("whois $ip");
+        if (preg_match('/Country:\s*([A-Z]{2})/i', $whois, $m)) {
+            return strtoupper($m[1]);
+        }
+    }
+    return "未知";
+}
+
+/**
+ * 根据用户指定的端口范围，返回一个端口数组
+ */
+function get_port_array($port_range) {
+    $range = explode('-', $port_range);
+    if (count($range) != 2) return [];
+    $start = intval($range[0]);
+    $end = intval($range[1]);
+    if ($start > $end) return [];
+    return range($start, $end);
+}
+
+/**
+ * 生成新连接，按二级域名及端口生成，每个连接的名称使用国家代码，
+ * 如果同一国家出现多次则在国家后增加序号（如 US01, US02）
+ */
+function generate_connections($orig, $subdomains, $ports) {
+    $results = [];
+    // 用于计数国家出现次数
+    $countryCount = [];
+    foreach ($subdomains as $sub) {
+        $country = get_country($sub);
+        if (!isset($countryCount[$country])) {
+            $countryCount[$country] = 1;
+        } else {
+            $countryCount[$country]++;
+        }
+        // 生成名称：国家代码+序号（序号两位，不足补零）
+        $countryName = $country . sprintf("%02d", $countryCount[$country]);
+        foreach ($ports as $port) {
+            if ($orig['type'] == 'vmess') {
+                $new = $orig;
+                // 修改二级域名与端口，更新名称
+                $new['add'] = $sub;
+                $new['port'] = (string)$port;
+                $new['ps'] = $countryName;
+                $encoded = base64_encode(json_encode($new, JSON_UNESCAPED_UNICODE));
+                $results[] = "vmess://$encoded";
+            } elseif ($orig['type'] == 'ss') {
+                $new = $orig;
+                $new['hostname'] = $sub;
+                $new['port'] = $port;
+                $new['name'] = $countryName;
+                // 这里简单处理 ss 链接：将 hostname:port 与名称放入链接
+                $results[] = "ss://" . base64_encode($new['hostname'] . ':' . $new['port'] . '#' . $new['name']);
+            }
+        }
+    }
+    return $results;
+}
+?>
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Vmess/SS连接生成工具</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h2 { color: #333; }
+        input, button, textarea { font-size: 1em; }
+        .result { margin-top: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        table, th, td { border: 1px solid #ccc; }
+        th, td { padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+    <h2>Vmess/SS连接生成工具</h2>
+    <form method="POST">
+        <label for="original_link">请输入原始连接 (vmess:// 或 ss://)：</label><br>
+        <textarea id="original_link" name="original_link" rows="3" cols="80" required></textarea><br><br>
+        <label for="port_range">请输入端口范围（例如 5000-5010）：</label><br>
+        <input type="text" id="port_range" name="port_range" required><br><br>
+        <button type="submit">生成连接</button>
+    </form>
+    
+    <?php
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        $original_link = trim($_POST['original_link']);
+        $port_range = trim($_POST['port_range']);
+        
+        $origData = parse_link($original_link);
+        if (!$origData) {
+            echo "<p>无法解析输入的连接，请检查格式。</p>";
+            exit;
+        }
+        
+        // 根据类型获取原始连接中的域名
+        if ($origData['type'] == 'vmess') {
+            $domain = $origData['add'];
+        } elseif ($origData['type'] == 'ss') {
+            $domain = $origData['hostname'];
+        } else {
+            $domain = "";
+        }
+        
+        if (empty($domain)) {
+            echo "<p>无法提取域名信息。</p>";
+            exit;
+        }
+        
+        // 提取主域名，如 uk1.vpn52.xyz -> vpn52.xyz
+        $main_domain = get_main_domain($domain);
+        
+        // 查询二级域名（先使用crt.sh）
+        $subdomains = get_subdomains($main_domain);
+        if (empty($subdomains)) {
+            echo "<p>未查询到相关二级域名，请检查网络或尝试其他方式查询。</p>";
+            exit;
+        }
+        
+        // 获取端口数组
+        $ports = get_port_array($port_range);
+        if (empty($ports)) {
+            echo "<p>端口范围格式不正确。</p>";
+            exit;
+        }
+        
+        // 生成修改后的连接
+        $generated = generate_connections($origData, $subdomains, $ports);
+        
+        // 以表格方式显示
+        echo "<div class='result'>";
+        echo "<h3>生成的连接</h3>";
+        echo "<table><tr><th>序号</th><th>连接内容</th></tr>";
+        $i = 1;
+        foreach ($generated as $conn) {
+            echo "<tr><td>$i</td><td style='word-break: break-all;'>$conn</td></tr>";
+            $i++;
+        }
+        echo "</table>";
+        echo "<br><button onclick='downloadExcel()'>下载Excel</button>";
+        echo "</div>";
+        
+        // 将生成内容保存到隐藏的文本域，方便JS下载
+        $allText = implode("\n", $generated);
+        echo "<textarea id='exportData' style='display:none;'>$allText</textarea>";
+    }
+    ?>
+    
+    <script>
+    function downloadExcel() {
+        var data = document.getElementById("exportData").value;
+        // 生成 CSV 格式（Excel 能够打开CSV文件）
+        var blob = new Blob([data], { type: 'application/vnd.ms-excel' });
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'generated_links.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+    }
+    </script>
+</body>
+</html>

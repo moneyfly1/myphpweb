@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员登录 | 系统后台管理</title>
+    <style>
+        :root {
+            --admin-primary: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            --admin-secondary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --admin-accent: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            --admin-dark: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            --input-bg: rgba(255, 255, 255, 0.1);
+            --input-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --shadow-heavy: 0 15px 35px rgba(31, 38, 135, 0.5);
+            --border-radius: 16px;
+            --admin-gold: #f39c12;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: var(--admin-primary);
+            background-attachment: fixed;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(30, 60, 114, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(42, 82, 152, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(102, 126, 234, 0.3) 0%, transparent 50%);
+            animation: adminFloat 8s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 2px,
+                rgba(255, 255, 255, 0.02) 2px,
+                rgba(255, 255, 255, 0.02) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 管理员登录容器 */
+        .admin-login {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            padding: 50px 40px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: var(--shadow-heavy), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            z-index: 2;
+            animation: adminSlideUp 0.8s ease-out;
+        }
+
+        /* 管理员图标 */
+        .admin-icon {
+            width: 80px;
+            height: 80px;
+            margin: -60px auto 30px;
+            background: var(--admin-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: adminRotate 4s linear infinite;
+        }
+
+        .admin-icon::after {
+            content: '👑';
+            font-size: 32px;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        /* 标题样式 */
+        .admin-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .admin-title h1 {
+            font-size: 28px;
+            color: var(--text-primary);
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            margin-bottom: 8px;
+        }
+
+        .admin-title p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        /* 表单样式 */
+        .admin-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 输入框容器 */
+        .input-group {
+            position: relative;
+            background: var(--input-bg);
+            border-radius: 12px;
+            border: 1px solid var(--input-border);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .input-group:focus-within {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--admin-gold);
+            box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.2);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            width: 20px;
+            height: 20px;
+            color: var(--text-secondary);
+            z-index: 3;
+            font-size: 18px;
+        }
+
+        .admin-input {
+            width: 100%;
+            height: 56px;
+            padding: 0 20px 0 50px;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            color: var(--text-primary);
+            outline: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .admin-input::placeholder {
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* 登录按钮 */
+        .admin-submit {
+            margin-top: 10px;
+        }
+
+        .admin-btn {
+            width: 100%;
+            height: 56px;
+            border: none;
+            border-radius: 12px;
+            background: var(--admin-accent);
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .admin-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .admin-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .admin-btn:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* 底部链接 */
+        .admin-footer {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .admin-footer a {
+            color: var(--admin-gold);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid transparent;
+        }
+
+        .admin-footer a:hover {
+            border-bottom-color: var(--admin-gold);
+            transform: translateY(-1px);
+        }
+
+        /* 状态提示 */
+        .admin-status {
+            display: none;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 12px;
+            background: rgba(46, 204, 113, 0.2);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            color: var(--text-primary);
+            text-align: center;
+            animation: adminFadeIn 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .admin-status.error {
+            background: rgba(231, 76, 60, 0.2);
+            border-color: rgba(231, 76, 60, 0.3);
+        }
+
+        /* 动画效果 */
+        @keyframes adminFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes adminFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(1deg); }
+            66% { transform: translateY(-10px) rotate(-1deg); }
+        }
+
+        @keyframes adminSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes adminRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+                align-items: center;
+                padding-top: 5vh;
+                padding-bottom: 5vh;
+            }
+            
+            .admin-login {
+                padding: 3rem 2rem;
+                max-width: 95vw;
+                width: 95vw;
+                min-height: 85vh;
+                border-radius: 20px;
+                margin: 0 auto;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            
+            .admin-title h1 {
+                font-size: 24px;
+            }
+            
+            .admin-input {
+                height: 58px;
+                font-size: 16px;
+            }
+            
+            .admin-btn {
+                height: 58px;
+                font-size: 17px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            body {
+                padding: 3px;
+                padding-top: 3vh;
+                padding-bottom: 3vh;
+            }
+            
+            .admin-login {
+                padding: 2.5rem 1.5rem;
+                max-width: 97vw;
+                width: 97vw;
+                min-height: 90vh;
+                border-radius: 16px;
+            }
+            
+            .admin-title h1 {
+                font-size: 22px;
+            }
+            
+            .admin-input {
+                height: 55px;
+                font-size: 15px;
+            }
+            
+            .admin-btn {
+                height: 55px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class='admin-login'>
+        <div class='admin-icon'></div>
+        
+        <div class='admin-title'>
+            <h1>管理员登录</h1>
+            <p>系统后台管理中心</p>
+        </div>
+        
+        <form class="admin-form" method="post" id="adminLoginForm">
+            <div class='input-group'>
+                <div class='input-icon'>👤</div>
+                <input type="text" name="username" class="admin-input" 
+                       placeholder="管理员账号" 
+                       required>
+            </div>
+            
+            <div class='input-group'>
+                <div class='input-icon'>🔒</div>
+                <input type="password" name="password" class="admin-input" 
+                       placeholder="登录密码" 
+                       required>
+            </div>
+            
+            <div class='admin-submit'>
+                <button type='submit' class="admin-btn">立即登录</button>
+            </div>
+            
+            <div class="admin-status"></div>
+        </form>
+        
+        <div class='admin-footer'>
+            <p>© 2024 系统管理后台 | <a href="/">返回首页</a></p>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/Public/statics/js/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#adminLoginForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const status = $('.admin-status');
+                const submitBtn = $('.admin-btn');
+                const originalBtnText = submitBtn.text();
+                
+                // 显示加载状态
+                submitBtn.text('登录中...');
+                submitBtn.prop('disabled', true);
+                status.show().removeClass('error').text('正在验证管理员身份...');
+                
+                // 获取表单数据
+                const formData = $(this).serialize();
+                
+                // 发送登录请求
+                $.ajax({
+                    url: $(this).attr('action') || window.location.href,
+                    method: 'POST',
+                    data: formData,
+                    timeout: 10000,
+                    success: function(response) {
+                        status.removeClass('error').text('登录成功，正在跳转...');
+                        setTimeout(function() {
+                            if (response.url) {
+                                window.location.href = response.url;
+                            } else {
+                                window.location.reload();
+                            }
+                        }, 1000);
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        status.addClass('error');
+                        if (xhr.status === 401) {
+                            status.text('用户名或密码错误');
+                        } else if (textStatus === 'timeout') {
+                            status.text('请求超时，请检查网络连接');
+                        } else {
+                            status.text('登录失败，请稍后重试');
+                        }
+                    },
+                    complete: function() {
+                        submitBtn.text(originalBtnText);
+                        submitBtn.prop('disabled', false);
+                    }
+                });
+            });
+            
+            // 输入框焦点效果
+            $('.admin-input').on('focus', function() {
+                $(this).closest('.input-group').addClass('focused');
+            }).on('blur', function() {
+                $(this).closest('.input-group').removeClass('focused');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,300 @@
+/**
+ * 后台公共组件样式
+ * 提取自 Users/list, Order/index, Level/index, Nav/index, Notification/index, Dingyue/list
+ * 依赖：design-tokens.css（通过 base.html 引入）
+ */
+
+/* ---------- 面包屑导航 ---------- */
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.breadcrumb-item {
+    display: flex;
+    align-items: center;
+}
+
+.breadcrumb-item a {
+    color: var(--color-primary, #1677ff);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--color-primary-active, #0958d9);
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: var(--color-text-placeholder, #8c8c8c);
+}
+
+.breadcrumb-item i { font-size: 14px; }
+
+.breadcrumb-item:not(:last-child)::after {
+    content: '/';
+    color: var(--color-border, #d9d9d9);
+    margin-left: 8px;
+    font-size: 12px;
+}
+
+/* ---------- 导航标签 ---------- */
+.nav-tabs {
+    border-bottom: none;
+    margin-bottom: 20px;
+    background: transparent;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.nav-tabs .nav-item { margin-right: 8px; }
+
+.nav-tabs .nav-link {
+    border: none;
+    color: var(--color-text-secondary, #595959);
+    padding: 12px 20px;
+    border-radius: var(--radius, 6px);
+    background: #f5f5f5;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.nav-tabs .nav-link.active {
+    background: var(--color-primary, #1677ff);
+    color: white;
+    border: none;
+    box-shadow: 0 2px 8px rgba(22, 119, 255, 0.3);
+}
+
+.nav-tabs .nav-link:hover {
+    background: #e6f7ff;
+    color: var(--color-primary, #1677ff);
+    transform: translateY(-1px);
+}
+
+/* ---------- 页面导航 ---------- */
+.page-navigation {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: var(--radius-lg, 8px);
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.page-navigation .nav-item {
+    display: flex;
+    align-items: center;
+    color: #6c757d;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.page-navigation .nav-item:hover {
+    color: var(--color-primary, #1677ff);
+    text-decoration: none;
+}
+
+.page-navigation .nav-item.active {
+    color: var(--color-primary, #1677ff);
+    font-weight: 500;
+}
+
+.page-navigation .nav-separator {
+    color: #dee2e6;
+    margin: 0 4px;
+}
+
+/* ---------- 卡片 ---------- */
+.card {
+    border: none;
+    border-radius: var(--radius-xl, 12px);
+    box-shadow: var(--shadow, 0 4px 8px rgba(0,0,0,0.05));
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background: #fafafa;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 16px 20px;
+    font-weight: 500;
+}
+
+/* ---------- 表格 ---------- */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table { margin: 0; font-size: 14px; }
+
+.table th {
+    background-color: #fafafa;
+    font-weight: 500;
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.table td {
+    padding: 16px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(22, 119, 255, 0.05);
+}
+
+/* ---------- 按钮 ---------- */
+.btn {
+    border-radius: var(--radius, 6px);
+    font-size: 14px;
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-primary { background: var(--color-primary, #1677ff); border-color: var(--color-primary, #1677ff); color: #fff; }
+.btn-primary:hover { background: var(--color-primary-hover, #4096ff); border-color: var(--color-primary-hover, #4096ff); }
+.btn-danger { background: var(--color-danger, #ff4d4f); border-color: var(--color-danger, #ff4d4f); color: #fff; }
+.btn-danger:hover { opacity: 0.85; }
+.btn-warning { background: var(--color-warning, #faad14); border-color: var(--color-warning, #faad14); color: #fff; }
+.btn-warning:hover { opacity: 0.85; }
+.btn-info { background: var(--color-info, #1890ff); border-color: var(--color-info, #1890ff); color: #fff; }
+.btn-info:hover { opacity: 0.85; }
+.btn-success { background: var(--color-success, #52c41a); border-color: var(--color-success, #52c41a); color: #fff; }
+.btn-success:hover { opacity: 0.85; }
+.btn-default { background: #fff; border: 1px solid var(--color-border, #d9d9d9); color: var(--color-text, #262626); }
+.btn-default:hover { color: var(--color-primary, #1677ff); border-color: var(--color-primary, #1677ff); }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+
+/* ---------- 表单 ---------- */
+.form-control {
+    border: 1px solid var(--color-border, #d9d9d9);
+    border-radius: var(--radius, 6px);
+    padding: 8px 12px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.form-control:focus {
+    border-color: var(--color-primary, #1677ff);
+    box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+    outline: none;
+}
+
+/* ---------- 徽章 ---------- */
+.badge {
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* ---------- 提示框 ---------- */
+.alert {
+    border-radius: var(--radius-lg, 8px);
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    border: none;
+}
+
+.alert-success { background: #f6ffed; color: #389e0d; }
+.alert-danger { background: #fff2f0; color: #cf1322; }
+.alert-warning { background: #fffbe6; color: #d48806; }
+.alert-info { background: #e6f7ff; color: #096dd9; }
+
+/* ---------- 分页 ---------- */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 4px;
+}
+
+.pagination a,
+.pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 8px;
+    border-radius: var(--radius, 6px);
+    border: 1px solid var(--color-border, #d9d9d9);
+    color: var(--color-text, #262626);
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.pagination a:hover {
+    color: var(--color-primary, #1677ff);
+    border-color: var(--color-primary, #1677ff);
+}
+
+.pagination .current,
+.pagination .active,
+.pagination span.current {
+    background: var(--color-primary, #1677ff);
+    color: #fff;
+    border-color: var(--color-primary, #1677ff);
+}
+
+.pagination-jump {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pagination-jump input {
+    width: 50px;
+    height: 36px;
+    text-align: center;
+    border: 1px solid var(--color-border, #d9d9d9);
+    border-radius: var(--radius, 6px);
+}
+
+.pagination-jump button {
+    height: 36px;
+    padding: 0 12px;
+    background: var(--color-primary, #1677ff);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius, 6px);
+    cursor: pointer;
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 768px) {
+    .table th, .table td { padding: 10px 8px; font-size: 13px; }
+    .nav-tabs { flex-wrap: wrap; gap: 4px; }
+    .nav-tabs .nav-link { padding: 8px 14px; font-size: 13px; }
+    .breadcrumb { font-size: 13px; flex-wrap: wrap; }
+    .pagination-container { gap: 8px; }
+}

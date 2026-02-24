@@ -1,0 +1,32 @@
+/**
+ * 基础样式：重置、body、字体
+ * 依赖：design-tokens.css
+ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+    font-size: 14px;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-sans);
+    font-size: var(--font-size);
+    line-height: 1.6;
+    color: var(--color-text);
+    background-color: var(--color-bg-page);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: var(--color-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+img { max-width: 100%; height: auto; vertical-align: middle; }
+
+/* 触控友好：最小点击区域 */
+@media (max-width: 767px) {
+    body { font-size: 15px; }
+}

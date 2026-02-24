@@ -1,0 +1,2421 @@
+<extend name="Public:base" />
+<block name="title">订阅列表</block>
+<block name="content">
+    <style>
+        /* ==================== 基础样式 ==================== */
+        .page-content {
+            padding: 15px;
+            background: #fff;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            margin: 0;
+            width: 100%;
+            text-align: left;
+        }
+
+        .table-container {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            text-align: left;
+        }
+
+        .table {
+            margin: 0;
+            font-size: 15px;
+            table-layout: fixed;
+            width: 100%;
+            min-width: 100%;
+            text-align: left;
+        }
+
+        /* 表格列宽设置 */
+        .table th:nth-child(1), .table td:nth-child(1) { width: 60px; } /* 复选框 */
+        .table th:nth-child(2), .table td:nth-child(2) { width: 100px; } /* QQ号码 */
+        .table th:nth-child(3), .table td:nth-child(3) { width: 140px; } /* 结束时间 */
+        .table th:nth-child(4), .table td:nth-child(4) { width: 70px; } /* 二维码 */
+        .table th:nth-child(5), .table td:nth-child(5) { width: 150px; } /* 手机短链 */
+        .table th:nth-child(6), .table td:nth-child(6) { width: 150px; } /* clash短链 */
+        .table th:nth-child(7), .table td:nth-child(7) { width: 80px; } /* 添加时间 */
+        .table th:nth-child(8), .table td:nth-child(8) { width: 80px; } /* 结束时间 */
+        .table th:nth-child(9), .table td:nth-child(9) { width: 60px; } /* 苹果 */
+        .table th:nth-child(10), .table td:nth-child(10) { width: 60px; } /* clash */
+        .table th:nth-child(11), .table td:nth-child(11) { width: 60px; } /* 在线 */
+        .table th:nth-child(12), .table td:nth-child(12) { width: 120px; } /* 最大设备数 */
+        .table th:nth-child(13), .table td:nth-child(13) { width: auto; min-width: 160px; } /* 操作 */
+
+        /* 表格头部样式 */
+        .table th {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            font-weight: 600;
+            padding: 12px 14px;
+            border-bottom: 2px solid var(--border-color);
+            font-size: 15px;
+            white-space: nowrap;
+            color: #495057;
+            text-align: center !important;
+        }
+
+        .table th span, .table th div {
+            text-align: center !important;
+        }
+
+        /* 表格单元格样式 */
+        .table td {
+            padding: 10px 14px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f3f4;
+            font-size: 15px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .table tbody tr {
+            height: auto;
+            min-height: 50px;
+            transition: var(--transition);
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(22, 119, 255, 0.08) !important;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        /* 文本列左对齐 */
+        .table td:nth-child(2), .table td:nth-child(5), .table td:nth-child(6), .table td:nth-child(7), .table td:nth-child(8) {
+            text-align: left;
+            white-space: normal;
+            word-break: break-all;
+        }
+
+        /* 操作列两排布局 - 使用grid布局 */
+        .table td:nth-child(13) {
+            text-align: right;
+            white-space: normal;
+            padding: 6px 8px;
+            width: 200px !important;
+            max-width: 200px !important;
+            min-width: 200px !important;
+            flex: none !important;
+            display: grid !important;
+            grid-template-columns: repeat(3, 60px) !important;
+            grid-template-rows: repeat(2, auto) !important;
+            gap: 4px !important;
+            justify-content: end !important;
+        }
+
+        .table td:nth-child(13) .btn {
+            display: block !important;
+            margin: 0 !important;
+            width: 60px !important;
+            min-width: 60px !important;
+            max-width: 60px !important;
+            text-align: center;
+            float: none !important;
+            font-size: 13px !important;
+            padding: 6px 4px !important;
+            border-radius: 4px !important;
+        }
+
+        /* ==================== 按钮样式 ==================== */
+        .btn-xs {
+            font-size: 13px;
+            padding: 6px 8px;
+            margin: 2px;
+            border-radius: 4px;
+            font-weight: 500;
+            min-width: 50px;
+        }
+
+        /* ==================== 表单样式 ==================== */
+        .endtime, .setdrivers-input {
+            max-width: 120px;
+            font-size: 14px;
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            background: #fff;
+            transition: var(--transition);
+        }
+
+        /* 最大设备数输入框宽度调整 */
+        .setdrivers-input {
+            width: 80px !important;
+            max-width: 80px !important;
+        }
+
+        /* 到期时间输入框宽度调整 */
+        .endtime {
+            width: 175px !important;
+            max-width: 175px !important;
+        }
+
+        .endtime:focus, .setdrivers-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.2);
+            outline: none;
+        }
+
+        /* ==================== 快速按钮样式 ==================== */
+        .quick-date-buttons, .quick-device-buttons {
+            display: flex;
+            gap: 4px;
+            margin-top: 4px;
+            flex-wrap: nowrap;
+            align-items: center;
+        }
+
+        .quick-date-btn, .quick-device-btn {
+            font-size: 13px;
+            padding: 4px 10px;
+            border: 1px solid var(--border-color);
+            background: var(--light-bg);
+            color: var(--text-secondary);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            width: 55px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-date-btn:hover, .quick-device-btn:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+            transform: translateY(-1px);
+        }
+
+        /* ==================== 二维码样式 ==================== */
+        .show-qrcode-btn {
+            max-width: 55px !important;
+            max-height: 55px !important;
+            width: auto;
+            height: auto;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .show-qrcode-btn:hover {
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* ==================== 复制链接样式 ==================== */
+        .copy-link {
+            cursor: pointer;
+            color: var(--primary-color);
+            text-decoration: underline;
+            word-break: break-all;
+        }
+
+        .copy-link:active {
+            color: var(--primary-hover);
+        }
+
+        /* ==================== 排序样式 ==================== */
+        .sortable-header {
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            border-radius: var(--radius);
+            background: transparent;
+            text-align: center;
+        }
+
+        .sortable-header span {
+            text-align: center;
+            flex: 1;
+        }
+
+        .sortable-header:hover {
+            background: var(--primary-light);
+            color: var(--primary-color);
+        }
+
+        .sortable-header.active {
+            background: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .sort-arrow {
+            margin-left: 4px;
+            font-size: 14px;
+            color: var(--text-muted);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .sortable-header:hover .sort-arrow {
+            color: var(--primary-color);
+        }
+
+        .sortable-header.active .sort-arrow {
+            color: var(--primary-color);
+        }
+
+        .sort-arrow .fa-sort {
+            opacity: 0.5;
+        }
+
+        .sort-arrow .fa-sort-up, .sort-arrow .fa-sort-down {
+            opacity: 1;
+            font-weight: bold;
+        }
+
+        .sort-arrow .fa-sort-up {
+            color: var(--success-color);
+        }
+
+        .sort-arrow .fa-sort-down {
+            color: var(--danger-color);
+        }
+
+        .sort-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-left: 4px;
+        }
+
+        .sort-indicator.active {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        /* ==================== 搜索表单样式 ==================== */
+        .search-form {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            margin-right: 15px;
+            flex-wrap: nowrap;
+        }
+
+        .search-form input[type="text"] {
+            margin-right: 10px;
+            width: 250px;
+            flex-shrink: 0;
+        }
+
+        .search-form .btn {
+            font-size: 16px;
+            padding: 8px 16px;
+            height: 40px;
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+
+        /* ==================== 排序状态栏 ==================== */
+        .sort-status-bar {
+            background: var(--primary-light);
+            border: 1px solid #d6e4ff;
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+        }
+
+        .sort-status-bar i {
+            color: var(--primary-color);
+        }
+
+        .sort-status-bar span:first-child {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .sort-status-bar span:nth-child(3) {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .sort-status-bar a {
+            margin-left: auto;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .sort-status-bar a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        /* ==================== 模态框样式 ==================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .column-settings {
+            margin-bottom: 20px;
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .setting-item label {
+            min-width: 100px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .setting-item input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+            margin: 0 10px;
+        }
+
+        .setting-item input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .setting-item input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .setting-item input[type="range"]::-webkit-slider-track {
+            background: #e0e0e0;
+            border-radius: 3px;
+            height: 6px;
+        }
+
+        .setting-item input[type="range"]::-moz-range-track {
+            background: #e0e0e0;
+            border-radius: 3px;
+            height: 6px;
+            border: none;
+        }
+
+        .setting-item span {
+            min-width: 50px;
+            text-align: right;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* ==================== 二维码模态框 ==================== */
+        .qrcode-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .qrcode-modal img {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+            background-color: white;
+            padding: 10px;
+            border-radius: var(--radius);
+        }
+
+        /* ==================== 批量操作样式 ==================== */
+        .batch-actions-with-pagination {
+            background: var(--light-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 20px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        }
+
+        .batch-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pagination-info {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .pagination-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* ==================== 手机端卡片样式 ==================== */
+        .mobile-card-list {
+            display: none;
+        }
+
+        .mobile-card {
+            background: linear-gradient(145deg, #ffffff, var(--light-bg));
+            border: 1px solid #e3f2fd;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .mobile-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.08);
+            border-color: var(--primary-color);
+        }
+
+        .mobile-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e3f2fd;
+            background: linear-gradient(90deg, rgba(22, 119, 255, 0.05), rgba(22, 119, 255, 0.02));
+            margin: -16px -16px 16px -16px;
+            padding: 12px 16px;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .mobile-card-qq {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.8);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(22, 119, 255, 0.2);
+        }
+
+        .mobile-card-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .mobile-card-status.enabled {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .mobile-card-status.disabled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .mobile-card-content {
+            margin-bottom: 16px;
+        }
+
+        .mobile-card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+            min-height: 36px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(22, 119, 255, 0.08);
+        }
+
+        .mobile-card-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .mobile-card-label {
+            color: #555;
+            font-weight: 500;
+            flex: 1;
+            font-size: 13px;
+        }
+
+        .mobile-card-value {
+            color: var(--primary-color);
+            text-align: right;
+            flex: 1;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .mobile-card-value input {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid #e3f2fd;
+            border-radius: 8px;
+            font-size: 13px;
+            text-align: center;
+            background: rgba(22, 119, 255, 0.02);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .mobile-card-value input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: #fff;
+            box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+        }
+
+        .mobile-card-links {
+            margin: 16px 0;
+            background: linear-gradient(135deg, var(--light-bg), #e3f2fd);
+            border-radius: 12px;
+            padding: 12px;
+            border: 1px solid rgba(22, 119, 255, 0.1);
+        }
+
+        .mobile-card-link {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(22, 119, 255, 0.15);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            word-break: break-all;
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+        }
+
+        .mobile-card-link:last-child {
+            margin-bottom: 0;
+        }
+
+        .mobile-card-link:hover {
+            background: #e3f2fd;
+            transform: scale(0.98);
+        }
+
+        .mobile-card-link-icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .mobile-card-link-text {
+            flex: 1;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .mobile-card-link-url {
+            flex: 2;
+            font-size: 12px;
+            color: #42a5f5;
+        }
+
+        .mobile-card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .mobile-card-actions .btn {
+            font-size: 14px;
+            padding: 12px 8px;
+            margin: 0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .mobile-card-actions .btn i {
+            font-size: 12px;
+        }
+
+        .mobile-card-checkbox {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            transform: scale(1.3);
+            z-index: 10;
+        }
+
+        /* ==================== 响应式设计 ==================== */
+        @media (max-width: 768px) {
+            /* 手机端操作列布局重置 */
+            .table td:nth-child(13) {
+                display: block !important;
+                text-align: center !important;
+                width: auto !important;
+                max-width: none !important;
+                min-width: auto !important;
+                grid-template-columns: none !important;
+                grid-template-rows: none !important;
+                gap: 0 !important;
+                justify-content: initial !important;
+            }
+
+            .table td:nth-child(13) .btn {
+                display: inline-block !important;
+                margin: 2px !important;
+                width: auto !important;
+                min-width: auto !important;
+                max-width: none !important;
+            }
+
+            /* 隐藏桌面端表格 */
+            .table-responsive {
+                display: none;
+            }
+
+            /* 显示手机端卡片列表 */
+            .mobile-card-list {
+                display: block;
+            }
+
+            /* 搜索表单优化 */
+            .search-form {
+                flex-direction: column !important;
+                gap: 10px !important;
+            }
+
+            .search-form input[type="text"] {
+                width: 100% !important;
+                min-width: auto !important;
+                margin-right: 0 !important;
+            }
+
+            .search-form .btn {
+                width: 100% !important;
+                justify-content: center;
+                height: 40px;
+                font-size: 16px;
+            }
+
+            /* 批量操作按钮优化 */
+            .batch-actions {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                margin: 20px 0;
+            }
+
+            .batch-actions .btn {
+                font-size: 14px;
+                padding: 12px 8px;
+                margin: 0;
+                border-radius: 8px;
+            }
+
+            /* 排序样式优化 */
+            .sortable-header {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+
+            .sort-arrow {
+                margin-left: 4px;
+                font-size: 12px;
+            }
+
+            .sort-indicator {
+                font-size: 11px;
+                margin-left: 2px;
+            }
+
+            .sort-indicator.active {
+                display: none;
+            }
+
+            /* 模态框优化 */
+            #column-settings-modal {
+                width: 90% !important;
+                max-width: 300px !important;
+                border-radius: 8px !important;
+            }
+
+            .modal-header {
+                padding: 15px;
+            }
+
+            .modal-body {
+                padding: 15px;
+            }
+
+            .setting-item label {
+                min-width: 80px;
+                font-size: 14px;
+            }
+
+            .setting-item input[type="checkbox"] {
+                transform: scale(1.2);
+                margin-right: 10px;
+            }
+
+            /* 输入框优化 */
+            .mobile-card-value input {
+                background: var(--light-bg);
+                border: 1px solid var(--border-color);
+                transition: var(--transition);
+            }
+
+            .mobile-card-value input:focus {
+                background: #fff;
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 2px rgba(22, 165, 245, 0.2);
+                outline: none;
+            }
+
+            /* 链接点击效果 */
+            .mobile-card-link {
+                cursor: pointer;
+                user-select: none;
+            }
+
+            .mobile-card-link:hover {
+                background: #e3f2fd;
+            }
+
+            /* 按钮布局优化 */
+            .quick-date-buttons {
+                display: flex;
+                gap: 3px;
+                margin-top: 5px;
+                flex-wrap: nowrap;
+                align-items: center;
+            }
+
+            .quick-date-btn {
+                padding: 3px 8px;
+                font-size: 11px;
+                border: 1px solid #28a745;
+                background: linear-gradient(135deg, #d4edda, #c3e6cb);
+                color: #155724;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: var(--transition);
+                font-weight: 500;
+                width: 30px;
+                text-align: center;
+                box-shadow: 0 1px 3px rgba(40, 167, 69, 0.2);
+            }
+
+            .quick-date-btn:hover {
+                background: linear-gradient(135deg, #28a745, #20c997);
+                color: #fff;
+                transform: translateY(-1px);
+                box-shadow: 0 3px 8px rgba(40, 167, 69, 0.4);
+                border-color: #20c997;
+            }
+
+            .quick-device-buttons {
+                display: flex;
+                gap: 3px;
+                margin-top: 5px;
+                flex-wrap: nowrap;
+                align-items: center;
+            }
+
+            .quick-device-btn {
+                padding: 3px 8px;
+                font-size: 11px;
+                border: 1px solid var(--primary-color);
+                background: linear-gradient(135deg, #cce7ff, #b3daff);
+                color: #004085;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: var(--transition);
+                font-weight: 500;
+                width: 30px;
+                text-align: center;
+                box-shadow: 0 1px 3px rgba(0, 123, 255, 0.2);
+            }
+
+            .quick-device-btn:hover {
+                background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+                color: #fff;
+                transform: translateY(-1px);
+                box-shadow: 0 3px 8px rgba(0, 123, 255, 0.4);
+                border-color: var(--primary-hover);
+            }
+
+            /* 二维码模态框优化 */
+            .qrcode-modal img {
+                max-width: 95%;
+                max-height: 80vh;
+                padding: 15px;
+                border-radius: 8px;
+            }
+
+            /* 隐藏桌面端快速日期按钮 */
+            .desktop-quick-date-buttons {
+                display: none !important;
+            }
+
+            /* 手机端卡片整体优化 */
+            .mobile-card {
+                margin-bottom: 12px !important;
+                padding: 12px !important;
+                border-radius: 12px !important;
+            }
+
+            .mobile-card-header {
+                margin: -12px -12px 12px -12px !important;
+                padding: 10px 12px !important;
+                border-radius: 12px 12px 0 0 !important;
+            }
+
+            .mobile-card-qq {
+                font-size: 16px !important;
+                padding: 3px 10px !important;
+            }
+
+            .mobile-card-row {
+                font-size: 13px !important;
+                min-height: 32px !important;
+                padding: 6px 0 !important;
+                margin-bottom: 8px !important;
+            }
+
+            .mobile-card-label, .mobile-card-value {
+                font-size: 12px !important;
+            }
+
+            /* 手机端按钮优化 */
+            .quick-date-btn, .quick-device-btn {
+                padding: 4px 10px !important;
+                font-size: 12px !important;
+                min-width: 40px !important;
+                border-radius: 6px !important;
+                margin: 2px !important;
+            }
+
+            .quick-date-buttons, .quick-device-buttons {
+                gap: 4px !important;
+                justify-content: center !important;
+                margin-top: 8px !important;
+            }
+
+
+
+            .show-qrcode-btn { 
+                max-width: 80px !important; 
+                max-height: 80px !important; 
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-card-list {
+                display: none;
+            }
+
+            .endtime-date, .setdrivers-input {
+                border: 2px solid var(--primary-color) !important;
+                border-radius: 6px !important;
+                padding: 8px 10px !important;
+                font-size: 16px !important;
+                background: var(--light-bg) !important;
+                transition: var(--transition) !important;
+                outline: none !important;
+            }
+
+            .endtime-date:focus, .setdrivers-input:focus {
+                border-color: var(--primary-hover) !important;
+                box-shadow: 0 0 0 3px rgba(0, 64, 133, 0.2) !important;
+                background: #ffffff !important;
+            }
+
+            .search-form input[name="search"] {
+                border: 3px solid var(--primary-color) !important;
+                border-radius: 8px !important;
+                padding: 12px 18px !important;
+                font-size: 16px !important;
+                background: var(--light-bg) !important;
+                transition: var(--transition) !important;
+                outline: none !important;
+                width: 250px !important;
+                box-shadow: 0 2px 8px rgba(0, 64, 133, 0.1) !important;
+            }
+
+            .search-form input[name="search"]:focus {
+                border-color: var(--primary-hover) !important;
+                box-shadow: 0 0 0 4px rgba(0, 64, 133, 0.2), 0 4px 12px rgba(0, 64, 133, 0.15) !important;
+                background: #ffffff !important;
+                transform: translateY(-1px) !important;
+            }
+        }
+
+        /* 中等屏幕优化 */
+        @media (max-width: 1200px) {
+            .table-container {
+                max-width: 100%;
+            }
+
+            .table th, .table td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+
+            .table td:nth-child(13) .btn {
+                font-size: 12px;
+                padding: 4px 6px;
+                width: 55px !important;
+                min-width: 55px !important;
+                max-width: 55px !important;
+                margin: 0 !important;
+            }
+
+            .table td:nth-child(13) {
+                display: grid !important;
+                grid-template-columns: repeat(3, 55px) !important;
+                grid-template-rows: repeat(2, auto) !important;
+                gap: 3px !important;
+                justify-content: end !important;
+                width: 175px !important;
+                max-width: 175px !important;
+                min-width: 175px !important;
+            }
+
+            .table th:nth-child(1), .table td:nth-child(1) { width: 35px; }
+            .table th:nth-child(2), .table td:nth-child(2) { width: 70px; }
+            .table th:nth-child(3), .table td:nth-child(3) { width: 100px; }
+            .table th:nth-child(4), .table td:nth-child(4) { width: 60px; }
+            .table th:nth-child(5), .table td:nth-child(5) { width: 120px; }
+            .table th:nth-child(6), .table td:nth-child(6) { width: 120px; }
+            .table th:nth-child(7), .table td:nth-child(7) { width: 70px; }
+            .table th:nth-child(8), .table td:nth-child(8) { width: 70px; }
+            .table th:nth-child(9), .table td:nth-child(9) { width: 50px; }
+            .table th:nth-child(10), .table td:nth-child(10) { width: 50px; }
+            .table th:nth-child(11), .table td:nth-child(11) { width: 50px; }
+            .table th:nth-child(12), .table td:nth-child(12) { width: 100px; }
+            .table th:nth-child(13), .table td:nth-child(13) { width: 175px !important; min-width: 175px !important; }
+        }
+
+        /* 超小屏幕优化 */
+        @media (max-width: 480px) {
+            .sortable-header {
+                padding: 4px 6px;
+                font-size: 11px;
+            }
+
+            .sort-arrow {
+                margin-left: 2px;
+                font-size: 9px;
+            }
+
+            .detail-btn {
+                font-size: 9px !important;
+                padding: 1px 3px !important;
+            }
+
+            td {
+                padding: 2px 1px !important;
+                font-size: 11px;
+            }
+
+            .endtime {
+                max-width: 60px !important;
+                font-size: 10px !important;
+            }
+
+        }
+    </style>
+
+    <!-- 面包屑导航 -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Index/index')}">
+                    <i class="fa fa-home"></i>
+                    首页
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Index/index')}">
+                    后台管理
+                </a>
+            </li>
+            <li class="breadcrumb-item active">
+                订阅列表
+            </li>
+        </ol>
+    </nav>
+    
+    <!-- 页面导航路径 -->
+    <div class="page-navigation">
+        <a href="{:U('Admin/Index/index')}" class="nav-item">
+            <i class="fa fa-home"></i>
+            首页
+        </a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/Index/index')}" class="nav-item">
+            后台管理
+        </a>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">
+            订阅管理
+        </div>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">
+            订阅列表
+        </div>
+    </div>
+    
+    <div class="page-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-start">
+                    <ul class="nav nav-tabs border-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{:U('Admin/Dingyue/list')}">订阅列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{:U('Admin/Dingyue/add')}">添加订阅</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- 搜索表单 -->
+                <div class="row mb-2" style="margin-bottom: 15px !important;">
+                    <div class="col-md-12">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <form method="post" class="search-form d-flex align-items-center" style="flex: 1; margin-right: 15px; flex-wrap: nowrap;">
+                                <input type="text" class="form-control" name="search" placeholder="输入QQ或任意订阅地址查询" value="{$data[0]['search']}" style="margin-right: 10px; width: 250px; flex-shrink: 0;">
+                                <button class="btn btn-primary btn-sm" type="submit">搜索</button>
+                                <button id="clean-all-drivers-btn" class="btn btn-danger btn-sm" type="button">清理设备数</button>
+                                <button id="toggle-columns-btn" class="btn btn-warning btn-sm" type="button">列设置</button>
+                                <a href="{:U('Admin/Dingyue/list', array('order'=>'count', 'type'=>($order=='count' && $type=='desc')?'asc':'desc'))}" class="btn btn-info btn-sm">
+                                    <i class="fa fa-apple"></i> 苹果{$order=='count'?($type=='desc'?'↓':'↑'):''}
+                                </a>
+                                <a href="{:U('Admin/Dingyue/list', array('order'=>'drivers', 'type'=>($order=='drivers' && $type=='desc')?'asc':'desc'))}" class="btn btn-success btn-sm">
+                                    <i class="fa fa-users"></i> 在线{$order=='drivers'?($type=='desc'?'↓':'↑'):''}
+                                </a>
+                                <a href="{:U('Admin/Dingyue/list', array('order'=>'addtime', 'type'=>($order=='addtime' && $type=='desc')?'asc':'desc'))}" class="btn btn-secondary btn-sm">
+                                    <i class="fa fa-plus"></i> 最新{$order=='addtime'?($type=='desc'?'↓':'↑'):''}
+                                </a>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- 排序状态显示 -->
+                <if condition="$order">
+                <div class="sort-status-bar" style="background: #f0f8ff; border: 1px solid #d6e4ff; border-radius: 6px; padding: 10px 14px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; font-size: 15px;">
+                    <i class="fa fa-sort" style="color: #1677ff;"></i>
+                    <span style="color: #595959;">当前排序：</span>
+                    <span style="color: #1677ff; font-weight: 500;">
+                        <if condition="$order=='addtime'">添加时间
+                        <elseif condition="$order=='endtime'" />结束时间
+                        <elseif condition="$order=='count'" />苹果
+                        <elseif condition="$order=='clashcount'" />clash
+                        <elseif condition="$order=='drivers'" />在线
+                        <elseif condition="$order=='setdrivers'" />最大设备数
+                        <else />未知字段
+                        </if>
+                    </span>
+                    <span style="color: #8c8c8c;">（{$type=='desc'?'降序':'升序'}）</span>
+                    <a href="{:U('Admin/Dingyue/list')}" style="margin-left: auto; color: #8c8c8c; text-decoration: none; font-size: 14px;">
+                        <i class="fa fa-times"></i> 清除排序
+                    </a>
+                </div>
+                </if>
+                
+
+                
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                        <tr>
+                            <th></th>
+                            <th width="10%">qq号码</th>
+                            <th>结束时间</th>
+                            <th>二维码</th>
+                            <th>手机短链</th>
+                            <th>clash短链</th>
+                            <th class="col-addtime">
+                                <div class="sortable-header {$order=='addtime'?'active':''}" data-order="addtime" data-type="{$order=='addtime' && $type=='desc'?'asc':'desc'}">
+                                    <span>添加时间</span>
+                                    <div class="sort-arrow">
+                                        <if condition="$order=='addtime'">
+                                            <if condition="$type=='desc'">
+                                                <i class="fa fa-sort-down"></i>
+                                                <span class="sort-indicator active">降序</span>
+                                            <else />
+                                                <i class="fa fa-sort-up"></i>
+                                                <span class="sort-indicator active">升序</span>
+                                            </if>
+                                        <else />
+                                            <i class="fa fa-sort"></i>
+                                        </if>
+                                    </div>
+                                </div>
+                            </th>
+                            <th class="col-endtime">
+                                <div class="sortable-header {$order=='endtime'?'active':''}" data-order="endtime" data-type="{$order=='endtime' && $type=='desc'?'asc':'desc'}">
+                                    <span>结束时间</span>
+                                    <div class="sort-arrow">
+                                        <if condition="$order=='endtime'">
+                                            <if condition="$type=='desc'">
+                                                <i class="fa fa-sort-down"></i>
+                                                <span class="sort-indicator active">降序</span>
+                                            <else />
+                                                <i class="fa fa-sort-up"></i>
+                                                <span class="sort-indicator active">升序</span>
+                                            </if>
+                                        <else />
+                                            <i class="fa fa-sort"></i>
+                                        </if>
+                                    </div>
+                                </div>
+                            </th>
+                            <th class="col-count">
+                                <div class="sortable-header {$order=='count'?'active':''}" data-order="count" data-type="{$order=='count' && $type=='desc'?'asc':'desc'}">
+                                    <span>苹果</span>
+                                    <div class="sort-arrow">
+                                        <if condition="$order=='count'">
+                                            <if condition="$type=='desc'">
+                                                <i class="fa fa-sort-down"></i>
+                                                <span class="sort-indicator active">降序</span>
+                                            <else />
+                                                <i class="fa fa-sort-up"></i>
+                                                <span class="sort-indicator active">升序</span>
+                                            </if>
+                                        <else />
+                                            <i class="fa fa-sort"></i>
+                                        </if>
+                                    </div>
+                                </div>
+                            </th>
+                            <th class="col-clashcount">
+                                <div class="sortable-header {$order=='clashcount'?'active':''}" data-order="clashcount" data-type="{$order=='clashcount' && $type=='desc'?'asc':'desc'}">
+                                    <span>clash</span>
+                                    <div class="sort-arrow">
+                                        <if condition="$order=='clashcount'">
+                                            <if condition="$type=='desc'">
+                                                <i class="fa fa-sort-down"></i>
+                                                <span class="sort-indicator active">降序</span>
+                                            <else />
+                                                <i class="fa fa-sort-up"></i>
+                                                <span class="sort-indicator active">升序</span>
+                                            </if>
+                                        <else />
+                                            <i class="fa fa-sort"></i>
+                                        </if>
+                                    </div>
+                                </div>
+                            </th>
+                            <th class="col-drivers">
+                                <div class="sortable-header {$order=='drivers'?'active':''}" data-order="drivers" data-type="{$order=='drivers' && $type=='desc'?'asc':'desc'}">
+                                    <span>在线</span>
+                                    <div class="sort-arrow">
+                                        <if condition="$order=='drivers'">
+                                            <if condition="$type=='desc'">
+                                                <i class="fa fa-sort-down"></i>
+                                                <span class="sort-indicator active">降序</span>
+                                            <else />
+                                                <i class="fa fa-sort-up"></i>
+                                                <span class="sort-indicator active">升序</span>
+                                            </if>
+                                        <else />
+                                            <i class="fa fa-sort"></i>
+                                        </if>
+                                    </div>
+                                </div>
+                            </th>
+                            <th class="col-setdrivers">
+                                <div class="sortable-header {$order=='setdrivers'?'active':''}" data-order="setdrivers" data-type="{$order=='setdrivers' && $type=='desc'?'asc':'desc'}">
+                                    <span>最大设备数</span>
+                                    <div class="sort-arrow">
+                                        <if condition="$order=='setdrivers'">
+                                            <if condition="$type=='desc'">
+                                                <i class="fa fa-sort-down"></i>
+                                                <span class="sort-indicator active">降序</span>
+                                            <else />
+                                                <i class="fa fa-sort-up"></i>
+                                                <span class="sort-indicator active">升序</span>
+                                            </if>
+                                        <else />
+                                            <i class="fa fa-sort"></i>
+                                        </if>
+                                    </div>
+                                </div>
+                            </th>
+                            <th>操作</th>
+                        </tr>
+                        <foreach name="data" item="v">
+                            <tr>
+                                <td colspan="13" style="background:#fffbe6;color:#d48806;" <if condition="isset($v['history_match'])">style="background:#fffbe6;color:#d48806;"</if>>
+                                    <if condition="isset($v['history_match'])">
+                                        <b>提示：</b> 该结果通过历史订阅地址查询获得，历史变更时间：{$v['history_match']['change_time']|date='Y-m-d H:i:s',###}，原地址：{$v['history_match']['old_url']}，新地址：{$v['history_match']['new_url']}
+                                    </if>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="all" name="all" value="{$v['id']}"></td>
+                                <td width="10%">
+                                    <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                                        <span style="margin-bottom: 4px;">{$v['qq']}</span>
+                                        <a href="{:U('Admin/Dingyue/customerDetail',array('id'=>$v['id']))}" class="btn btn-xs btn-success" title="查看客户详情">
+                                            <i class="fa fa-user"></i> 详情
+                                        </a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                                        <input type="date" class="endtime" data="{$v['id']}" value="{$v['endtime']}" style="max-width:120px;">
+                                        <div class="desktop-quick-date-buttons quick-date-buttons">
+                                            <button type="button" class="quick-date-btn" data-days="31" data-id="{$v['id']}">+一月</button>
+                                            <button type="button" class="quick-date-btn" data-days="365" data-id="{$v['id']}">+一年</button>
+                                            <button type="button" class="quick-date-btn" data-days="182" data-id="{$v['id']}">+半年</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><img class="show-qrcode-btn" src="data:image/png;base64,{$v['qrcodeUrl']}" style="max-width:60px;max-height:60px;cursor:pointer;"></td>
+                                <td style="max-width:120px;overflow:auto;">
+                                    <span class="copy-link" data-clipboard-text="{$v['mobileshorturl']}">{$v['mobileshorturl']}</span>
+                                </td>
+                                <td style="max-width:120px;overflow:auto;">
+                                    <span class="copy-link" data-clipboard-text="{$v['clashshorturl']}">{$v['clashshorturl']}</span>
+                                </td>
+                                <td class="col-addtime">{$v['addtime']}</td>
+                                <td class="col-endtime">{$v['endtime']}</td>
+                                <td class="col-count">{$v['count']}</td>
+                                <td class="col-clashcount">{$v['clashcount']}</td>
+                                <td class="col-drivers">{$v['drivers']}</td>
+                                <td class="col-setdrivers">
+                                    <input type="number" min="1" class="setdrivers-input" data-id="{$v['id']}" value="{:isset($v['setdrivers']) ? $v['setdrivers'] : 1}" style="width:80px;">
+                                    <div class="quick-device-buttons">
+                                        <button type="button" class="quick-device-btn" data-devices="5" data-id="{$v['id']}">+5</button>
+                                        <button type="button" class="quick-device-btn" data-devices="10" data-id="{$v['id']}">+10</button>
+                                        <button type="button" class="quick-device-btn" data-devices="15" data-id="{$v['id']}">+15</button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a class="btn btn-xs btn-success" href="{:U('Admin/Dingyue/loginAsUser',array('id'=>$v['id']))}" target="_blank" title="进入用户后台">后台</a>
+                                    <a class="btn btn-xs btn-primary" onClick="return confirm('确定重置该用户的订阅地址吗？');" href="{:U('Admin/Dingyue/resetSubscription',array('id'=>$v['id']))}" title="重置订阅地址">重置</a>
+                                    <a class="btn btn-xs btn-info" href="{:U('Admin/Dingyue/sendmail',array('id'=>$v['id']))}" title="发送邮件">发送</a>
+                                    <a class="btn btn-xs btn-warning" href="{:U('Admin/Dingyue/edit',array('id'=>$v['id']))}" title="修改信息">修改</a>
+                                    <a class="btn btn-xs btn-danger dingyue-del-btn" data-id="{$v['id']}" href="javascript:void(0);" title="删除">删除</a>
+                                    <a class="btn btn-xs btn-danger clean-drivers-btn" data-id="{$v['id']}" href="javascript:void(0);" title="清理在线设备数">清理</a>
+                                </td>
+                            </tr>
+                        </foreach>
+                    </table>
+                    </div>
+                </div>
+                
+                <!-- 手机端卡片列表 -->
+                <div class="mobile-card-list">
+                    <foreach name="data" item="v">
+                        <div class="mobile-card">
+                            <input type="checkbox" class="mobile-card-checkbox all" name="all" value="{$v['id']}">
+                            
+                            <div class="mobile-card-header">
+                                <div class="mobile-card-qq">{$v['qq']}</div>
+                            </div>
+                            
+                            <div class="mobile-card-content">
+                                <div class="mobile-card-row">
+                                    <span class="mobile-card-label">到期时间:</span>
+                                    <div class="mobile-card-value">
+                                        <input type="date" class="endtime-date" data="{$v['id']}" value="{$v['endtime']}" style="width:100%;">
+                                        <div class="quick-date-buttons">
+                                            <button type="button" class="quick-date-btn" data-days="31" data-id="{$v['id']}">+一月</button>
+                                            <button type="button" class="quick-date-btn" data-days="365" data-id="{$v['id']}">+一年</button>
+                                            <button type="button" class="quick-date-btn" data-days="182" data-id="{$v['id']}">+半年</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mobile-card-row">
+                                    <span class="mobile-card-label">最大设备数:</span>
+                                    <div class="mobile-card-value">
+                                        <input type="number" min="1" class="setdrivers-input" data-id="{$v['id']}" value="{:isset($v['setdrivers']) ? $v['setdrivers'] : 1}" style="width:100px;">
+                                        <div class="quick-device-buttons">
+                                            <button type="button" class="quick-device-btn" data-devices="5" data-id="{$v['id']}">+5</button>
+                                            <button type="button" class="quick-device-btn" data-devices="10" data-id="{$v['id']}">+10</button>
+                                            <button type="button" class="quick-device-btn" data-devices="15" data-id="{$v['id']}">+15</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mobile-card-row">
+                                    <span class="mobile-card-label">当前设备数:</span>
+                                    <span class="mobile-card-value">{$v['drivers']} / {$v['setdrivers']}</span>
+                                </div>
+                                <div class="mobile-card-row">
+                                    <span class="mobile-card-label">请求次数:</span>
+                                    <span class="mobile-card-value">{$v['count']}</span>
+                                </div>
+                                <div class="mobile-card-row">
+                                    <span class="mobile-card-label">Clash请求:</span>
+                                    <span class="mobile-card-value">{$v['clashcount']}</span>
+                                </div>
+
+                            </div>
+                            <div class="mobile-card-qrcode">
+                                <div class="mobile-card-qrcode-title">二维码</div>
+                                <img class="mobile-card-qrcode-img show-qrcode-btn" src="data:image/png;base64,{$v['qrcodeUrl']}" alt="QR Code">
+                            </div>
+                            <div class="mobile-card-links">
+                                <div class="mobile-card-link" onclick="copyToClipboard('{$v.mobileshorturl}')">
+                                    <span class="mobile-card-link-icon">📱</span>
+                                    <div class="mobile-card-link-text">手机短链</div>
+                                    <div class="mobile-card-link-url">{$v.mobileshorturl}</div>
+                                </div>
+                                <div class="mobile-card-link" onclick="copyToClipboard('{$v.clashshorturl}')">
+                                    <span class="mobile-card-link-icon">⚡</span>
+                                    <div class="mobile-card-link-text">Clash短链</div>
+                                    <div class="mobile-card-link-url">{$v.clashshorturl}</div>
+                                </div>
+                            </div>
+                            <div class="mobile-card-actions">
+                                <a class="btn btn-xs btn-success" href="{:U('Admin/Dingyue/customerDetail',array('id'=>$v['id']))}" title="客户详情">
+                                    <i class="fa fa-user"></i> 详情
+                                </a>
+                                <a class="btn btn-xs btn-success" href="{:U('Admin/Dingyue/loginAsUser',array('id'=>$v['id']))}" target="_blank" title="进入用户后台">
+                                    <i class="fa fa-sign-in"></i> 后台
+                                </a>
+                                <a class="btn btn-xs btn-primary" onClick="return confirm('确定重置该用户的订阅地址吗？');" href="{:U('Admin/Dingyue/resetSubscription',array('id'=>$v['id']))}" title="重置订阅地址">
+                                    <i class="fa fa-refresh"></i> 重置
+                                </a>
+                                <a class="btn btn-xs btn-info" href="{:U('Admin/Dingyue/sendmail',array('id'=>$v['id']))}">
+                                    <i class="fa fa-envelope"></i> 发送
+                                </a>
+                                <a class="btn btn-xs btn-warning" href="{:U('Admin/Dingyue/edit',array('id'=>$v['id']))}">
+                                    <i class="fa fa-edit"></i> 修改
+                                </a>
+                                <a class="btn btn-xs btn-danger dingyue-del-btn" data-id="{$v['id']}" href="javascript:void(0);">
+                                    <i class="fa fa-trash"></i> 删除
+                                </a>
+                                <a class="btn btn-xs btn-danger clean-drivers-btn" data-id="{$v['id']}" href="javascript:void(0);">
+                                    <i class="fa fa-broom"></i> 清理
+                                </a>
+                                <a class="btn btn-xs btn-success mobile-activate-btn" data-id="{$v['id']}" href="javascript:void(0);" title="激活账号">
+                                    <i class="fa fa-check-circle"></i> 激活
+                                </a>
+                            </div>
+                        </div>
+                    </foreach>
+                </div>
+                <!-- 批量操作 -->
+                <div style="margin:10px 0;">
+                    <span class="inputword">全选</span>
+                    <input type="checkbox" class="alls">
+                </div>
+                <div class="batch-actions-with-pagination">
+                    <div class="batch-actions">
+                        <div id="allDel" class="btn btn-danger">全部删除</div>
+                        <div onClick="return confirm('确定全部发送?');" id="allPush" class="btn btn-info">全部发送</div>
+                        <div onClick="return confirm('确定全部禁用?');" id="allDisable" class="btn btn-warning">全部禁用</div>
+                        <div onClick="return confirm('确定全部启用?');" id="allEnable" class="btn btn-success">全部启用</div>
+                    </div>
+                    <div class="pagination-wrapper">
+                        <div class="pagination" id="pagination-container">{$page}</div>
+                        <div class="pagination-jump">
+                            <span class="jump-label">跳转到</span>
+                            <input type="number" id="jumpPage" min="1" placeholder="页码">
+                            <button id="jumpButton" class="btn btn-primary">确定</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="pagination-info">
+                    <span class="text-muted">共 {$totalCount} 条记录</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 在页面底部添加模态框 -->
+    <div class="qrcode-modal" id="qrcodeModal">
+        <img id="modalQrcode" src="" alt="QR Code">
+    </div>
+    <!-- 列设置模态框 -->
+    <div id="column-settings-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>列宽设置</h3>
+                <button class="close-btn" id="close-settings-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="column-settings">
+                    <div class="setting-item">
+                        <label>QQ号码:</label>
+                        <input type="range" id="qq-width" min="60" max="150" value="100" onchange="updateColumnWidth(2, this.value)">
+                        <span id="qq-width-value">100px</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>结束时间:</label>
+                        <input type="range" id="endtime-width" min="100" max="200" value="140" onchange="updateColumnWidth(3, this.value)">
+                        <span id="endtime-width-value">140px</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>二维码:</label>
+                        <input type="range" id="qrcode-width" min="50" max="100" value="70" onchange="updateColumnWidth(4, this.value)">
+                        <span id="qrcode-width-value">70px</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>手机短链:</label>
+                        <input type="range" id="mobile-width" min="100" max="200" value="150" onchange="updateColumnWidth(5, this.value)">
+                        <span id="mobile-width-value">150px</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>Clash短链:</label>
+                        <input type="range" id="clash-width" min="100" max="200" value="150" onchange="updateColumnWidth(6, this.value)">
+                        <span id="clash-width-value">150px</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>添加时间:</label>
+                        <input type="range" id="addtime-width" min="60" max="120" value="80" onchange="updateColumnWidth(7, this.value)">
+                        <span id="addtime-width-value">80px</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>结束时间:</label>
+                        <input type="range" id="endtime2-width" min="60" max="120" value="80" onchange="updateColumnWidth(8, this.value)">
+                        <span id="endtime2-width-value">80px</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>苹果:</label>
+                        <input type="range" id="apple-width" min="40" max="80" value="60" onchange="updateColumnWidth(9, this.value)">
+                        <span id="apple-width-value">60px</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>clash:</label>
+                        <input type="range" id="clashcount-width" min="40" max="80" value="60" onchange="updateColumnWidth(10, this.value)">
+                        <span id="clashcount-width-value">60px</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>在线:</label>
+                        <input type="range" id="online-width" min="40" max="80" value="60" onchange="updateColumnWidth(11, this.value)">
+                        <span id="online-width-value">60px</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>最大设备数:</label>
+                        <input type="range" id="maxdevices-width" min="80" max="150" value="120" onchange="updateColumnWidth(12, this.value)">
+                        <span id="maxdevices-width-value">120px</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>操作列最小宽度:</label>
+                        <input type="range" id="action-width" min="120" max="300" value="160" onchange="updateActionColumnWidth(this.value)">
+                        <span id="action-width-value">160px</span>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" id="save-settings-btn">保存设置</button>
+                    <button class="btn btn-secondary" id="reset-settings-btn">重置默认</button>
+                    <button class="btn btn-danger" id="cancel-settings-btn">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="__PUBLIC__/statics/js/jquery-3.6.0.min.js"></script>
+    <script src="__PUBLIC__/statics/user/clipboard.min.js"></script>
+    <script src="__PUBLIC__/statics/layer/layer.js"></script>
+    <script type="text/javascript">
+        // 全局函数定义
+        function openColumnSettings() {
+            $('#column-settings-modal').show();
+            loadCurrentSettings();
+        }
+        
+        function closeColumnSettings() {
+            $('#column-settings-modal').hide();
+        }
+        
+        function loadCurrentSettings() {
+            // 从localStorage加载当前设置
+            var settings = JSON.parse(localStorage.getItem('dingyue_column_widths') || '{}');
+            
+            // 设置滑块的值
+            $('#qq-width').val(settings.qq || 100);
+            $('#endtime-width').val(settings.endtime || 140);
+            $('#qrcode-width').val(settings.qrcode || 70);
+            $('#mobile-width').val(settings.mobile || 150);
+            $('#clash-width').val(settings.clash || 150);
+            $('#addtime-width').val(settings.addtime || 80);
+            $('#endtime2-width').val(settings.endtime2 || 80);
+            $('#apple-width').val(settings.apple || 60);
+            $('#clashcount-width').val(settings.clashcount || 60);
+            $('#online-width').val(settings.online || 60);
+            $('#maxdevices-width').val(settings.maxdevices || 120);
+            $('#action-width').val(settings.action || 160);
+            
+            // 更新显示的值
+            updateAllValueDisplays();
+        }
+        
+        function updateColumnWidth(columnIndex, width) {
+            var selector = '.table th:nth-child(' + columnIndex + '), .table td:nth-child(' + columnIndex + ')';
+            $(selector).css('width', width + 'px');
+            
+            // 更新显示的值
+            updateValueDisplay(columnIndex, width);
+        }
+        
+        function updateActionColumnWidth(width) {
+            $('.table th:nth-child(13), .table td:nth-child(13)').css('min-width', width + 'px');
+            $('#action-width-value').text(width + 'px');
+        }
+        
+        function updateValueDisplay(columnIndex, width) {
+            var idMap = {
+                2: 'qq-width-value',
+                3: 'endtime-width-value',
+                4: 'qrcode-width-value',
+                5: 'mobile-width-value',
+                6: 'clash-width-value',
+                7: 'addtime-width-value',
+                8: 'endtime2-width-value',
+                9: 'apple-width-value',
+                10: 'clashcount-width-value',
+                11: 'online-width-value',
+                12: 'maxdevices-width-value'
+            };
+            
+            if (idMap[columnIndex]) {
+                $('#' + idMap[columnIndex]).text(width + 'px');
+            }
+        }
+        
+        function updateAllValueDisplays() {
+            $('#qq-width-value').text($('#qq-width').val() + 'px');
+            $('#endtime-width-value').text($('#endtime-width').val() + 'px');
+            $('#qrcode-width-value').text($('#qrcode-width').val() + 'px');
+            $('#mobile-width-value').text($('#mobile-width').val() + 'px');
+            $('#clash-width-value').text($('#clash-width').val() + 'px');
+            $('#addtime-width-value').text($('#addtime-width').val() + 'px');
+            $('#endtime2-width-value').text($('#endtime2-width').val() + 'px');
+            $('#apple-width-value').text($('#apple-width').val() + 'px');
+            $('#clashcount-width-value').text($('#clashcount-width').val() + 'px');
+            $('#online-width-value').text($('#online-width').val() + 'px');
+            $('#maxdevices-width-value').text($('#maxdevices-width').val() + 'px');
+            $('#action-width-value').text($('#action-width').val() + 'px');
+        }
+        
+        function saveColumnSettings() {
+            var settings = {
+                qq: parseInt($('#qq-width').val()),
+                endtime: parseInt($('#endtime-width').val()),
+                qrcode: parseInt($('#qrcode-width').val()),
+                mobile: parseInt($('#mobile-width').val()),
+                clash: parseInt($('#clash-width').val()),
+                addtime: parseInt($('#addtime-width').val()),
+                endtime2: parseInt($('#endtime2-width').val()),
+                apple: parseInt($('#apple-width').val()),
+                clashcount: parseInt($('#clashcount-width').val()),
+                online: parseInt($('#online-width').val()),
+                maxdevices: parseInt($('#maxdevices-width').val()),
+                action: parseInt($('#action-width').val())
+            };
+            localStorage.setItem('dingyue_column_widths', JSON.stringify(settings));
+            
+            // 应用设置
+            updateColumnWidth(2, settings.qq);
+            updateColumnWidth(3, settings.endtime);
+            updateColumnWidth(4, settings.qrcode);
+            updateColumnWidth(5, settings.mobile);
+            updateColumnWidth(6, settings.clash);
+            updateColumnWidth(7, settings.addtime);
+            updateColumnWidth(8, settings.endtime2);
+            updateColumnWidth(9, settings.apple);
+            updateColumnWidth(10, settings.clashcount);
+            updateColumnWidth(11, settings.online);
+            updateColumnWidth(12, settings.maxdevices);
+            updateActionColumnWidth(settings.action);
+            closeColumnSettings();
+            if (typeof layer !== 'undefined') {
+                layer.msg('列宽设置已保存', {icon: 1});
+            } else {
+                alert('列宽设置已保存');
+            }
+        }
+        
+        function resetColumnSettings() {
+            // 重置为默认值
+            $('#qq-width').val(100);
+            $('#endtime-width').val(140);
+            $('#qrcode-width').val(70);
+            $('#mobile-width').val(150);
+            $('#clash-width').val(150);
+            $('#addtime-width').val(80);
+            $('#endtime2-width').val(80);
+            $('#apple-width').val(60);
+            $('#clashcount-width').val(60);
+            $('#online-width').val(60);
+            $('#maxdevices-width').val(120);
+            $('#action-width').val(160);
+            
+            updateAllValueDisplays();
+            
+            // 应用默认设置
+            updateColumnWidth(2, 100);
+            updateColumnWidth(3, 140);
+            updateColumnWidth(4, 70);
+            updateColumnWidth(5, 150);
+            updateColumnWidth(6, 150);
+            updateColumnWidth(7, 80);
+            updateColumnWidth(8, 80);
+            updateColumnWidth(9, 60);
+            updateColumnWidth(10, 60);
+            updateColumnWidth(11, 60);
+            updateColumnWidth(12, 120);
+            updateActionColumnWidth(160);
+        }
+        
+        function loadColumnSettings() {
+            var settings = JSON.parse(localStorage.getItem('dingyue_column_widths') || '{}');
+            
+            if (Object.keys(settings).length > 0) {
+                // 应用保存的设置
+                if (settings.qq) updateColumnWidth(2, settings.qq);
+                if (settings.endtime) updateColumnWidth(3, settings.endtime);
+                if (settings.qrcode) updateColumnWidth(4, settings.qrcode);
+                if (settings.mobile) updateColumnWidth(5, settings.mobile);
+                if (settings.clash) updateColumnWidth(6, settings.clash);
+                if (settings.addtime) updateColumnWidth(7, settings.addtime);
+                if (settings.endtime2) updateColumnWidth(8, settings.endtime2);
+                if (settings.apple) updateColumnWidth(9, settings.apple);
+                if (settings.clashcount) updateColumnWidth(10, settings.clashcount);
+                if (settings.online) updateColumnWidth(11, settings.online);
+                if (settings.maxdevices) updateColumnWidth(12, settings.maxdevices);
+                if (settings.action) updateActionColumnWidth(settings.action);
+            }
+        }
+        
+        $(function () {
+            // 排序功能点击事件
+            $('.sortable-header').click(function () {
+                var order = $(this).data('order');
+                var type = $(this).data('type');
+                
+                // 显示加载提示
+                layer.load(1, {shade: [0.3, '#000']});
+                
+                var url = new URL(window.location.href);
+                url.searchParams.set('order', order);
+                url.searchParams.set('type', type);
+                // 重置页码到第一页
+                url.searchParams.set('p', '1');
+                
+                // 直接跳转到排序后的页面
+                window.location.href = url.toString();
+            });
+            
+            // 添加排序提示
+            $('.sortable-header').hover(
+                function() {
+                    var order = $(this).data('order');
+                    var type = $(this).data('type');
+                    var orderText = '';
+                    
+                    switch(order) {
+                        case 'addtime': orderText = '添加时间'; break;
+                        case 'endtime': orderText = '结束时间'; break;
+                        case 'count': orderText = '苹果'; break;
+                        case 'clashcount': orderText = 'clash'; break;
+                        case 'drivers': orderText = '在线'; break;
+                        case 'setdrivers': orderText = '最大设备数'; break;
+                        default: orderText = '未知字段';
+                    }
+                    
+                    $(this).attr('title', '点击按' + orderText + (type === 'asc' ? '升序' : '降序') + '排列');
+                },
+                function() {
+                    $(this).removeAttr('title');
+                }
+            );
+            
+            // 快速排序按钮点击效果
+            $('.quick-sort-buttons .btn').click(function() {
+                layer.load(1, {shade: [0.3, '#000']});
+                
+                // 保持其他参数（如搜索参数）
+                var currentUrl = new URL(window.location.href);
+                var href = $(this).attr('href');
+                var targetUrl = new URL(href);
+                
+                // 保持搜索参数
+                var search = currentUrl.searchParams.get('search');
+                if (search) {
+                    targetUrl.searchParams.set('search', search);
+                }
+                
+                // 保持其他可能的参数
+                var tab = currentUrl.searchParams.get('tab');
+                if (tab) {
+                    targetUrl.searchParams.set('tab', tab);
+                }
+                
+                // 更新链接并跳转
+                $(this).attr('href', targetUrl.toString());
+            });
+            
+            // 清除排序按钮点击效果
+            $('.sort-status-bar a').click(function() {
+                layer.load(1, {shade: [0.3, '#000']});
+                
+                // 保持其他参数（如搜索参数、页码等）
+                var currentUrl = new URL(window.location.href);
+                var href = $(this).attr('href');
+                var targetUrl = new URL(href);
+                
+                // 保持搜索参数
+                var search = currentUrl.searchParams.get('search');
+                if (search) {
+                    targetUrl.searchParams.set('search', search);
+                }
+                
+                // 保持标签页参数
+                var tab = currentUrl.searchParams.get('tab');
+                if (tab) {
+                    targetUrl.searchParams.set('tab', tab);
+                }
+                
+                // 保持页码参数
+                var page = currentUrl.searchParams.get('p');
+                if (page) {
+                    targetUrl.searchParams.set('p', page);
+                }
+                
+                // 更新链接并跳转
+                $(this).attr('href', targetUrl.toString());
+            });
+            
+            $('.alls').change(function(){
+                var check = $(this).prop('checked');
+                $('.all').prop('checked',check);
+            })
+            // 单个删除（AJAX）
+            $('.dingyue-del-btn').off('click').on('click', function(){
+                var id = $(this).data('id');
+                layer.confirm('确定删除?', {icon: 3, title:'提示'}, function(index){
+                    $.get('{:U("Admin/Dingyue/del")}?id='+id, function(res){
+                        var successMsg = '该账号下所有订阅、邮件、用户信息、日志、设备记录等信息已全部清除';
+                        if(typeof res === 'string'){
+                            try{res=JSON.parse(res);}catch(e){
+                                layer.msg(successMsg, {icon: 1, time: 1500}, function(){location.reload();});
+                                return;
+                            }
+                        }
+                        layer.msg(res.info || successMsg, {icon: res.status==1?1:2, time: 1500}, function(){
+                            if(res.status==1){location.reload();}
+                        });
+                    }, 'json').fail(function(){
+                        layer.msg('该账号下所有订阅、邮件、用户信息、日志、设备记录等信息已全部清除', {icon: 1, time: 1500}, function(){location.reload();});
+                    });
+                    layer.close(index);
+                });
+            });
+            // 批量操作美化提示
+            function showLayerMsg(msg, success) {
+                layer.msg(msg, {icon: success?1:2, time: 1500}, function(){ if(success) location.reload(); });
+            }
+            // 批量删除
+            $('#allDel').off('click').on('click', function () {
+                var chk_value = getCheckedIds();
+                if(!chk_value){ return; }
+                // 只保留layer.confirm弹窗，去除原生confirm
+                layer.confirm('确定全部删除?', {icon:3, title:'提示'}, function(index){
+                    var hasPopup = false;
+                    $.post('{:U("Admin/Dingyue/allDel")}', {id:chk_value}, function(res){
+                        var successMsg = '所选账号下所有订阅、邮件、用户信息、日志、设备记录等信息已全部清除';
+                        if(typeof res === 'string'){
+                            try{res=JSON.parse(res);}catch(e){
+                                if(!hasPopup){
+                                    hasPopup = true;
+                                    layer.msg(successMsg, {icon: 1, time: 1500}, function(){location.reload();});
+                                }
+                                return;
+                            }
+                        }
+                        if(!hasPopup){
+                            hasPopup = true;
+                            layer.msg(res.info || successMsg, {icon: res.status==1?1:2, time: 1500}, function(){
+                                if(res.status==1){location.reload();}
+                            });
+                        }
+                    }, 'json').fail(function(){
+                        if(!hasPopup){
+                            hasPopup = true;
+                            layer.msg('所选账号下所有订阅、邮件、用户信息、日志、设备记录等信息已全部清除', {icon: 1, time: 1500}, function(){location.reload();});
+                        }
+                    });
+                    layer.close(index);
+                });
+            });
+            // 批量发送
+            $('#allPush').click(function () {
+                var chk_value = getCheckedIds();
+                if(!chk_value){ return; }
+                layer.confirm('确定全部发送?', {icon:3, title:'提示'}, function(index){
+                    $.post("{:U('Admin/Dingyue/allPush')}", {id:chk_value}, function(res){
+                        showLayerMsg(res.info, res.status == 1);
+                    }, 'json');
+                    layer.close(index);
+                });
+            });
+            // 批量禁用
+            $('#allDisable').click(function () {
+                var chk_value = getCheckedIds();
+                if(!chk_value){ return; }
+                layer.confirm('确定全部禁用?', {icon:3, title:'提示'}, function(index){
+                    $.post("{:U('Admin/Dingyue/allDisable')}", {id:chk_value}, function(res){
+                        showLayerMsg(res.info, res.status == 1);
+                    }, 'json');
+                    layer.close(index);
+                });
+            });
+            // 批量启用
+            $('#allEnable').click(function () {
+                var chk_value = getCheckedIds();
+                if(!chk_value){ return; }
+                layer.confirm('确定全部启用?', {icon:3, title:'提示'}, function(index){
+                    $.post("{:U('Admin/Dingyue/allEnable')}", {id:chk_value}, function(res){
+                        showLayerMsg(res.info, res.status == 1);
+                    }, 'json');
+                    layer.close(index);
+                });
+            });
+            // 日期选择器功能
+            $(function(){
+                // 手机端日期输入框变化时自动保存
+                $('.endtime-date').change(function (){
+                    var id = $(this).attr('data');
+                    var vals = $(this).val();
+                    if(vals) {
+                        $.ajax({
+                            url: "{:U('Admin/Dingyue/editTime')}",
+                            type:'post',
+                            data:{id:id,endtime:vals},
+                            success:function(res){
+                                if(window.layer){
+                                    layer.msg(res && res.info ? res.info : '到期时间已更新');
+                                }
+                            }
+                        });
+                    }
+                });
+                
+                // 桌面端日期输入框变化时自动保存
+                $('.endtime').change(function (){
+                    var id = $(this).attr('data');
+                    var vals = $(this).val();
+                    if(vals) {
+                        $.ajax({
+                            url: "{:U('Admin/Dingyue/editTime')}",
+                            type:'post',
+                            data:{id:id,endtime:vals},
+                            success:function(res){
+                                if(window.layer){
+                                    layer.msg(res && res.info ? res.info : '到期时间已更新');
+                                }
+                            }
+                        });
+                    }
+                });
+                
+                // 快速日期按钮功能
+                $('.quick-date-btn').click(function(){
+                    var id = $(this).attr('data-id');
+                    var days = parseInt($(this).attr('data-days'));
+                    
+                    // 获取当前用户的到期时间
+                    var currentEndTime = $('.endtime[data="' + id + '"]').val();
+                    var currentDate = new Date();
+                    var endTimeDate = new Date(currentEndTime);
+                    
+                    var newDate;
+                    
+                    // 判断用户是否在有效期内
+                    if (endTimeDate > currentDate) {
+                        // 在有效期内：在原到期时间基础上累加
+                        endTimeDate.setDate(endTimeDate.getDate() + days);
+                        newDate = endTimeDate.getFullYear() + '-' + 
+                                 String(endTimeDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                 String(endTimeDate.getDate()).padStart(2, '0');
+                    } else {
+                        // 不在有效期内：以当前时间为起点进行添加
+                        currentDate.setDate(currentDate.getDate() + days);
+                        newDate = currentDate.getFullYear() + '-' + 
+                                 String(currentDate.getMonth() + 1).padStart(2, '0') + '-' + 
+                                 String(currentDate.getDate()).padStart(2, '0');
+                    }
+                    
+                    // 更新手机端输入框
+                    $('.endtime-date[data="' + id + '"]').val(newDate);
+                    
+                    // 更新桌面端输入框
+                    $('.endtime[data="' + id + '"]').val(newDate);
+                    
+                    // 自动保存
+                    $.ajax({
+                        url: "{:U('Admin/Dingyue/editTime')}",
+                        type:'post',
+                        data:{id:id,endtime:newDate},
+                        success:function(res){
+                            if(window.layer){
+                                var timeText = '';
+                                if(days === 31) {
+                                    timeText = '一月';
+                                } else if(days === 365) {
+                                    timeText = '一年';
+                                } else if(days === 183) {
+                                    timeText = '半年';
+                                } else {
+                                    timeText = days + '天';
+                                }
+                                layer.msg('到期时间已延长' + timeText);
+                            }
+                        }
+                    });
+                });
+                
+                // 快速设备数量按钮功能
+                $('.quick-device-btn').click(function(){
+                    var id = $(this).attr('data-id');
+                    var devices = parseInt($(this).attr('data-devices'));
+                    var currentValue = parseInt($('.setdrivers-input[data-id="' + id + '"]').val()) || 0;
+                    var newValue = currentValue + devices;
+                    
+                    // 更新输入框值
+                    $('.setdrivers-input[data-id="' + id + '"]').val(newValue);
+                    
+                    // 自动保存
+                    $.ajax({
+                        url: "{:U('Admin/Dingyue/editSetdrivers')}",
+                        type:'post',
+                        data:{id:id,setdrivers:newValue},
+                        success:function(res){
+                            if(window.layer){
+                                layer.msg('设备数量已增加' + devices + '个');
+                            }
+                        }
+                    });
+                });
+            });
+
+            // 复制短链功能
+            var clipboard = new Clipboard('.copy-link', {
+                text: function(trigger) {
+                    return $(trigger).attr('data-clipboard-text');
+                }
+            });
+            clipboard.on('success', function(e) {
+                // 可用layer或alert
+                if(window.layer){
+                    layer.open({content: '已复制到剪贴板'});
+                }else{
+                    alert('已复制到剪贴板');
+                }
+            });
+            clipboard.on('error', function(e) {
+                alert('复制失败，请手动复制');
+            });
+            // 手机端复制功能
+            window.copyToClipboard = function(text) {
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(text).then(function() {
+                        if(window.layer){
+                            layer.open({content: '已复制到剪贴板'});
+                        }else{
+                            alert('已复制到剪贴板');
+                        }
+                    }).catch(function(err) {
+                        fallbackCopyTextToClipboard(text);
+                    });
+                } else {
+                    fallbackCopyTextToClipboard(text);
+                }
+            };
+            
+            function fallbackCopyTextToClipboard(text) {
+                var textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px";
+                textArea.style.top = "-999999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    var successful = document.execCommand('copy');
+                    if (successful) {
+                        if(window.layer){
+                            layer.open({content: '已复制到剪贴板'});
+                        }else{
+                            alert('已复制到剪贴板');
+                        }
+                    } else {
+                        alert('复制失败，请手动复制');
+                    }
+                } catch (err) {
+                    alert('复制失败，请手动复制');
+                }
+                textArea.remove();
+            }
+
+            // 二维码预览功能（点击时放大base64图片）
+            $('.table').on('click', '.show-qrcode-btn', function() {
+                var src = $(this).attr('src');
+                $('#modalQrcode').attr('src', src);
+                $('#qrcodeModal').css('display', 'flex');
+            });
+
+            // 点击模态框关闭
+            $('#qrcodeModal').click(function() {
+                $(this).css('display', 'none');
+            });
+
+            // 阻止点击图片时关闭模态框
+            $('#modalQrcode').click(function(e) {
+                e.stopPropagation();
+            });
+
+            // 由于现在使用传统页面跳转，不需要重新绑定事件
+            // 页码跳转功能
+            $('#jumpButton').click(function () {
+                var page = parseInt($('#jumpPage').val());
+                if (page > 0) {
+                    var url = new URL(window.location.href);
+                    url.searchParams.set('p', page);
+                    // 保持所有现有参数（包括排序参数）
+                    window.location.href = url.toString();
+                } else {
+                    alert('请输入有效的页码');
+                }
+            });
+            
+            // 确保分页链接保持排序参数
+            function updatePaginationLinks() {
+                var currentUrl = new URL(window.location.href);
+                var order = currentUrl.searchParams.get('order');
+                var type = currentUrl.searchParams.get('type');
+                
+                // 如果当前有排序参数，则更新所有分页链接
+                if (order && type) {
+                    $('#pagination-container a').each(function() {
+                        var linkUrl = new URL($(this).attr('href'));
+                        linkUrl.searchParams.set('order', order);
+                        linkUrl.searchParams.set('type', type);
+                        $(this).attr('href', linkUrl.toString());
+                    });
+                }
+            }
+            
+            // 页面加载完成后执行
+            updatePaginationLinks();
+            
+            // 监听分页容器的变化（如果分页是动态加载的）
+            var paginationObserver = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList') {
+                        updatePaginationLinks();
+                    }
+                });
+            });
+            
+            // 开始观察分页容器
+            var paginationContainer = document.getElementById('pagination-container');
+            if (paginationContainer) {
+                paginationObserver.observe(paginationContainer, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+            
+
+
+            // 回车键跳转
+            $('#jumpPage').keypress(function(e) {
+                if (e.which == 13) {
+                    $('#jumpButton').click();
+                }
+            });
+
+            // 提取已选ID的辅助函数
+            function getCheckedIds(){
+                var ids =[];
+                $('input[name="all"]:checked').each(function(){
+                    ids.push($(this).val());
+                });
+                if(ids.length == 0){
+                    layer.msg('请至少选择一项', {icon: 2});
+                    return false;
+                }
+                return ids.join(',');
+            }
+
+            // 列设置功能
+            $('#toggle-columns-btn').click(function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                openColumnSettings();
+            });
+            // 加载保存的列宽设置
+            loadColumnSettings();
+            // 点击模态框外部关闭
+            $(document).on('click', '.modal-overlay', function(e) {
+                if (e.target === this) {
+                    closeColumnSettings();
+                }
+            });
+            
+            // 绑定模态框按钮事件
+            $('#close-settings-btn').click(function() {
+                closeColumnSettings();
+            });
+            
+            $('#save-settings-btn').click(function() {
+                saveColumnSettings();
+            });
+            
+            $('#reset-settings-btn').click(function() {
+                resetColumnSettings();
+            });
+            
+            $('#cancel-settings-btn').click(function() {
+                closeColumnSettings();
+            });
+            
+            // 为滑块添加实时更新事件
+            $(document).on('input', 'input[type="range"]', function() {
+                var id = $(this).attr('id');
+                var value = $(this).val();
+                
+                // 更新显示的值
+                $('#' + id + '-value').text(value + 'px');
+                
+                // 实时应用列宽
+                switch(id) {
+                    case 'qq-width':
+                        updateColumnWidth(2, value);
+                        break;
+                    case 'endtime-width':
+                        updateColumnWidth(3, value);
+                        break;
+                    case 'qrcode-width':
+                        updateColumnWidth(4, value);
+                        break;
+                    case 'mobile-width':
+                        updateColumnWidth(5, value);
+                        break;
+                    case 'clash-width':
+                        updateColumnWidth(6, value);
+                        break;
+                    case 'addtime-width':
+                        updateColumnWidth(7, value);
+                        break;
+                    case 'endtime2-width':
+                        updateColumnWidth(8, value);
+                        break;
+                    case 'apple-width':
+                        updateColumnWidth(9, value);
+                        break;
+                    case 'clashcount-width':
+                        updateColumnWidth(10, value);
+                        break;
+                    case 'online-width':
+                        updateColumnWidth(11, value);
+                        break;
+                    case 'maxdevices-width':
+                        updateColumnWidth(12, value);
+                        break;
+                    case 'action-width':
+                        updateActionColumnWidth(value);
+                        break;
+                }
+            });
+
+            // 设置最大设备数失焦自动保存并有提示
+            $(function(){
+                $('.setdrivers-input').blur(function(){
+                    var id = $(this).data('id');
+                    var val = $(this).val();
+                    $.ajax({
+                        url: "{:U('Admin/Dingyue/editSetdrivers')}",
+                        type: 'post',
+                        data: {id: id, setdrivers: val},
+                        success: function(res){
+                            if(window.layer){
+                                layer.msg(res && res.info ? res.info : '已保存');
+                            }
+                        }
+                    });
+                });
+            });
+            // 一键清理所有在线设备数按钮事件
+            $('#clean-all-drivers-btn').click(function(){
+                layer.confirm('确定要清理所有在线设备数吗？', {icon: 3, title:'提示'}, function(index){
+                    $.post('{:U("Admin/Dingyue/cleanAllDrivers")}', {}, function(res){
+                        layer.msg(res.info, {icon: res.status==1?1:2, time: 1500}, function(){
+                            if(res.status==1){location.reload();}
+                        });
+                    }, 'json');
+                    layer.close(index);
+                });
+            });
+            // 清理在线设备数按钮事件
+            $(document).on('click', '.clean-drivers-btn', function(){
+                var id = $(this).data('id');
+                layer.confirm('确定要清理该账号下所有在线设备记录吗？', {icon: 3, title:'提示'}, function(index){
+                    $.post('{:U("Admin/Dingyue/cleanDrivers")}', {id: id}, function(res){
+                        layer.msg(res.info, {icon: res.status==1?1:2, time: 1500}, function(){
+                            if(res.status==1){location.reload();}
+                        });
+                    }, 'json');
+                    layer.close(index);
+                });
+            });
+            
+            // 手机端激活按钮事件
+            $(document).on('click', '.mobile-activate-btn', function(){
+                var id = $(this).data('id');
+                layer.confirm('确定要激活该账号吗？', {icon: 3, title:'提示'}, function(index){
+                    $.post('{:U("Admin/Dingyue/allEnable")}', {id: [id]}, function(res){
+                        layer.msg('激活成功', {icon: 1, time: 1500}, function(){
+                            location.reload();
+                        });
+                    }, 'json');
+                    layer.close(index);
+                });
+            });
+            
+            // 选项卡点击事件处理
+            $('.nav-tabs .nav-link').click(function(e){
+                // 移除所有活动状态
+                $('.nav-tabs .nav-link').removeClass('active');
+                // 添加当前点击项的活动状态
+                $(this).addClass('active');
+                
+                // 更新页面导航路径
+                var tabText = $(this).text();
+                updatePageNavigation(tabText);
+            });
+            
+            // 更新页面导航路径函数
+            function updatePageNavigation(currentTab) {
+                var navigationHtml = `
+                    <a href="{:U('Admin/Index/index')}" class="nav-item">
+                        <i class="fa fa-home"></i>
+                        首页
+                    </a>
+                    <div class="nav-separator">/</div>
+                    <a href="{:U('Admin/Index/index')}" class="nav-item">
+                        后台管理
+                    </a>
+                    <div class="nav-separator">/</div>
+                    <div class="nav-item active">
+                        订阅管理
+                    </div>
+                    <div class="nav-separator">/</div>
+                    <div class="nav-item active">
+                        ${currentTab}
+                    </div>
+                `;
+                $('.page-navigation').html(navigationHtml);
+            }
+        })
+    </script>
+            </div>
+        </div>
+    </div>
+</block>
+

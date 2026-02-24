@@ -1,0 +1,125 @@
+port: 7890
+allow-lan: true
+mode: rule
+log-level: info
+unified-delay: true
+global-client-fingerprint: chrome
+dns:
+  enable: false
+  listen: :53
+  ipv6: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  default-nameserver: 
+    - 223.5.5.5
+    - 8.8.8.8
+  nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  fallback:
+    - https://1.0.0.1/dns-query
+    - tls://dns.google
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    ipcidr:
+      - 240.0.0.0/4
+
+proxies:
+- name: vless-reality-vision-iZt4n22rya9pbpwzpto613Z               
+  type: vless
+  server: 47.236.50.101                           
+  port: 41763                                
+  uuid: 0822c3e5-7d83-4e57-9b11-f6b6ced8303b   
+  network: tcp
+  udp: true
+  tls: true
+  flow: xtls-rprx-vision
+  servername: www.yahoo.com                 
+  reality-opts: 
+    public-key: X1h3WfhugDXYnimVhfMTuL67jlpAC8W7VM4KJb3I0SQ    
+    short-id: 70142969                    
+  client-fingerprint: chrome                  
+
+- name: vmess-ws-iZt4n22rya9pbpwzpto613Z                         
+  type: vmess
+  server: 47.236.50.101                        
+  port: 57311                                     
+  uuid: 0822c3e5-7d83-4e57-9b11-f6b6ced8303b       
+  alterId: 0
+  cipher: auto
+  udp: true
+  tls: false
+  network: ws
+  servername: www.bing.com                    
+  ws-opts:
+    path: "0822c3e5-7d83-4e57-9b11-f6b6ced8303b-vm"                             
+    headers:
+      Host: www.bing.com                     
+
+
+
+
+
+- name: hysteria2-iZt4n22rya9pbpwzpto613Z                            
+  type: hysteria2                                      
+  server: 47.236.50.101                               
+  port: 12039                                
+  password: 0822c3e5-7d83-4e57-9b11-f6b6ced8303b                          
+  alpn:
+    - h3
+  sni: www.bing.com                               
+  skip-cert-verify: true
+  fast-open: true
+
+- name: tuic5-iZt4n22rya9pbpwzpto613Z                            
+  server: 47.236.50.101                      
+  port: 24532                                    
+  type: tuic
+  uuid: 0822c3e5-7d83-4e57-9b11-f6b6ced8303b       
+  password: 0822c3e5-7d83-4e57-9b11-f6b6ced8303b   
+  alpn: [h3]
+  disable-sni: true
+  reduce-rtt: true
+  udp-relay-mode: native
+  congestion-controller: bbr
+  sni: www.bing.com                                
+  skip-cert-verify: true
+
+proxy-groups:
+- name: 负载均衡
+  type: load-balance
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  strategy: round-robin
+  proxies:
+    - vless-reality-vision-iZt4n22rya9pbpwzpto613Z                              
+    - vmess-ws-iZt4n22rya9pbpwzpto613Z
+    - hysteria2-iZt4n22rya9pbpwzpto613Z
+    - tuic5-iZt4n22rya9pbpwzpto613Z
+
+- name: 自动选择
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  proxies:
+    - vless-reality-vision-iZt4n22rya9pbpwzpto613Z                              
+    - vmess-ws-iZt4n22rya9pbpwzpto613Z
+    - hysteria2-iZt4n22rya9pbpwzpto613Z
+    - tuic5-iZt4n22rya9pbpwzpto613Z
+    
+- name: 🌍选择代理节点
+  type: select
+  proxies:
+    - 负载均衡                                         
+    - 自动选择
+    - DIRECT
+    - vless-reality-vision-iZt4n22rya9pbpwzpto613Z                              
+    - vmess-ws-iZt4n22rya9pbpwzpto613Z
+    - hysteria2-iZt4n22rya9pbpwzpto613Z
+    - tuic5-iZt4n22rya9pbpwzpto613Z
+rules:
+  - GEOIP,LAN,DIRECT
+  - GEOIP,CN,DIRECT
+  - MATCH,🌍选择代理节点

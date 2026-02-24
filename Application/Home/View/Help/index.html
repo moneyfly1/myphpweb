@@ -1,0 +1,338 @@
+<extend name="Public:layout" />
+<block name="title">帮助文档</block>
+<block name="head">
+    <link rel="stylesheet" href="/Public/statics/user/login/layui/css/layui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .help-page .container { max-width: 1200px; margin: 0 auto; padding: var(--space-4); }
+        .help-page .page-header { margin-bottom: var(--space-6); }
+        .help-page .page-header h1 { margin: 0 0 var(--space-2); font-size: var(--font-size-lg); }
+        .help-content { }
+        .help-card { background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow); margin-bottom: var(--space-4); padding: var(--space-4); }
+        .help-card h3 { margin: 0 0 var(--space-3); display: flex; align-items: center; gap: var(--space-2); }
+        .help-card .icon { font-size: 1.5rem; }
+        .help-card .content { color: var(--color-text-secondary); }
+        .help-card .highlight { color: var(--color-primary); font-weight: 600; }
+        .download-section { display: flex; flex-wrap: wrap; gap: var(--space-4); margin-top: var(--space-3); }
+        .download-item { display: flex; align-items: center; justify-content: space-between; padding: var(--space-3); background: var(--color-bg-page); border-radius: var(--radius); min-width: 200px; }
+        .download-btn { padding: var(--space-2) var(--space-4); background: var(--color-primary); color: #fff; border-radius: var(--radius); text-decoration: none; }
+        .plan-card { cursor: pointer; padding: var(--space-4); border: 2px solid var(--color-border); border-radius: var(--radius-lg); }
+        .plan-card.selected { border-color: var(--color-primary); background: rgba(22,119,255,.05); }
+        .payment-option { cursor: pointer; padding: var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius); }
+        .payment-option.selected { border-color: var(--color-primary); }
+        @media (max-width: 767px) { .help-page .container { padding: var(--space-3); } }
+    </style>
+</block>
+<block name="content">
+<div class="help-page">
+    <div class="container" style="padding-top:0;">
+
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h1>帮助文档</h1>
+            <p>快速了解如何使用我们的科学上网服务</p>
+        </div>
+
+        <!-- 帮助内容 -->
+        <div class="help-content">
+            <!-- 快速开始 -->
+            <div class="help-card">
+                <h3>
+                    <div class="icon">🚀</div>
+                    快速开始
+                </h3>
+                <div class="content">
+                    <p>欢迎使用我们的VPN服务！按照以下步骤快速开始：</p>
+                    <ul>
+                        <li>1. 选择合适的<span class="highlight">套餐订阅</span></li>
+                        <li>2. 完成支付后获取订阅链接</li>
+                        <li>3. 下载对应的客户端软件</li>
+                        <li>4. 导入订阅链接开始使用</li>
+                    </ul>
+                    <p>整个过程只需要几分钟即可完成！</p>
+                </div>
+            </div>
+
+            <!-- 客户端下载 -->
+            <div class="help-card">
+                <h3>
+                    <div class="icon">📱</div>
+                    客户端下载
+                </h3>
+                <div class="content">
+                    <p>我们支持多种设备和平台，点击下载对应客户端：</p>
+                    <div class="download-section">
+                        <div class="download-item">
+                            <div class="platform-info">
+                                <strong>🖥️ Windows</strong>
+                                <span>sparkle</span>
+                            </div>
+                            <a id="dl-win" href="#" target="_blank" class="download-btn">
+                                <i class="layui-icon layui-icon-download-circle"></i> 下载
+                            </a>
+                        </div>
+                        <div class="download-item">
+                            <div class="platform-info">
+                                <strong>🍎 macOS Intel芯片</strong>
+                                <span>sparkle</span>
+                            </div>
+                            <a id="dl-mac-intel" href="#" target="_blank" class="download-btn">
+                                <i class="layui-icon layui-icon-download-circle"></i> 下载
+                            </a>
+                        </div>
+                        <div class="download-item">
+                            <div class="platform-info">
+                                <strong>🍎 macOS 苹果芯片</strong>
+                                <span>sparkle</span>
+                            </div>
+                            <a id="dl-mac-arm" href="#" target="_blank" class="download-btn">
+                                <i class="layui-icon layui-icon-download-circle"></i> 下载
+                            </a>
+                        </div>
+                        <div class="download-item">
+                            <div class="platform-info">
+                                <strong>🤖 Android</strong>
+                                <span>Clash meta for Android</span>
+                            </div>
+                            <a id="dl-android" href="#" target="_blank" class="download-btn">
+                                <i class="layui-icon layui-icon-download-circle"></i> 下载
+                            </a>
+                        </div>
+                        <div class="download-item">
+                            <div class="platform-info">
+                                <strong>📱 iOS</strong>
+                                <span>Shadowrocket (App Store)</span>
+                            </div>
+                            <a href="https://apps.apple.com/app/shadowrocket/id932747118" target="_blank" class="download-btn">
+                                <i class="layui-icon layui-icon-download-circle"></i> 下载
+                            </a>
+                        </div>
+                        <div class="download-item">
+                            <div class="platform-info">
+                                <strong>📱 iOS</strong>
+                                <span>Quantumult X (App Store)</span>
+                            </div>
+                            <a href="https://apps.apple.com/app/quantumult-x/id1443988620" target="_blank" class="download-btn">
+                                <i class="layui-icon layui-icon-download-circle"></i> 下载
+                            </a>
+                        </div>
+                    </div>
+                    <p style="margin-top: 20px; color: #666; font-size: 14px;">💡 提示：iOS用户需要使用非大陆区Apple ID下载，Android用户也可以下载APK文件直接安装。Mac用户请根据芯片类型选择对应版本：Intel芯片选择Intel版本，M1/M2/M3等苹果芯片选择ARM版本。</p>
+                </div>
+            </div>
+
+            <!-- 使用教程 -->
+            <div class="help-card">
+                <h3>
+                    <div class="icon">📖</div>
+                    使用教程
+                </h3>
+                <div class="content">
+                    <p>详细的使用步骤：</p>
+                    <ul>
+                        <li><strong>客户端选择:</strong> 根据设备类型选择对应客户端，Mac用户注意选择正确的芯片版本</li>
+                        <li><strong>订阅导入:</strong> 复制订阅链接到客户端</li>
+                        <li><strong>节点选择:</strong> 选择延迟最低的节点</li>
+                        <li><strong>规则配置:</strong> 建议使用自动分流规则</li>
+                        <li><strong>测试连接:</strong> 访问Google等网站测试</li>
+                    </ul>
+                    <p>如遇问题，请查看常见问题或联系客服。</p>
+                </div>
+            </div>
+
+            <!-- 常见问题 -->
+            <div class="help-card">
+                <h3>
+                    <div class="icon">❓</div>
+                    常见问题
+                </h3>
+                <div class="content">
+                    <p><strong>Q: 无法连接怎么办？</strong></p>
+                    <p>A: 请检查网络连接，尝试更换节点或重启客户端。</p>
+                    
+                    <p><strong>Q: 速度很慢怎么办？</strong></p>
+                    <p>A: 建议选择延迟较低的节点，或联系客服优化线路。</p>
+                    
+                    <p><strong>Q: 订阅链接失效？</strong></p>
+                    <p>A: 请检查套餐是否到期，或重新获取订阅链接。</p>
+                    
+                    <p><strong>Q: 支持哪些付款方式？</strong></p>
+                    <p>A: 目前支持支付宝方式。</p>
+                    
+                    <p><strong>Q: Mac用户如何选择正确的客户端版本？</strong></p>
+                    <p>A: Intel芯片的Mac选择"Mac Intel芯片"版本，M1/M2/M3等苹果芯片选择"Mac 苹果芯片"版本。</p>
+                </div>
+            </div>
+
+            <!-- 注意事项 -->
+            <div class="help-card">
+                <h3>
+                    <div class="icon">⚠️</div>
+                    注意事项
+                </h3>
+                <div class="content">
+                    <p>使用服务时请注意以下事项：</p>
+                    <ul>
+                        <li>请勿将账号信息分享给他人</li>
+                        <li>禁止用于违法违规活动</li>
+                        <li>建议定期更新客户端版本</li>
+                        <li>流量用完后请及时续费</li>
+                        <li>遇到问题及时联系客服</li>
+                    </ul>
+                    <p>感谢您的理解与配合！</p>
+                </div>
+            </div>
+
+            <!-- 技术支持 -->
+            <div class="help-card">
+                <h3>
+                    <div class="icon">🛠️</div>
+                    技术支持
+                </h3>
+                <div class="content">
+                    <p>我们提供专业的技术支持：</p>
+                    <ul>
+                        <li><strong>在线客服:</strong> 工作日 9:00-18:00</li>
+                        <li><strong>邮件支持:</strong> 24小时内回复</li>
+                        <li><strong>远程协助:</strong> 复杂问题可申请</li>
+                        <li><strong>使用文档:</strong> 详细的图文教程</li>
+                    </ul>
+                    <p>我们致力于为您提供最好的服务体验。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 联系信息 -->
+        <div class="contact-info">
+            <h3>需要帮助？</h3>
+            <p>如果您在使用过程中遇到任何问题，请随时联系我们：</p>
+            <p><strong>客服QQ:</strong> 3219904322</p>
+            <p><strong>工作时间:</strong> 周一至周五 9:00-18:00</p>
+            <p>我们会尽快为您解决问题！</p>
+        </div>
+    </div>
+
+    <script src="/statics/user/login/layui/layui.js"></script>
+    <script>
+        // 用户菜单交互
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // 点击外部关闭菜单
+        document.addEventListener('click', function(event) {
+            const userMenu = document.querySelector('.user-menu');
+            const dropdown = document.getElementById('userDropdown');
+            
+            if (!userMenu.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.help-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+        
+        
+        
+        
+        // 确保在DOM加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 移动端导航（仅当页面有旧版 nav 时执行，使用 layout 时由 layout 处理）
+            var hamburger = document.getElementById('hamburger');
+            var navMenu = document.getElementById('navMenu');
+            var userMenuBtn = document.getElementById('userMenuBtn');
+            var userMenu = document.getElementById('userMenu');
+            if (hamburger && navMenu) {
+                hamburger.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    navMenu.classList.toggle('active');
+                    if (userMenu) userMenu.classList.remove('show');
+                    hamburger.innerHTML = navMenu.classList.contains('active') ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+                });
+            }
+            if (userMenuBtn && userMenu) {
+                userMenuBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    userMenu.classList.toggle('show');
+                });
+            }
+            document.addEventListener('click', function(e) {
+                if (userMenu && userMenuBtn && !userMenu.contains(e.target) && !userMenuBtn.contains(e.target)) userMenu.classList.remove('show');
+                if (navMenu && hamburger && window.innerWidth <= 992 && !navMenu.contains(e.target) && !hamburger.contains(e.target)) {
+                    navMenu.classList.remove('active');
+                    hamburger.innerHTML = '<i class="fas fa-bars"></i>';
+                }
+            });
+
+            // 套餐选择交互
+            const planCards = document.querySelectorAll('.plan-card');
+            planCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    planCards.forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    // 更新支付按钮金额
+                    const price = this.querySelector('.price').textContent.split(' ')[0];
+                    document.querySelector('.btn-block').innerHTML = 
+                        `<i class="fas fa-shopping-cart"></i> 确认支付 ${price}`;
+                });
+            });
+            
+            // 支付方式选择交互
+            const paymentOptions = document.querySelectorAll('.payment-option');
+            paymentOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    paymentOptions.forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+        });
+    </script>
+</div></div>
+</block>
+<block name="footer">
+    <script>
+    // GitHub加速服务配置（按稳定性排序）
+    const githubMirrors = [
+        'https://ghfast.top',
+        'https://ghproxy.com', 
+        'https://github.91chi.fun'
+    ];
+
+    // 智能下载链接设置，使用最稳定的加速服务
+    async function setDownloadLink(repo, assetMatch, btnId) {
+        try {
+            const response = await fetch(`https://api.github.com/repos/${repo}/releases/latest`);
+            const data = await response.json();
+            const asset = data.assets.find(a => a.name.match(assetMatch));
+            
+            if (asset) {
+                const btn = document.getElementById(btnId);
+                // 使用URL编码方式构建加速链接
+                const acceleratedUrl = githubMirrors[0] + '/?q=' + encodeURIComponent(asset.browser_download_url);
+                btn.href = acceleratedUrl;
+                btn.innerText = '下载最新版';
+                console.log(`设置下载链接: ${acceleratedUrl}`);
+            } else {
+                document.getElementById(btnId).innerText = '未找到安装包';
+            }
+        } catch (error) {
+            document.getElementById(btnId).innerText = '获取失败';
+            console.error('获取下载链接失败:', error);
+        }
+    }
+setDownloadLink('mihomo-party-org/clash-party', /windows.*x64.*setup.*\.exe$/i, 'dl-win');
+setDownloadLink('mihomo-party-org/clash-party', /macos.*x64.*(pkg|dmg)$/i, 'dl-mac-intel');
+setDownloadLink('mihomo-party-org/clash-party', /macos.*arm64.*(pkg|dmg)$/i, 'dl-mac-arm');
+setDownloadLink('MetaCubeX/ClashMetaForAndroid', /arm64.*release.*\.apk$/i, 'dl-android');
+</script>
+</block>

@@ -1,0 +1,284 @@
+<extend name="Public:base"/>
+<block name="title">修改管理员</block>
+<block name="css"><icheckcss/></block>
+<block name="content">
+    <!-- 页面头部 -->
+    <div class="page-header">
+        <ol class="breadcrumb">
+            <li><a href="{:U('Admin/Index/index')}"><i class="fa fa-home"></i> 首页</a></li>
+            <li><a href="{:U('Admin/Index/index')}">后台管理</a></li>
+            <li class="active">修改管理员</li>
+        </ol>
+    </div>
+
+    <div class="page-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-start">
+                    <ul class="nav nav-tabs border-0">
+                        <li class="nav-item me-3">
+                            <a class="nav-link" href="{:U('Admin/Rule/admin_user_list')}">管理员列表</a>
+                        </li>
+                        <li class="nav-item me-3">
+                            <a class="nav-link active" href="{:U('Admin/Rule/add_admin')}">修改管理员</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+                <form class="form-horizontal" method="post">
+                    <input type="hidden" name="id" value="{$user_data['id']}">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">管理组</label>
+                        <div class="col-sm-10">
+                            <foreach name="data" item="v">
+                                <label class="checkbox-inline">
+                                    <input class="xb-icheck" type="checkbox" name="group_ids[]" value="{$v['id']}" 
+                                           <in name="v['id']" value="$group_data"> checked="checked"</in>>
+                                    {$v['title']}
+                                </label>
+                            </foreach>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">姓名</label>
+                        <div class="col-sm-6">
+                            <input class="form-control" type="text" name="username" value="{$user_data['username']}" placeholder="请输入管理员姓名">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">手机号</label>
+                        <div class="col-sm-6">
+                            <input class="form-control" type="text" name="phone" value="{$user_data['phone']}" placeholder="请输入手机号码">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">邮箱</label>
+                        <div class="col-sm-6">
+                            <input class="form-control" type="email" name="email" value="{$user_data['email']}" placeholder="请输入邮箱地址">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">初始密码</label>
+                        <div class="col-sm-6">
+                            <input class="form-control" type="text" name="password" placeholder="如不改密码，留空即可">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">状态</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline">
+                                <input class="xb-icheck" type="radio" name="status" value="1" 
+                                       <eq name="user_data['status']" value="1"> checked="checked"</eq>>
+                                允许登录
+                            </label>
+                            <label class="radio-inline">
+                                <input class="xb-icheck" type="radio" name="status" value="0" 
+                                       <eq name="user_data['status']" value="0"> checked="checked"</eq>>
+                                禁止登录
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-save"></i>
+                                修改管理员
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* 页面样式 */
+        .page-header {
+            margin-bottom: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .breadcrumb {
+            background: transparent;
+            padding: 0.75rem 1rem;
+            margin: 0;
+            border-radius: 0.5rem;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .breadcrumb li {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .breadcrumb li a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+        }
+
+        .breadcrumb li.active {
+            color: #fff;
+        }
+
+        .page-content {
+            padding: 0 1rem;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid #e9ecef;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* 导航标签样式 */
+        .nav-tabs {
+            display: flex;
+            background: transparent;
+            border-bottom: none;
+            margin-bottom: 0;
+            border-radius: 0;
+            overflow: hidden;
+        }
+
+        .nav-tabs li {
+            margin: 0;
+        }
+
+        .nav-tabs li a {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.8);
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .nav-tabs li.active a {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border-bottom-color: #fff;
+        }
+
+        .nav-tabs li a:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            padding-top: 0.5rem;
+        }
+
+        .form-control {
+            padding: 0.75rem 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            color: #495057;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: #fff;
+        }
+
+        .checkbox-inline, .radio-inline {
+            margin-right: 1.5rem;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .checkbox-inline input, .radio-inline input {
+            margin-right: 0.5rem;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 14px;
+            font-weight: 500;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .page-content {
+                padding: 0 0.5rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .nav-tabs li a {
+                padding: 0.5rem 1rem;
+                font-size: 13px;
+            }
+
+            .form-control {
+                font-size: 13px;
+            }
+
+            .control-label {
+                font-size: 13px;
+            }
+
+            .checkbox-inline, .radio-inline {
+                display: block;
+                margin-bottom: 0.5rem;
+                font-size: 13px;
+            }
+        }
+    </style>
+</block>
+<block name="js"><icheckjs color="blue"/></block>

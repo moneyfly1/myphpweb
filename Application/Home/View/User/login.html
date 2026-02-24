@@ -1,0 +1,438 @@
+<extend name="Public:layout" />
+
+<block name="title">用户登录 | 享受高速科学服务 尽享外贸生活</block>
+
+<block name="head">
+    <script src="/Public/statics/js/wechat-detect.js"></script>
+    <style>
+        /* 登录页背景覆盖 */
+        .page-home {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-active) 100%) !important;
+            min-height: 100vh;
+        }
+
+        /* 透明头部 */
+        .site-header {
+            background: rgba(255, 255, 255, 0.08) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+            box-shadow: none !important;
+        }
+        .site-header .header-inner a,
+        .site-header .header-inner .logo,
+        .site-header .header-inner span,
+        .site-header .header-inner i,
+        .site-header .nav-desktop a,
+        .site-header .user-menu-btn span,
+        .site-header .user-menu-btn i,
+        .site-header .nav-toggle i {
+            color: #ffffff !important;
+        }
+        .site-header .nav-mobile {
+            background: rgba(22, 119, 255, 0.95) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .site-header .nav-mobile a {
+            color: #ffffff !important;
+        }
+
+        /* 透明页脚 */
+        .site-footer {
+            background: transparent !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        .site-footer p {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        /* 主内容区垂直居中 */
+        .page-main {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 120px);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 动态背景粒子效果 */
+        .page-main::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(22, 119, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(64, 150, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(9, 88, 217, 0.2) 0%, transparent 50%);
+            animation: float 6s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        .page-main::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 98px,
+                rgba(255, 255, 255, 0.03) 100px
+            );
+            z-index: 1;
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow:
+                0 8px 32px rgba(22, 119, 255, 0.37),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(0);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .login-container:hover {
+            transform: translateY(-8px);
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            margin: -80px auto 2rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+            padding: 6px;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.15),
+                inset 0 2px 4px rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: rotate 3s linear infinite;
+            z-index: 0;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: stretch;
+            margin-bottom: 1rem;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            font-size: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px 0 0 16px;
+            color: #ffffff;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+        }
+
+        .input-group input:focus {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .input-suffix {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 0 16px 16px 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-left: none;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .input-group.no-suffix input {
+            border-radius: 16px;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #ffffff;
+            background: linear-gradient(135deg, var(--color-primary-hover) 0%, var(--color-primary) 100%);
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            margin-top: 0.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(22, 119, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .login-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .login-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .login-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(22, 119, 255, 0.4);
+        }
+
+        .login-button:hover::before {
+            opacity: 1;
+        }
+
+        .login-button:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .login-links {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .login-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            display: inline-block;
+        }
+
+        .login-links a:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .login-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, var(--color-primary-hover) 0%, var(--color-primary) 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+        }
+
+        .login-links a:hover::after {
+            width: 80%;
+        }
+
+        /* 动画效果 */
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-10px) rotate(1deg); }
+            66% { transform: translateY(5px) rotate(-1deg); }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 480px) {
+            .page-main {
+                padding: 15px;
+            }
+
+            .login-container {
+                padding: 2.5rem 2rem;
+                max-width: 100%;
+                border-radius: 20px;
+            }
+
+            .avatar {
+                width: 85px;
+                height: 85px;
+                margin-top: -65px;
+            }
+
+            .login-title {
+                font-size: 1.75rem;
+                margin-bottom: 2rem;
+            }
+
+            .input-group input,
+            .input-suffix {
+                padding: 0.875rem 1rem;
+                font-size: 0.95rem;
+            }
+
+            .login-button {
+                padding: 0.875rem 1.25rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .login-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .login-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</block>
+
+<block name="content">
+    <div class="login-container">
+        <div class="avatar">
+            <img src="/Public/statics/user/login/img/user_icon_copy.png" alt="用户头像">
+        </div>
+        <h1 class="login-title">欢迎回来</h1>
+        <form class="login-form" method="post" action="#">
+            <div class="input-group">
+                <input
+                    type="text"
+                    name="user"
+                    placeholder="请输入QQ号码"
+                    maxlength="16"
+                    autocomplete="off"
+                    required
+                >
+                <span class="input-suffix">@qq.com</span>
+            </div>
+            <div class="input-group no-suffix">
+                <input
+                    type="password"
+                    name="pwd"
+                    placeholder="密码-请输入您设置的网站密码"
+                    maxlength="16"
+                    autocomplete="off"
+                    required
+                >
+            </div>
+            <div class="input-group no-suffix" style="display:flex;align-items:center;gap:8px;">
+                <input type="text" name="verify_code" placeholder="验证码" maxlength="6" autocomplete="off" required style="flex:1;">
+                <img src="/verify" alt="验证码" id="verify-img" style="height:40px;cursor:pointer;border-radius:6px;" title="点击刷新">
+            </div>
+            <button type="submit" class="btn btn-primary login-button">立即登录</button>
+        </form>
+        <div class="login-links">
+            <p><a href="/getpass">找回密码</a> • <a href="/reg">注册账号</a></p>
+        </div>
+    </div>
+</block>
+
+<block name="footer">
+    <script>
+        document.getElementById('verify-img').onclick = function(){ this.src = '/verify?t=' + Date.now(); };
+    </script>
+</block>

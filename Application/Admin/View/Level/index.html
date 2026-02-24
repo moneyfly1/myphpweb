@@ -1,0 +1,307 @@
+<extend name="Public:base" />
+<block name="title">套餐列表</block>
+<block name="content">
+    <style>
+        /* 手机端响应式设计 */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.2rem !important;
+                padding: 10px 0 !important;
+            }
+
+            .page-header h1 small {
+                font-size: 0.9rem !important;
+                display: block !important;
+                margin-top: 5px !important;
+            }
+
+            /* 表格响应式处理 */
+            .table-responsive {
+                display: none !important;
+            }
+
+            /* 标签页优化 */
+            .tabbable {
+                padding: 0 5px !important;
+            }
+
+            .nav-tabs {
+                display: flex !important;
+                border-radius: 8px !important;
+                overflow: hidden !important;
+            }
+
+            .nav-tabs li {
+                flex: 1 !important;
+            }
+
+            .nav-tabs li a {
+                font-size: 14px !important;
+                padding: 12px 8px !important;
+                text-align: center !important;
+                border-radius: 0 !important;
+            }
+
+            /* 表格优化 */
+            .table {
+                font-size: 14px !important;
+            }
+
+            .table th, .table td {
+                padding: 8px 6px !important;
+                word-break: break-word !important;
+            }
+
+            /* 按钮优化 */
+            .btn {
+                font-size: 14px !important;
+                padding: 8px 12px !important;
+                border-radius: 6px !important;
+                margin: 2px !important;
+            }
+
+            /* 分页优化 */
+            .pagination {
+                justify-content: center !important;
+                flex-wrap: wrap !important;
+                gap: 5px !important;
+            }
+
+            .pagination li a {
+                font-size: 14px !important;
+                padding: 8px 12px !important;
+                border-radius: 6px !important;
+            }
+        }
+
+        /* 桌面端隐藏手机元素 */
+        @media (min-width: 769px) {
+            .mobile-only {
+                display: none !important;
+            }
+        }
+    </style>
+    <!-- 面包屑导航 -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Index/index')}">
+                    <i class="fa fa-home"></i>
+                    首页
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Index/index')}">
+                    后台管理
+                </a>
+            </li>
+            <li class="breadcrumb-item active">
+                套餐列表
+            </li>
+        </ol>
+    </nav>
+    
+    <!-- 页面导航路径 -->
+    <div class="page-navigation">
+        <a href="{:U('Admin/Index/index')}" class="nav-item">
+            <i class="fa fa-home"></i>
+            首页
+        </a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/Index/index')}" class="nav-item">
+            后台管理
+        </a>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">
+            套餐列表
+        </div>
+    </div>
+    
+    <div class="page-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-start">
+                    <ul class="nav nav-tabs border-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{:U('Admin/Level/index')}">套餐列表</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{:U('Admin/Level/add')}">添加套餐</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+            <div class="tab-content">
+           
+
+                <table class="table table-striped table-bordered table-hover table-condensed">
+                    <tr>
+                        <!-- <th></th> -->
+                        <th width="8%">id</th>
+                        <th>名称</th>
+                        <th>天数</th>
+                        <th>金额</th>
+                        <th>最大设备数</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                    <foreach name="list" item="v">
+                        <tr>
+                            <!-- <td><input type="checkbox" class="all" name="all" value="{$v['id']}"></td> -->
+                            <td width="8%">{$v['id']}</td>
+                            <td>{$v['name']}</td>
+                            <td>{$v['num']}</td>
+                            <td>{$v['price']}</td>
+                            <td>{$v['setdrivers']|default=5}</td>
+                            <td>{$v['status']}</td>
+                            <td style="min-width: 120px;">
+                                <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                    <a class="btn btn-xs btn-warning" href="{:U('Admin/Level/edit',array('id'=>$v['id']))}">修改</a> 
+                                    <a class="btn btn-xs btn-danger" onClick="return confirm('确定删除?');" href="{:U('Admin/Level/del',array('id'=>$v['id']))}">删除</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </foreach>
+                </table>
+<!--                 <span class="inputword">全选</span> <input type="checkbox" class="alls">
+                <div onClick="return confirm('确定全部删除?');" id="allDel" class="btn btn-success">全部删除</div>
+                <div onClick="return confirm('确定全部发送?');" id="allPush" class="btn btn-success">全部发送</div>
+                <div onClick="return confirm('确定全部禁用?');" id="allDisable" class="btn btn-success">全部禁用</div>
+                <div onClick="return confirm('确定全部启用?');" id="allEnable" class="btn btn-success">全部启用</div> -->
+            </div>
+            <div class="batch-actions-with-pagination">
+                <div class="batch-actions">
+                    <!-- 批量操作按钮可以在这里添加 -->
+                </div>
+                <div class="pagination-wrapper">
+                    <div class="pagination" id="pagination-container">{$page}</div>
+                    <div class="pagination-jump">
+                        <span class="jump-label">跳转到</span>
+                        <input type="number" id="jumpPage" min="1" placeholder="页码">
+                        <button id="jumpButton" class="btn btn-primary">确定</button>
+                    </div>
+                </div>
+            </div>
+            <div class="pagination-info">
+                <span class="text-muted">共 {$totalCount} 条记录</span>
+            </div>
+        </div>
+    </div>
+    <script src="__PUBLIC__/statics/js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $('.alls').change(function(){
+            var check = $(this).prop('checked');
+            $('.all').prop('checked',check);
+        })
+        //删除
+        $('#allDel').click(function () {
+            var chk_value =[];//定义一个数组
+            $('input[name="all"]:checked').each(function(){
+                chk_value.push($(this).val());
+            })
+            $.ajax({
+                url: "{:U('Admin/Level/allDel')}",
+                type:'post',
+                data:{id:chk_value.join(',')},
+                success:function(e){
+                    if(e=='删除成功'){
+                        location.reload();
+                    }else{
+                        alert(e+'!请稍后再试');
+                    }
+                }
+            })
+        })
+        //发邮件
+        $('#allPush').click(function () {
+            var chk_value =[];//定义一个数组
+            $('input[name="all"]:checked').each(function(){
+                chk_value.push($(this).val());
+            })
+            $.ajax({
+                url: "{:U('Admin/Level/allPush')}",
+                type:'post',
+                data:{id:chk_value.join(',')},
+                success:function(e){
+                    if(e=='发送成功'){
+                        alert('已全部发送，如出现未成功请重试')
+                        location.reload();
+                    }else{
+                        alert(e+'!请稍后再试');
+                    }
+                }
+            })
+        })
+        //禁用
+        $('#allDisable').click(function () {
+            var chk_value =[];//定义一个数组
+            $('input[name="all"]:checked').each(function(){
+                chk_value.push($(this).val());
+            })
+            $.ajax({
+                url: "{:U('Admin/Level/allDisable')}",
+                type:'post',
+                data:{id:chk_value.join(',')},
+                success:function(e){
+                    if(e=='禁用成功'){
+                        alert('已全部禁用，如出现个别未成功请单独重试')
+                        location.reload();
+                    }else{
+                        alert(e+'!请稍后再试');
+                    }
+                }
+            })
+        })
+
+        //启用
+        $('#allEnable').click(function () {
+            var chk_value =[];//定义一个数组
+            $('input[name="all"]:checked').each(function(){
+                chk_value.push($(this).val());
+            })
+            $.ajax({
+                url: "{:U('Admin/Level/allEnable')}",
+                type:'post',
+                data:{id:chk_value.join(',')},
+                success:function(e){
+                    if(e=='启用成功'){
+                        alert('已全部启用，如出现个别未成功请单独重试')
+                        location.reload();
+                    }else{
+                        alert(e+'!请稍后再试');
+                    }
+                }
+            })
+        })
+
+        // 页码跳转功能
+        $('#jumpButton').click(function () {
+            var page = $('#jumpPage').val();
+            if (page) {
+                var url = new URL(window.location.href);
+                url.searchParams.set('p', page);
+                // 保持所有现有参数（包括排序参数）
+                window.location.href = url.toString();
+            }
+        });
+
+        $('.endtime').blur(function (){
+            var id = $(this).attr('data');
+            var vals = $(this).val();
+            $.ajax({
+                url: "{:U('Admin/Level/editTime')}",
+                type:'post',
+                data:{id:id,endtime:vals},
+                success:function(e){
+                   
+                }
+            })
+            // alert($(this).val());
+        });
+
+
+    })
+</script>
+</block>

@@ -1,0 +1,490 @@
+dns:
+  enable: true
+  nameserver:
+  - 119.29.29.29
+  - 223.5.5.5
+  nameserver-policy:
+    ChinaClassical,Apple,SteamCN,geosite:cn:
+    - tls://1.12.12.12
+    - 223.5.5.5
+  fallback:
+  - 8.8.8.8
+  - 1.1.1.1
+  - tls://dns.google:853
+  - tls://1.0.0.1:853
+proxies:
+- name: 🇭🇰HK-香港-快速专线1
+  type: ss
+  server: shrimp-door-9527.gym0boy.com
+  port: 14443
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🇭🇰HK-香港-快速专线2
+  type: ss
+  server: lkhjm.edu2026.cn
+  port: 20322
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🇯🇵JP-日本-快速专线1
+  type: ss
+  server: shrimp-door-9527.gym0boy.com
+  port: 11482
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🇯🇵JP-日本-快速专线2
+  type: ss
+  server: lkhjm.edu2026.cn
+  port: 30684
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🇹🇼TW-台湾-快速专线1
+  type: ss
+  server: shrimp-door-9527.gym0boy.com
+  port: 15838
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🇹🇼TW-台湾-快速专线2
+  type: ss
+  server: lkhjm.edu2026.cn
+  port: 10279
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🇰🇷KR-韩国-快速专线1
+  type: ss
+  server: shrimp-door-9527.gym0boy.com
+  port: 37748
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🇰🇷KR-韩国-快速专线2
+  type: ss
+  server: lkhjm.edu2026.cn
+  port: 16045
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🇺🇸US-美国-快速专线1
+  type: ss
+  server: shrimp-door-9527.gym0boy.com
+  port: 10741
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🇺🇸US-美国-快速专线2
+  type: ss
+  server: lkhjm.edu2026.cn
+  port: 44167
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🇰🇭KH-柬埔寨-快速专线1
+  type: ss
+  server: shrimp-door-9527.gym0boy.com
+  port: 36432
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🇰🇭KH-柬埔寨-快速专线2
+  type: ss
+  server: lkhjm.edu2026.cn
+  port: 57038
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🇻🇳VN-越南-快速专线1
+  type: ss
+  server: shrimp-door-9527.gym0boy.com
+  port: 25770
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🇫🇷FR-法国-快速专线1
+  type: ss
+  server: shrimp-door-9527.gym0boy.com
+  port: 49212
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🇫🇷FR-法国-快速专线2
+  type: ss
+  server: lkhjm.edu2026.cn
+  port: 39980
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🇬🇧UK-英国-快速专线1
+  type: ss
+  server: shrimp-door-9527.gym0boy.com
+  port: 16303
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🇬🇧UK-英国-快速专线2
+  type: ss
+  server: lkhjm.edu2026.cn
+  port: 10540
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🌐DE-德国-快速专线1
+  type: ss
+  server: shrimp-door-9527.gym0boy.com
+  port: 29909
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🌐DE-德国-快速专线2
+  type: ss
+  server: lkhjm.edu2026.cn
+  port: 48429
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🌐FLB-菲律宾-快速专线1
+  type: ss
+  server: shrimp-door-9527.gym0boy.com
+  port: 35541
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🌐FLB-菲律宾-快速专线2
+  type: ss
+  server: lkhjm.edu2026.cn
+  port: 47140
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🌐RU-土耳其-快速专线1
+  type: ss
+  server: shrimp-door-9527.gym0boy.com
+  port: 47708
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🌐RU-土耳其-快速专线2
+  type: ss
+  server: lkhjm.edu2026.cn
+  port: 52562
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🌐TG-泰国-快速专线1
+  type: ss
+  server: shrimp-door-9527.gym0boy.com
+  port: 44572
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🌐TM-新加坡-快速专线1
+  type: ss
+  server: shrimp-door-9527.gym0boy.com
+  port: 11889
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🌐TM-新加坡-快速专线2
+  type: ss
+  server: lkhjm.edu2026.cn
+  port: 54091
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🌐TM-马来西亚-快速专线1
+  type: ss
+  server: shrimp-door-9527.gym0boy.com
+  port: 11889
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🌐TM-马来西亚-快速专线2
+  type: ss
+  server: lkhjm.edu2026.cn
+  port: 54091
+  cipher: aes-128-gcm
+  password: 75c8790a-8baf-415b-867e-4903e101fca9
+  udp: true
+- name: 🌐派大星-CAVancouver
+  type: ss
+  server: 18.217.77.234
+  port: 443
+  cipher: aes-256-cfb
+  password: amazonskr05
+  udp: true
+- name: 🌐派大星-HKKowloon
+  type: ss
+  server: 18.130.237.128
+  port: 443
+  cipher: aes-256-cfb
+  password: amazonskr05
+  udp: true
+- name: 🌐派大星-HKLosAngeles
+  type: ss
+  server: 3.135.219.249
+  port: 443
+  cipher: aes-256-cfb
+  password: amazonskr05
+  udp: true
+- name: 🌐派大星-JPOsaka
+  type: ss
+  server: 3.96.217.223
+  port: 443
+  cipher: aes-256-cfb
+  password: amazonskr05
+  udp: true
+- name: 🌐派大星-JPTokyo
+  type: ss
+  server: 3.121.234.87
+  port: 443
+  cipher: aes-256-cfb
+  password: amazonskr05
+  udp: true
+- name: 🌐派大星-KRIncheon
+  type: ss
+  server: 18.192.121.6
+  port: 443
+  cipher: aes-256-cfb
+  password: amazonskr05
+  udp: true
+- name: 🌐派大星-SGSingapore
+  type: ss
+  server: 35.179.168.106
+  port: 443
+  cipher: aes-256-cfb
+  password: amazonskr05
+  udp: true
+- name: 🌐派大星-TWTaipei
+  type: ss
+  server: 3.76.116.135
+  port: 443
+  cipher: aes-256-cfb
+  password: amazonskr05
+  udp: true
+- name: 🌐派大星-USDallas2
+  type: ss
+  server: 13.59.128.99
+  port: 443
+  cipher: aes-256-cfb
+  password: amazonskr05
+  udp: true
+- name: 🌐派大星-USHouston
+  type: ss
+  server: 3.143.214.107
+  port: 443
+  cipher: aes-256-cfb
+  password: amazonskr05
+  udp: true
+proxy-groups:
+- name: 🚀 节点选择
+  type: select
+  proxies:
+  - 🇭🇰HK-香港-快速专线1
+  - 🇭🇰HK-香港-快速专线2
+  - 🇯🇵JP-日本-快速专线1
+  - 🇯🇵JP-日本-快速专线2
+  - 🇹🇼TW-台湾-快速专线1
+  - 🇹🇼TW-台湾-快速专线2
+  - 🇰🇷KR-韩国-快速专线1
+  - 🇰🇷KR-韩国-快速专线2
+  - 🇺🇸US-美国-快速专线1
+  - 🇺🇸US-美国-快速专线2
+  - 🇰🇭KH-柬埔寨-快速专线1
+  - 🇰🇭KH-柬埔寨-快速专线2
+  - 🇻🇳VN-越南-快速专线1
+  - 🇫🇷FR-法国-快速专线1
+  - 🇫🇷FR-法国-快速专线2
+  - 🇬🇧UK-英国-快速专线1
+  - 🇬🇧UK-英国-快速专线2
+  - 🌐DE-德国-快速专线1
+  - 🌐DE-德国-快速专线2
+  - 🌐FLB-菲律宾-快速专线1
+  - 🌐FLB-菲律宾-快速专线2
+  - 🌐RU-土耳其-快速专线1
+  - 🌐RU-土耳其-快速专线2
+  - 🌐TG-泰国-快速专线1
+  - 🌐TM-新加坡-快速专线1
+  - 🌐TM-新加坡-快速专线2
+  - 🌐TM-马来西亚-快速专线1
+  - 🌐TM-马来西亚-快速专线2
+  - 🌐派大星-CAVancouver
+  - 🌐派大星-HKKowloon
+  - 🌐派大星-HKLosAngeles
+  - 🌐派大星-JPOsaka
+  - 🌐派大星-JPTokyo
+  - 🌐派大星-KRIncheon
+  - 🌐派大星-SGSingapore
+  - 🌐派大星-TWTaipei
+  - 🌐派大星-USDallas2
+  - 🌐派大星-USHouston
+- name: 🌍 国外媒体
+  type: select
+  proxies:
+  - 🚀 节点选择
+  - 🎯 全球直连
+- name: Ⓜ️ 微软服务
+  type: select
+  proxies:
+  - 🎯 全球直连
+  - 🚀 节点选择
+- name: 🍎 苹果服务
+  type: select
+  proxies:
+  - 🎯 全球直连
+  - 🚀 节点选择
+- name: 📦 PikPak
+  type: select
+  proxies:
+  - 🚀 节点选择
+  - 🎯 全球直连
+- name: 🤖 OpenAI
+  type: select
+  proxies:
+  - 🚀 节点选择
+  - 🎯 全球直连
+- name: 🐟 漏网之鱼
+  type: select
+  proxies:
+  - 🚀 节点选择
+  - 🎯 全球直连
+- name: 🎯 全球直连
+  type: select
+  proxies:
+  - DIRECT
+rules:
+- IP-CIDR,129.146.160.80/32,DIRECT,no-resolve
+- IP-CIDR,148.135.52.61/32,DIRECT,no-resolve
+- IP-CIDR,148.135.56.101/32,DIRECT,no-resolve
+- IP-CIDR,37.123.193.133/32,DIRECT,no-resolve
+- IP-CIDR,111.119.203.69/32,DIRECT,no-resolve
+- IP-CIDR,110.238.105.126/32,DIRECT,no-resolve
+- IP-CIDR,166.108.206.148/32,DIRECT,no-resolve
+- IP-CIDR,155.248.181.42/32,DIRECT,no-resolve
+- IP-CIDR,176.126.114.184/32,DIRECT,no-resolve
+- IP-CIDR,103.238.129.152/32,DIRECT,no-resolve
+- IP-CIDR,45.66.217.124/32,DIRECT,no-resolve
+- IP-CIDR,183.2.133.144/32,DIRECT,no-resolve
+- IP-CIDR,103.103.245.13/32,DIRECT,no-resolve
+- DOMAIN,oiyun.de,DIRECT
+- DOMAIN,github.moeyy.xyz,DIRECT
+- DOMAIN,hk.xybhdy.top,DIRECT
+- DOMAIN,hd1dc.com,DIRECT
+- RULE-SET,LocalAreaNetwork,DIRECT
+- RULE-SET,BanAD,REJECT
+- RULE-SET,BanAdobe,REJECT
+- RULE-SET,GoogleFCM,🚀 节点选择
+- RULE-SET,SteamCN,DIRECT
+- RULE-SET,Microsoft,Ⓜ️ 微软服务
+- RULE-SET,Apple,🍎 苹果服务
+- RULE-SET,Telegram,🚀 节点选择
+- RULE-SET,PikPak,📦 PikPak
+- RULE-SET,OpenAI,🤖 OpenAI
+- RULE-SET,Claude,🤖 OpenAI
+- RULE-SET,Gemini,🤖 OpenAI
+- RULE-SET,ProxyMedia,🌍 国外媒体
+- RULE-SET,ProxyClassical,🚀 节点选择
+- RULE-SET,ChinaCIDr,DIRECT
+- RULE-SET,ChinaClassical,DIRECT
+- GEOIP,CN,DIRECT
+- MATCH,🐟 漏网之鱼
+rule-providers:
+  Apple:
+    behavior: classical
+    interval: 604800
+    path: ./rules/Apple.yaml
+    type: http
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Apple/Apple.yaml
+  BanAD:
+    behavior: domain
+    interval: 604800
+    path: ./rules/BanAD.yaml
+    type: http
+    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/reject.txt
+  BanAdobe:
+    behavior: classical
+    interval: 604800
+    path: ./rules/BanAdobe.yaml
+    type: http
+    url: https://raw.githubusercontent.com/ignaciocastro/a-dove-is-dumb/main/clash.yaml
+  ChinaCIDr:
+    behavior: ipcidr
+    interval: 604800
+    path: ./rules/CNCIDR.yaml
+    type: http
+    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/cncidr.txt
+  ChinaClassical:
+    behavior: domain
+    interval: 604800
+    path: ./rules/ChinaClassical.yaml
+    type: http
+    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/direct.txt
+  Claude:
+    behavior: classical
+    interval: 604800
+    path: ./rules/Claude.yaml
+    type: http
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.yaml
+  Gemini:
+    behavior: classical
+    interval: 604800
+    path: ./rules/Gemini.yaml
+    type: http
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Gemini/Gemini.yaml
+  GoogleFCM:
+    behavior: classical
+    interval: 604800
+    path: ./rules/GoogleFCM.yaml
+    type: http
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/GoogleFCM/GoogleFCM.yaml
+  LocalAreaNetwork:
+    behavior: classical
+    interval: 604800
+    path: ./rules/LocalAreaNetwork.yaml
+    type: http
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/LocalAreaNetwork.yaml
+  Microsoft:
+    behavior: classical
+    interval: 604800
+    path: ./rules/Microsoft.yaml
+    type: http
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Microsoft/Microsoft.yaml
+  OpenAI:
+    behavior: classical
+    interval: 604800
+    path: ./rules/OpenAI.yaml
+    type: http
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OpenAI/OpenAI.yaml
+  PikPak:
+    behavior: classical
+    interval: 604800
+    path: ./rules/PikPak.yaml
+    type: http
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/PikPak/PikPak.yaml
+  ProxyClassical:
+    behavior: domain
+    interval: 604800
+    path: ./rules/ProxyClassical.yaml
+    type: http
+    url: https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/proxy.txt
+  ProxyMedia:
+    behavior: classical
+    interval: 604800
+    path: ./rules/ProxyMedia.yaml
+    type: http
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GlobalMedia/GlobalMedia_Classical.yaml
+  SteamCN:
+    behavior: classical
+    interval: 604800
+    path: ./rules/SteamCN.yaml
+    type: http
+    url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/SteamCN/SteamCN.yaml
+  Telegram:
+    behavior: classical
+    interval: 604800
+    path: ./rules/Telegram.yaml
+    type: http
+    url: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Providers/Ruleset/Telegram.yaml

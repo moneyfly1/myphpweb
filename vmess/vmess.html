@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VMess精准生成器</title>
+    <meta charset="UTF-8">
+    <style>
+        /* 保持原有样式不变 */
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto; padding: 20px; background: #f8f9fa; }
+        textarea { width: 100%; height: 300px; padding: 15px; border: 2px solid #2ecc71; border-radius: 8px; font-family: Consolas; }
+        #result { margin-top: 20px; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .vmess-box { padding: 15px; margin: 10px 0; background: #e8f5e9; border-left: 4px solid #2ecc71; }
+        .debug-info { color: #666; font-size: 0.9em; margin-top: 8px; }
+    </style>
+</head>
+<body>
+    <h2>VMess精准生成器</h2>
+    <textarea id="jsonInput" placeholder="粘贴完整JSON配置..."></textarea>
+    <input type="text" id="uuid" value="87506851-455a-3d8c-a8ed-d4e7d63cec64" 
+           style="width:100%; padding:12px; margin:10px 0; border:2px solid #2ecc71; border-radius:6px;">
+    <button onclick="generate()" style="background:#2ecc71; color:white; padding:12px 24px; border:none; border-radius:6px; cursor:pointer;">
+        生成链接
+    </button>
+    <div id="result"></div>
+
+    <script>
+        function generate() {
+            try {
+                const config = JSON.parse(document.getElementById('jsonInput').value);
+                const uuid = document.getElementById('uuid').value;
+                const resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = '';
+
+                config.nodeinfo.nodes.forEach(node => {
+                    try {
+                        // 深度解析server字段
+                        const serverParts = node.raw_node.server.split(';').map(p => p.trim());
+                        
+                        // 处理特殊port格式
+                        let [host, port, aid] = serverParts;
+                        const portMatch = host.match(/port=(\d+)/);
+                        if (portMatch) {
+                            port = portMatch[1];
+                            host = host.split(';')[0];
+                        }
+
+                        // 构建完全匹配的配置对象（关键修正点）
+                        const vmessConfig = {
+                            v: "2",
+                            ps: node.name.replace(/\|/g, ' ').trim(),
+                            add: host,
+                            port: port || '443',
+                            id: uuid,
+                            aid: aid || '0',
+                            scy: "auto",  // 固定使用auto
+                            net: serverParts[3] || 'tcp',
+                            type: "none",
+                            host: host,
+                            path: serverParts[4] || '/',
+                            tls: "",
+                            sni: "",
+                            alpn: "",
+                            fp: ""
+                        };
+
+                        // 生成标准JSON
+                        const jsonStr = JSON.stringify(vmessConfig, null, 2);
+                        const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
+                        
+                        resultDiv.innerHTML += `
+                            <div class="vmess-box">
+                                <div>vmess://${base64}</div>
+                                <div class="debug-info">
+                                    原始server: ${node.raw_node.server}<br>
+                                    解析结果: ${host}:${port} | 强制加密方式: ${vmessConfig.scy}
+                                </div>
+                            </div>
+                        `;
+                    } catch (e) {
+                        resultDiv.innerHTML += `
+                            <div style="background:#ffebee; padding:15px; margin:10px 0; border-left:4px solid #e74c3c;">
+                                错误: ${e.message}
+                                <div style="font-size:0.8em">${node.raw_node?.server || '无server字段'}</div>
+                            </div>
+                        `;
+                    }
+                });
+
+            } catch (e) {
+                alert(`配置解析失败: ${e.message}`);
+            }
+        }
+
+        // 测试数据预填充（验证示例节点）
+        window.onload = () => {
+            document.getElementById('jsonInput').value = JSON.stringify({
+                nodeinfo: {
+                    nodes: [{
+                        raw_node: {
+                            server: "sg1.vpn52.xyz;28012;0;tcp;;",
+                            method: "aes-256-cfb",
+                            name: "A2| 新加坡 01"
+                        },
+                        name: "A2| 新加坡 01"
+                    }]
+                }
+            }, null, 2);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1003 @@
+<extend name="Public:base" />
+<block name="title">机场运营总览</block>
+<block name="content">
+    <style>
+        /* 全局样式优化 */
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* 面包屑导航设计 */
+        .breadcrumb {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .breadcrumb-item a {
+            color: #1677ff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        
+        .breadcrumb-item a:hover {
+            color: #0958d9;
+            background: rgba(22, 119, 255, 0.1);
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+        
+        .breadcrumb-item.active {
+            color: #8c8c8c;
+            font-weight: 500;
+        }
+        
+        .breadcrumb-item i {
+            font-size: 14px;
+        }
+        
+        .breadcrumb-item:not(:last-child)::after {
+            content: '/';
+            color: #d9d9d9;
+            margin-left: 8px;
+            font-size: 12px;
+        }
+        
+        /* 页面导航路径 */
+        .page-navigation {
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+        }
+        
+        .page-navigation .nav-item {
+            display: flex;
+            align-items: center;
+            color: #6c757d;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+        
+        .page-navigation .nav-item:hover {
+            color: #1677ff;
+            background: rgba(22, 119, 255, 0.1);
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+        
+        .page-navigation .nav-item.active {
+            color: #1677ff;
+            font-weight: 600;
+            background: rgba(22, 119, 255, 0.15);
+        }
+        
+        .page-navigation .nav-separator {
+            color: #dee2e6;
+            margin: 0 4px;
+            font-weight: 300;
+        }
+        
+        /* 选项卡样式 - 并排排列 */
+        .nav-tabs {
+            border-bottom: none;
+            margin-bottom: 20px;
+            background: transparent;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+        
+        .nav-tabs .nav-item {
+            margin-right: 8px;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            color: #595959;
+            padding: 12px 20px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background: #1677ff;
+            color: white;
+            border: none;
+            box-shadow: 0 2px 8px rgba(22, 119, 255, 0.3);
+        }
+        
+        .nav-tabs .nav-link:hover {
+            background: #e6f7ff;
+            color: #1677ff;
+            transform: translateY(-1px);
+        }
+        
+        /* 卡片样式 */
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-bottom: none;
+            padding: 20px 25px;
+            font-weight: 600;
+            color: white;
+            font-size: 18px;
+        }
+        
+        .card-body {
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        
+        /* 快速操作按钮 */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .action-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px 24px;
+            border-radius: 16px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .action-btn:hover::before {
+            left: 100%;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .action-btn.danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+        
+        .action-btn.danger:hover {
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+        }
+        
+        .action-btn.success {
+            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+            box-shadow: 0 8px 25px rgba(81, 207, 102, 0.3);
+        }
+        
+        .action-btn.success:hover {
+            box-shadow: 0 12px 35px rgba(81, 207, 102, 0.4);
+        }
+        
+        .action-btn.warning {
+            background: linear-gradient(135deg, #ffd43b 0%, #fab005 100%);
+            box-shadow: 0 8px 25px rgba(255, 212, 59, 0.3);
+        }
+        
+        .action-btn.warning:hover {
+            box-shadow: 0 12px 35px rgba(255, 212, 59, 0.4);
+        }
+        
+        .action-btn.info {
+            background: linear-gradient(135deg, #339af0 0%, #228be6 100%);
+            box-shadow: 0 8px 25px rgba(51, 154, 240, 0.3);
+        }
+        
+        .action-btn.info:hover {
+            box-shadow: 0 12px 35px rgba(51, 154, 240, 0.4);
+        }
+        
+        .action-btn.purple {
+            background: linear-gradient(135deg, #9775fa 0%, #845ef7 100%);
+            box-shadow: 0 8px 25px rgba(151, 117, 250, 0.3);
+        }
+        
+        .action-btn.purple:hover {
+            box-shadow: 0 12px 35px rgba(151, 117, 250, 0.4);
+        }
+        
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-card.success::before {
+            background: linear-gradient(90deg, #51cf66, #40c057);
+        }
+        
+        .stat-card.warning::before {
+            background: linear-gradient(90deg, #ffd43b, #fab005);
+        }
+        
+        .stat-card.danger::before {
+            background: linear-gradient(90deg, #ff6b6b, #ee5a52);
+        }
+        
+        .stat-card.info::before {
+            background: linear-gradient(90deg, #339af0, #228be6);
+        }
+        
+        .stat-card.purple::before {
+            background: linear-gradient(90deg, #9775fa, #845ef7);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+            line-height: 1;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            color: #718096;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-change {
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-change.positive {
+            background: linear-gradient(135deg, #51cf66, #40c057);
+            color: white;
+            box-shadow: 0 4px 12px rgba(81, 207, 102, 0.3);
+        }
+        
+        .stat-change.negative {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+        
+        .stat-change.neutral {
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e0);
+            color: #4a5568;
+        }
+        
+        /* 数据表格 */
+        .data-tables {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2.5rem;
+        }
+        
+        .data-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: none;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+        
+        .data-section:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #2d3748;
+            border-bottom: 3px solid transparent;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            padding-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: transparent;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 1rem 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+            font-size: 0.9rem;
+        }
+        
+        .data-table th {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            font-weight: 700;
+            color: #4a5568;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .data-table tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .amount {
+            color: #51cf66;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .expire-soon {
+            color: #ffd43b;
+            font-weight: 700;
+        }
+        
+        .expired {
+            color: #ff6b6b;
+            font-weight: 700;
+        }
+        
+        /* 收入分析区域 */
+        .revenue-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .level-stats {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .level-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .level-item:last-child {
+            border-bottom: none;
+        }
+        
+        .level-name {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .level-revenue {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .level-count {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* 告警区域 */
+        .alert-section {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: #721c24;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        /* 状态标签 */
+        .status-严重异常 {
+            background-color: #dc3545;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .status-高度异常 {
+            background-color: #fd7e14;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .status-中度异常 {
+            background-color: #ffc107;
+            color: #212529;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .status-轻度异常 {
+            background-color: #17a2b8;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .days-remaining {
+            font-weight: bold;
+            color: #dc3545;
+        }
+        
+        /* 告警区域 */
+        .alert-section {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            color: #721c24;
+            padding: 25px 30px;
+            border-radius: 20px;
+            margin-bottom: 35px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 8px 32px rgba(255, 154, 158, 0.3);
+            border: none;
+            position: relative;
+            overflow: hidden;
+            animation: pulse 2s infinite;
+        }
+        
+        .alert-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        /* 刷新时间 */
+        .refresh-time {
+            color: #718096;
+            font-size: 1rem;
+            margin-top: 40px;
+            text-align: center;
+            padding: 20px 25px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .data-tables {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .revenue-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 1024px) {
+            .quick-actions {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .breadcrumb {
+                display: none !important;
+            }
+            
+            .page-navigation {
+                font-size: 12px;
+                padding: 8px 12px;
+                margin-bottom: 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-tables {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .action-btn {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .stat-number {
+                font-size: 2rem;
+            }
+            
+            .stat-label {
+                font-size: 0.875rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-btn {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* 桌面端隐藏手机元素 */
+        @media (min-width: 769px) {
+            .mobile-only {
+                display: none !important;
+            }
+        }
+    </style>
+    
+    <!-- 面包屑导航 -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Index/index')}">
+                    <i class="fa fa-home"></i>
+                    首页
+                </a>
+            </li>
+            <li class="breadcrumb-item active">
+                机场运营总览
+            </li>
+        </ol>
+    </nav>
+    
+    <!-- 页面导航路径 -->
+    <div class="page-navigation">
+        <a href="{:U('Admin/Index/index')}" class="nav-item">
+            <i class="fa fa-home"></i>
+            首页
+        </a>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">
+            后台管理
+        </div>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">
+            运营总览
+        </div>
+    </div>
+            <div class="card-body">
+                <!-- 快速操作按钮 -->
+                <div class="quick-actions">
+                    <a href="{:U('Users/list')}" class="action-btn">
+                        👥 用户管理
+                    </a>
+                    <a href="{:U('Dingyue/list')}" class="action-btn success">
+                        📋 订阅管理
+                    </a>
+                    <a href="{:U('Order/index')}" class="action-btn warning">
+                        💰 订单管理
+                    </a>
+                    <a href="{:U('Order/paysite')}" class="action-btn info">
+                        💳 支付管理
+                    </a>
+                    <a href="{:U('Level/index')}" class="action-btn">
+                        📦 套餐管理
+                    </a>
+                    <a href="{:U('Notification/index')}" class="action-btn warning">
+                        🔔 通知管理
+                    </a>
+                </div>
+                
+                <!-- 关键指标告警 -->
+                <if condition="$statistics.expired_subscriptions gt 50 OR $statistics.problem_users gt 10">
+                <div class="alert-section">
+                    ⚠️ 注意：当前有 {$statistics.expired_subscriptions} 个过期订阅，{$statistics.problem_users} 个问题用户需要处理！
+                </div>
+                </if>
+                
+                <!-- 核心数据统计 -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-label">👥 总用户数</div>
+                            <div class="stat-change positive">+{$statistics.user_growth_rate}%</div>
+                        </div>
+                        <div class="stat-number">
+                            <a href="{:U('Users/list')}" style="color: inherit; text-decoration: none;">
+                                {$statistics.total_users}
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card success">
+                        <div class="stat-header">
+                            <div class="stat-label">📊 活跃订阅</div>
+                            <div class="stat-change positive">+{$statistics.conversion_rate}%</div>
+                        </div>
+                        <div class="stat-number">
+                            <a href="{:U('Dingyue/list')}" style="color: inherit; text-decoration: none;">
+                                {$statistics.active_subscriptions}
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card info">
+                        <div class="stat-header">
+                            <div class="stat-label">💰 月收入</div>
+                            <div class="stat-change positive">+{$statistics.revenue_growth_rate}%</div>
+                        </div>
+                        <div class="stat-number amount">¥{$statistics.monthly_revenue}</div>
+                    </div>
+                    
+                    <div class="stat-card warning">
+                        <div class="stat-header">
+                            <div class="stat-label">⏰ 即将过期 (7天)</div>
+                        </div>
+                        <div class="stat-number">
+                            <a href="{:U('Users/expiring')}" style="color: inherit; text-decoration: none;">
+                                {$statistics.expiring_subscriptions}
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card danger">
+                        <div class="stat-header">
+                            <div class="stat-label">❌ 已过期订阅</div>
+                        </div>
+                        <div class="stat-number">{$statistics.expired_subscriptions}</div>
+                    </div>
+                    
+                    <div class="stat-card purple">
+                        <div class="stat-header">
+                            <div class="stat-label">🔄 转化率</div>
+                        </div>
+                        <div class="stat-number">{$statistics.conversion_rate}%</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-label">📈 今日新用户</div>
+                        </div>
+                        <div class="stat-number">{$statistics.today_new_users}</div>
+                    </div>
+                    
+                    <div class="stat-card success">
+                        <div class="stat-header">
+                            <div class="stat-label">🛒 今日订单</div>
+                        </div>
+                        <div class="stat-number">
+                            <a href="{:U('Order/index', array('pay_time'=>date('Y-m-d')))}" style="color: inherit; text-decoration: none;">
+                                {$statistics.today_orders}
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card info">
+                        <div class="stat-header">
+                            <div class="stat-label">💵 今日收入</div>
+                        </div>
+                        <div class="stat-number amount">¥{$statistics.today_revenue}</div>
+                    </div>
+                    
+                    <div class="stat-card warning">
+                        <div class="stat-header">
+                            <div class="stat-label">⚠️ 问题用户</div>
+                        </div>
+                        <div class="stat-number">{$statistics.problem_users}</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-label">📊 活跃用户</div>
+                        </div>
+                        <div class="stat-number">{$statistics.active_users}</div>
+                    </div>
+                    
+                    <div class="stat-card danger">
+                        <div class="stat-header">
+                            <div class="stat-label">❌ 失败订单</div>
+                        </div>
+                        <div class="stat-number">{$statistics.failed_orders}</div>
+                    </div>
+                </div>
+                
+                <!-- 收入分析和套餐销售 -->
+                <div class="revenue-section">
+                    <div class="data-section">
+                        <div class="section-title">📊 收入趋势分析</div>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-label">今日收入</div>
+                                <div class="stat-number amount">¥{$statistics.today_revenue}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">本周收入</div>
+                                <div class="stat-number amount">¥{$statistics.weekly_revenue}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">本月收入</div>
+                                <div class="stat-number amount">¥{$statistics.monthly_revenue}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="level-stats">
+                        <div class="section-title">🏆 热销套餐 TOP5</div>
+                        <volist name="statistics.top_packages" id="package">
+                        <div class="level-item">
+                            <div>
+                                <div class="level-name">{$package.level_name}</div>
+                                <div class="level-count">销量: {$package.sales_count}</div>
+                            </div>
+                            <div class="level-revenue">¥{$package.total_revenue}</div>
+                        </div>
+                        </volist>
+                    </div>
+                </div>
+                
+                <!-- 详细数据表格 -->
+                <div class="data-tables">
+                    <div class="data-section">
+                        <div class="section-title">💳 最近支付记录</div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>用户</th>
+                                    <th>套餐</th>
+                                    <th>金额</th>
+                                    <th>时间</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <volist name="statistics.recent_payments" id="payment">
+                                <tr>
+                                    <td>{$payment.qq}</td>
+                                    <td>{$payment.level_name}</td>
+                                    <td class="amount">¥{$payment.money}</td>
+                                    <td>{$payment.pay_time|date="m-d H:i",###}</td>
+                                </tr>
+                                </volist>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="data-section">
+                        <div class="section-title">⏰ 即将过期用户</div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>用户</th>
+                                    <th>过期时间</th>
+                                    <th>剩余</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <volist name="statistics.expiring_users" id="user">
+                                <tr>
+                                    <td>{$user.qq}</td>
+                                    <td class="expire-soon">{$user.endtime|date="m-d",###}</td>
+                                    <td class="expire-soon">{$user.days_left}天</td>
+                                </tr>
+                                </volist>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="data-section">
+                        <div class="section-title">⚠️ 问题用户</div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>用户</th>
+                                    <th>订阅次数</th>
+                                    <th>Clash请求次数</th>
+                                    <th>更改订阅次数</th>
+                                    <th>异常原因</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <volist name="statistics.problem_users_list" id="user">
+                                <tr>
+                                    <td>{$user.qq}</td>
+                                    <td class="amount">{$user.subscription_count}次</td>
+                                    <td class="amount">{$user.clash_count}次</td>
+                                    <td class="amount">{$user.change_count}次</td>
+                                    <td style="font-size: 0.85rem; color: #666;">{$user.abnormal_reason}</td>
+                                    <td><a href="{:U('Dingyue/list')}?qq={$user.qq}" class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 12px;">查询</a></td>
+                                </tr>
+                                </volist>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="refresh-time">
+                    📊 数据更新时间: <span id="refresh-time">{$Think.server.REQUEST_TIME|date="Y-m-d H:i:s",###}</span>
+                    <br>💡 提示：点击上方按钮可快速进入相应管理页面
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function updateTime() {
+        const now = new Date();
+        const timeString = now.getFullYear() + '-' + 
+                          String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                          String(now.getDate()).padStart(2, '0') + ' ' + 
+                          String(now.getHours()).padStart(2, '0') + ':' + 
+                          String(now.getMinutes()).padStart(2, '0') + ':' + 
+                          String(now.getSeconds()).padStart(2, '0');
+        document.getElementById('refresh-time').textContent = timeString;
+    }
+
+    // 更新时间
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    // 自动刷新页面数据（每5分钟）
+    setInterval(function() {
+        location.reload();
+    }, 300000);
+    </script>
+</block>
+
+<block name="js">
+</block>

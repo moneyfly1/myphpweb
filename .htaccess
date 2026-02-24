@@ -1,0 +1,97 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # 处理订阅链接 (16位随机字符串)
+    RewriteRule ^([a-zA-Z0-9]{16})$ index.php/Home/Index/short/short/$1 [L]
+    
+    # 处理后台路由
+    RewriteRule ^admin/(.*)$ admin.php/$1 [L]
+    
+    # 处理前台路由
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ index.php/$1 [QSA,PT,L]
+</IfModule>
+
+# 安全配置
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # 保护敏感文件
+    RewriteRule ^\.env$ - [F,L]
+    RewriteRule ^env\.example$ - [F,L]
+    RewriteRule ^\.git/ - [F,L]
+    RewriteRule ^\.gitignore$ - [F,L]
+    RewriteRule ^install\.sql$ - [F,L]
+    RewriteRule ^sync_user_with_short\.php$ - [F,L]
+    
+    # 保护配置文件
+    RewriteRule ^Application/Common/Conf/.*\.php$ - [F,L]
+    RewriteRule ^ThinkPHP/Conf/.*\.php$ - [F,L]
+    
+    # 保护日志文件
+    RewriteRule ^logs/.*\.log$ - [F,L]
+    RewriteRule ^.*\.log$ - [F,L]
+    
+    # 保护上传目录中的敏感文件
+    RewriteRule ^Upload/.*\.(yaml|yml|conf|config)$ - [F,L]
+    
+    # 保护shell脚本（只允许通过script_manager.php执行）
+    RewriteRule ^shell/.*\.sh$ - [F,L]
+    RewriteRule ^.*\.sh$ - [F,L]
+    
+    # 保护PHP文件（除了入口文件）
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteCond %{REQUEST_FILENAME} \.php$
+    RewriteCond %{REQUEST_URI} !^/index\.php
+    RewriteCond %{REQUEST_URI} !^/admin\.php
+    RewriteCond %{REQUEST_URI} !^/script_manager\.php
+    RewriteRule ^.*\.php$ - [F,L]
+</IfModule>
+
+# 禁止访问敏感文件类型
+<FilesMatch "\.(env|example|sql|log|sh|yaml|yml|conf|config|key|pem|crt)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# 禁止访问隐藏文件
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# 设置安全头
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:;"
+</IfModule>
+
+# 禁用服务器信息
+ServerTokens Prod
+ServerSignature Off
+
+# 设置文件上传限制
+<IfModule mod_php.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    php_value max_execution_time 300
+    php_value memory_limit 256M
+</IfModule>
+
+# 禁止访问备份文件
+<FilesMatch "\.(bak|backup|old|tmp|temp)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# 设置目录浏览
+Options -Indexes
+
+# 错误页面
+ErrorDocument 403 /404.html
+ErrorDocument 404 /404.html
+ErrorDocument 500 /404.html 

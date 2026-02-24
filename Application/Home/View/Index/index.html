@@ -1,0 +1,1450 @@
+<extend name="Public:layout" />
+
+<block name="title">订阅地址获取</block>
+
+<block name="head">
+    <link rel="stylesheet" href="/Public/statics/user/iconfont.css">
+    <link rel="stylesheet" href="/Public/statics/user/cur.min.css">
+    <link rel="stylesheet" href="/Public/statics/user/layui.css">
+    <link rel="stylesheet" href="/Public/statics/user/dropdown.css">
+    <script src="/Public/statics/js/kjua-0.9.0.min.js"></script>
+    <script src="/Public/statics/js/wechat-detect.js"></script>
+    <style>
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--color-primary);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .stats-card {
+            background: linear-gradient(45deg, var(--color-primary-active), #4a69dd);
+            color: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .expiry-date {
+            background: rgba(255,255,255,0.2);
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+
+        .expiry-warning {
+            color: #ffd700;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-control {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 10px;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                margin-top:20px ;
+            }
+
+            .card-header {
+                padding: 1rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .plan-container {
+                grid-template-columns: 1fr;
+            }
+
+            .payment-options {
+                flex-direction: column;
+            }
+
+            .payment-option {
+                width: 100%;
+            }
+
+            .subscription-info {
+                flex-direction: column;
+            }
+
+            .card-header {
+                padding: 15px;
+            }
+
+            .card-body {
+                padding: 20px;
+            }
+        }
+
+        /* 客户端下载卡片样式 */
+        .client-card {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--color-bg-page);
+            border-radius: 8px;
+        }
+
+        .client-card.active {
+            display: block;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--color-primary);
+            color: #fff;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .download-btn:hover {
+            background: var(--color-primary-hover);
+        }
+
+        /* 复制提示样式 */
+        .copy-tooltip {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .copy-tooltip.show {
+            display: block;
+            animation: fadeInOut 2s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, 1rem); }
+            15% { opacity: 1; transform: translate(-50%, 0); }
+            85% { opacity: 1; transform: translate(-50%, 0); }
+            100% { opacity: 0; transform: translate(-50%, -1rem); }
+        }
+
+        @media (max-width: 768px) {
+            .client-card {
+                margin: 0.5rem;
+            }
+        }
+
+        /* 客户端下载区域样式 */
+        .client-downloads {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #edf2f7;
+        }
+
+        .download-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: var(--color-bg-page);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+        }
+
+        .download-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .download-item span {
+            font-weight: 500;
+        }
+
+        .download-item .notice {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--color-primary);
+            color: #fff;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .download-btn:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .download-item {
+                flex-direction: column;
+                gap: 0.75rem;
+                text-align: center;
+            }
+        }
+
+        /* 邮件发送成功弹窗 */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 10000;
+            justify-content: flex-end;
+            align-items: flex-end;
+            padding: 20px;
+        }
+        .custom-modal.show { display: flex; }
+        .modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+            text-align: center;
+            width: 360px;
+            max-width: 90%;
+            animation: modal-pop 0.3s ease-out;
+        }
+        .icon-wrapper {
+            width: 70px; height: 70px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .icon-wrapper.success { background-color: #e8f5e9; }
+        .icon-wrapper.success i { color: #4CAF50; font-size: 40px; }
+        .icon-wrapper.warning { background-color: #fff8e1; }
+        .icon-wrapper.warning i { color: #ffa000; font-size: 40px; }
+        .modal-content h3 { font-size: 22px; font-weight: 600; color: #333; margin: 0 0 10px; }
+        .modal-content p { font-size: 16px; color: #777; margin: 0 0 25px; }
+        .modal-btn {
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 110px;
+        }
+        .modal-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .modal-btn.secondary { background-color: #f1f1f1; color: #555; }
+        .modal-btn.danger { background-color: #f44336; color: #fff; }
+        .modal-buttons { display: flex; justify-content: center; gap: 15px; }
+        @keyframes modal-pop {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    /* 统一弹窗风格 */
+    .unified-modal {
+        width: 380px;
+        max-width: 95vw;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(22, 119, 255, 0.18);
+        padding: 32px 24px 24px 24px;
+        background: #fff;
+        text-align: center;
+        font-family: 'Segoe UI', 'PingFang SC', Arial, sans-serif;
+    }
+    .unified-icon {
+        width: 64px; height: 64px;
+        margin: 0 auto 18px auto;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--color-primary) 60%, var(--color-primary-active) 100%);
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 2px 8px rgba(22, 119, 255, 0.12);
+    }
+    .unified-icon i {
+        color: #fff;
+        font-size: 36px;
+    }
+    .unified-icon.warning {
+        background: linear-gradient(135deg, #ffd600 60%, #ff9800 100%);
+    }
+    .unified-modal h3 {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--color-primary-active);
+        margin: 0 0 10px 0;
+    }
+    .unified-modal p {
+        font-size: 15px;
+        color: #555;
+        margin: 0 0 22px 0;
+    }
+    .unified-btn {
+        border: none;
+        border-radius: 8px;
+        padding: 12px 28px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        background: linear-gradient(90deg, var(--color-primary) 60%, var(--color-primary-active) 100%);
+        color: #fff;
+        margin: 0 8px;
+        box-shadow: 0 2px 8px rgba(22, 119, 255, 0.10);
+        transition: background 0.2s, box-shadow 0.2s;
+    }
+    .unified-btn:hover {
+        background: linear-gradient(90deg, var(--color-primary-active) 60%, var(--color-primary) 100%);
+        box-shadow: 0 4px 16px rgba(22, 119, 255, 0.18);
+    }
+    .unified-btn.secondary {
+        background: #f1f1f1;
+        color: var(--color-primary-active);
+        box-shadow: none;
+    }
+    .unified-btn.danger {
+        background: linear-gradient(90deg, #ff9800 60%, #ffd600 100%);
+        color: #fff;
+    }
+    .modal-buttons { display: flex; justify-content: center; gap: 15px; }
+    @media (max-width: 480px) {
+        .unified-modal { padding: 18px 4vw 18px 4vw; }
+        .unified-btn { width: 100%; margin: 8px 0; }
+        .modal-buttons { flex-direction: column; gap: 8px; }
+    }
+    /* 设备管理样式 */
+    .device-count-badge {
+        background: var(--color-primary);
+        color: #fff;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-left: 10px;
+    }
+
+    .device-actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .device-actions .btn {
+        flex: 1;
+        min-width: 140px;
+    }
+
+    .device-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px;
+        background: var(--color-bg-page);
+        border-radius: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #e0e6ed;
+        transition: all 0.2s ease;
+    }
+
+    .device-item:hover {
+        background: #f0f7ff;
+        border-color: var(--color-primary);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(22, 119, 255, 0.1);
+    }
+
+    .device-info {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    /* 设备logo样式 */
+    .device-logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: #fff;
+        flex-shrink: 0;
+    }
+    /* 软件logo颜色 */
+    .device-logo.shadowrocket { background: linear-gradient(135deg, #ff6b35, #ff8c42); }
+    .device-logo.clash { background: linear-gradient(135deg, #4a90e2, #357abd); }
+    .device-logo.v2ray { background: linear-gradient(135deg, #7b68ee, #6a5acd); }
+    .device-logo.quantumult { background: linear-gradient(135deg, #ff4757, #ff3742); }
+    .device-logo.surge { background: linear-gradient(135deg, #2ed573, #20bf6b); }
+    .device-logo.loon { background: linear-gradient(135deg, #ffa502, #ff9500); }
+    .device-logo.stash { background: linear-gradient(135deg, #ff6348, #ff5722); }
+    .device-logo.sparkle { background: linear-gradient(135deg, #ff9ff3, #ff69b4); }
+    .device-logo.flclash { background: linear-gradient(135deg, #4a90e2, #357abd); }
+    .device-logo.default { background: linear-gradient(135deg, #747d8c, #57606f); }
+
+    .device-details {
+        flex: 1;
+    }
+
+    .device-name {
+        font-weight: 600;
+        color: var(--color-text);
+        margin-bottom: 4px;
+        font-size: 14px;
+    }
+
+    .device-meta {
+        font-size: 12px;
+        color: #666;
+        line-height: 1.4;
+    }
+
+    .device-ip {
+        font-family: 'Courier New', monospace;
+        background: #f5f5f5;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-right: 8px;
+    }
+
+    .device-actions-btns {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+
+    .device-remove-btn {
+        background: #ff5722;
+        color: #fff;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .device-remove-btn:hover {
+        background: #d32f2f;
+        transform: translateY(-1px);
+    }
+
+    .device-software {
+        background: var(--color-primary);
+        color: #fff;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        margin-top: 4px;
+        display: inline-block;
+    }
+
+    .device-last-seen {
+        color: #999;
+        font-size: 11px;
+        margin-top: 2px;
+    }
+
+    @media (max-width: 768px) {
+        .device-item {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+        }
+
+        .device-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .device-actions-btns {
+            justify-content: center;
+        }
+
+        .device-actions .btn {
+            min-width: auto;
+            flex: 1;
+        }
+    }
+    </style>
+</block>
+
+<block name="content">
+    <!-- 统一风格的自定义弹窗 -->
+    <div id="emailSuccessModal" class="custom-modal">
+        <div class="modal-content unified-modal">
+            <div class="icon-wrapper unified-icon">
+                <i class="layui-icon layui-icon-email"></i>
+            </div>
+            <h3>发送成功</h3>
+            <p>订阅地址已发送到您的QQ邮箱，请注意查收。</p>
+            <button class="modal-btn unified-btn" onclick="closeModal('emailSuccessModal')">我知道了</button>
+        </div>
+    </div>
+    <div id="resetConfirmModal" class="custom-modal">
+        <div class="modal-content unified-modal">
+            <div class="icon-wrapper unified-icon warning">
+                <i class="layui-icon layui-icon-help"></i>
+            </div>
+            <h3>确认重置订阅地址？</h3>
+            <p>此操作不可逆，旧的订阅链接将立即失效。确定要继续吗？</p>
+            <div class="modal-buttons">
+                <button class="modal-btn unified-btn secondary" onclick="closeModal('resetConfirmModal')">取消</button>
+                <button class="modal-btn unified-btn danger" onclick="confirmReset()">确认重置</button>
+            </div>
+        </div>
+    </div>
+    <div id="resetSuccessModal" class="custom-modal">
+        <div class="modal-content unified-modal">
+            <div class="icon-wrapper unified-icon">
+                <i class="layui-icon layui-icon-ok"></i>
+            </div>
+            <h3>重置成功</h3>
+            <p>您的订阅地址已更新，旧链接已失效。</p>
+            <button class="modal-btn unified-btn" onclick="closeModalAndReload('resetSuccessModal')">好的，刷新页面</button>
+        </div>
+    </div>
+
+    <!-- 设备数量超限提醒弹窗 -->
+    <div id="deviceLimitModal" class="custom-modal">
+        <div class="modal-content unified-modal">
+            <div class="icon-wrapper unified-icon warning">
+                <i class="layui-icon layui-icon-alert"></i>
+            </div>
+            <h3>设备数量超限提醒</h3>
+            <p style="text-align: left; line-height: 1.6;">
+                <strong>当前状态：</strong>您的在线设备数量已达到最大限制（{$data['drivers']}/{$data['setdrivers']}）。<br><br>
+                <strong>解决方案：</strong><br>
+                1. 点击下方"重置订阅地址"按钮<br>
+                2. 使用新的订阅地址重新配置您的设备<br>
+                3. 这样可以清除所有在线设备记录，重新开始计数<br><br>
+                <strong>注意：</strong>重置后需要重新配置所有设备，但不会影响您的服务时长。
+            </p>
+            <div class="modal-buttons">
+                <button class="modal-btn unified-btn secondary" onclick="closeModal('deviceLimitModal')">稍后处理</button>
+                <button class="modal-btn unified-btn danger" onclick="handleDeviceLimit()">立即重置</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <div class="page-header">
+            <h1>订阅管理</h1>
+        </div>
+
+        <div class="card stats-card">
+            <div class="stats-content">
+                <h3>剩余时长</h3>
+                <div class="stats-number">{$data['endtime']} 天</div>
+                <div class="expiry-date">
+                    到期时间：<span id="expiryDate"></span>
+                </div>
+                <div class="expiry-warning" id="expiryWarning"></div>
+                <div class="stats-number" style="font-size:1.2rem;margin-top:1rem;">
+                    当前设备数：<span id="currentDevices" style="color:#ffd700;">{$data['drivers']}</span> / <span style="color:var(--color-primary);">{$data['setdrivers']}</span> 个
+                    <span style="font-size:0.95rem;color:#888;margin-left:8px;">（当前/最大）</span>
+                </div>
+                <div id="deviceWarning" style="margin-top:0.5rem;font-size:0.9rem;color:#ff6b6b;display:none;">
+                    <i class="layui-icon layui-icon-alert"></i> 设备数量已达上限，建议重置订阅地址
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><i class="iconfont icon-notification"></i>&nbsp;网站公告</div>
+            <div class="card-body">
+                <strong>请遵守节点当地和您所在国家的法律法规，禁止用作违规行为，不要发表不该说的言论，不要认为换了IP就找不到你，出问题后果自负，请谨言慎行才是生存之道！</strong>
+                <br><br>
+                <div id="deviceManagementTip" style="padding: 12px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; margin-bottom: 15px; display: none;">
+                    <strong style="color: #856404;">📱 设备管理提示：</strong>
+                    <p style="margin: 8px 0 0 0; color: #856404; font-size: 14px;">
+                        当您的设备数量达到上限时，可以点击下方"一键重置订阅地址"按钮来清除所有在线设备记录，然后使用新的订阅地址重新配置您的设备。
+                    </p>
+                </div>
+                <a class="btn btn-primary" href="javascript:void(0);" onclick="showModal('resetConfirmModal')">一键重置订阅地址</a>
+                <a class="btn btn-primary" onclick="sendSubscriptionEmail()">
+                    <i class="layui-icon layui-icon-email"></i> 发送订阅地址到自己qq邮箱
+                </a>
+                <div>请注意，点击重置订阅之后，你之前所有的链接都会失效。</div>
+                <br>
+                <strong style="color:red">续费请点击下方按钮</strong>
+                <hr>
+                <a class="btn btn-primary"  href="/tc" target="_blank">续费请点击我</a>
+            </div>
+        </div>
+
+                </form>
+                <div class="input-group">
+                    <input type="text" class="form-control" readonly value="{$data['mobileshorturl']}">
+                    <button type="button" class="btn btn-primary sub-ssr" data-clipboard-text="{$data['mobileshorturl']}">复制</button>
+                </div>
+                <div style="margin-bottom: 1rem; padding: 8px 12px; background: #e3f2fd; border-radius: 6px; color: var(--color-primary-active); font-size: 0.95rem; font-weight: 500;">
+                    <i class="layui-icon layui-icon-tips"></i>
+                    适配软件：Shadowrocket、V2Ray、Hiddify
+                </div>
+                <div class="input-group">
+                    <input type="text" class="form-control" readonly value="{$data['clashshorturl']}">
+                    <button type="button" class="btn btn-primary sub-ssr" data-clipboard-text="{$data['clashshorturl']}">复制</button>
+                </div>
+                <div style="margin-bottom: 1rem; padding: 8px 12px; background: #e8f5e9; border-radius: 6px; color: #2e7d32; font-size: 0.95rem; font-weight: 500;">
+                    <i class="layui-icon layui-icon-tips"></i>
+                    适配软件：电脑版Clash、安卓版Clash Meta、电脑版Mihomo Part
+                </div>
+                <a class="btn btn-primary" href="clash://install-config?url={$data['clashshorturl']}&name={$data['jsdate']}_到期">小猫咪软件一键导入</a>
+                <div>此步骤省略复制订阅地址到小猫咪软件下载配置的步骤，方便快捷</div>
+                <div id="qrcode"></div>
+                <a class="btn btn-primary" onclick="ssr_AddSub('{$data[\'mobileshorturl\']}','shadowrocket://add/sub://','{$data[\'jsdate\']}')">小火箭一键导入</a>
+                <div class="card">
+                  <div class="card-header"><i class="iconfont icon-cloud-download"></i>&nbsp;快速配置</div>
+                  <div class="card-body">
+                      <form class="layui-form" lay-filter="course_ssr">
+                          <select name="interest" lay-filter="filter_ssr">
+                              <option value="windows">Windows</option>
+                              <option value="android">Android</option>
+                              <option value="mac">Mac</option>
+                              <option value="ios">iOS</option>
+                          </select>
+                <!-- 客户端下载区域 -->
+                <div class="client-downloads" id="clientDownloads">
+                    <!-- Windows客户端 -->
+                    <div id="windows-client" class="client-card">
+                        <div class="download-item">
+                            <span>Windows客户端</span>
+                            <a id="dl-win" href="#" class="download-btn">
+                                <i class="layui-icon layui-icon-download-circle"></i>
+                                下载
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Android客户端 -->
+                    <div id="android-client" class="client-card">
+                        <div class="download-item">
+                            <span>安卓猫咪软件</span>
+                            <a id="dl-android" href="#" class="download-btn">
+                                <i class="layui-icon layui-icon-download-circle"></i>
+                                下载
+                            </a>
+                        </div>
+                        <div class="download-item">
+                            <span>安卓Hiddify软件</span>
+                            <a href="https://ghfast.top/https://github.com/hiddify/hiddify-app/releases/download/v2.5.7/Hiddify-Android-arm64.apk" class="download-btn">
+                                <i class="layui-icon layui-icon-download-circle"></i>
+                                下载
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Mac客户端 -->
+                    <div id="mac-client" class="client-card">
+                        <div class="download-item">
+                            <span>Mac Intel芯片</span>
+                            <a id="dl-mac-intel" href="#" class="download-btn">
+                                <i class="layui-icon layui-icon-download-circle"></i>
+                                下载
+                            </a>
+                        </div>
+                        <div class="download-item">
+                            <span>Mac 苹果芯片</span>
+                            <a id="dl-mac-arm" href="#" class="download-btn">
+                                <i class="layui-icon layui-icon-download-circle"></i>
+                                下载
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- iOS客户端 -->
+                    <div id="ios-client" class="client-card">
+                        <div class="download-item">
+                            <span>Shadowrocket</span>
+                            <span class="notice">App Store自行下载</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 设备管理区域 -->
+        <div class="card">
+            <div class="card-header">
+                <i class="iconfont icon-mobile"></i>&nbsp;设备管理
+                <span class="device-count-badge" id="deviceCountBadge">加载中...</span>
+            </div>
+            <div class="card-body">
+                <div class="device-management-intro">
+                    <p style="margin: 0 0 15px 0; color: #666; font-size: 14px;">
+                        <i class="layui-icon layui-icon-tips"></i>
+                        您可以查看和管理当前在线的设备，删除不需要的设备以释放设备数量限制。
+                    </p>
+                </div>
+
+                <div class="device-actions">
+                    <button class="btn btn-primary" onclick="refreshDeviceList()" id="refreshDeviceBtn">
+                        <i class="layui-icon layui-icon-refresh"></i> 刷新设备列表
+                    </button>
+                </div>
+
+                <div class="device-list-container" id="deviceListContainer">
+                    <div class="device-loading" id="deviceLoading" style="text-align: center; padding: 40px; color: #999;">
+                        <i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i>
+                        <p>正在加载设备列表...</p>
+                    </div>
+                    <div class="device-list" id="deviceList" style="display: none;">
+                        <!-- 设备列表将在这里动态生成 -->
+                    </div>
+                    <div class="device-empty" id="deviceEmpty" style="display: none; text-align: center; padding: 40px; color: #999;">
+                        <i class="layui-icon layui-icon-face-surprised" style="font-size: 48px; color: #ddd;"></i>
+                        <p>暂无在线设备</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="copy-tooltip" id="copyTooltip">复制成功!</div>
+</block>
+
+<block name="footer">
+    <script src="/Public/statics/user/breakpoints.min.js"></script>
+    <script src="/Public/statics/user/script.min.js"></script>
+    <script src="/Public/statics/user/clipboard.min.js"></script>
+    <script src="/Public/statics/user/main.js"></script>
+    <script src="/Public/statics/user/layui.js"></script>
+    <script src="/Public/statics/user/dropdown.js"></script>
+    <script src="/Public/statics/user/wangEditor.min.js"></script>
+    <script src="/Public/statics/user/jquery.qrcode.min.js"></script>
+    <script src="/Public/statics/user/jquery.slimscroll.js"></script>
+    <script src="/Public/statics/user/perfect-scrollbar.jquery.js"></script>
+    <script src="/Public/statics/user/library.js"></script>
+    <script src="/Public/statics/user/plugins.js"></script>
+    <script src="/Public/statics/user/app.min.js"></script>
+    <script src="/Public/statics/user/jquery-validation.js"></script>
+    <script>
+        layui.use('layer', function(){
+            var layer = layui.layer;
+            var os = layui.device();
+            if(os.os == 'windows'){ document.getElementById("devices").innerText="windows"; }
+            if(os.android == true){ document.getElementById("devices").innerText="android"; }
+            if(os.os == 'mac'){ document.getElementById("devices").innerText="mac"; }
+            if(os.os == 'ios'){ document.getElementById("devices").innerText="ios"; }
+            if(os.os == 'linux' && os.android == false){ document.getElementById("devices").innerText="linux"; }
+        });
+        layui.use('form',function(){});
+    </script>
+    <script>
+        layui.use(['form', 'element'], function(){
+            var form = layui.form;
+
+            // 1. 定义一个函数来更新显示的卡片
+            function updateClientCard(selectedValue) {
+                // 隐藏所有下载卡片
+                document.querySelectorAll('.client-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+
+                // 显示选中的客户端下载卡片
+                const clientCard = document.querySelector(`#${selectedValue}-client`);
+                if(clientCard) {
+                    clientCard.classList.add('active');
+                }
+            }
+
+            // 2. 为下拉框选择事件绑定这个函数
+            form.on('select(filter_ssr)', function(data){
+                updateClientCard(data.value);
+            });
+
+            // 3. 页面加载完成后，默认显示Windows的卡片
+            updateClientCard('windows');
+        });
+    </script>
+    <script>
+        $(function(){ new Clipboard('.sub-ssr'); });
+        $(".sub-ssr").click(function (){ showCopyTooltip(); });
+        $(function(){ new Clipboard('.sub-quantumult'); });
+        $(".sub-ssr-quantumult").click(function (){ showCopyTooltip(); });
+    </script>
+    <script>
+        function ssr_AddSub(url,jumpurl="",$endDate='') {
+            let tmp = window.btoa(url);
+            if($endDate){
+                window.location.href = jumpurl + tmp + '?remarks='+ $endDate;
+            }else{
+                window.location.href = jumpurl + tmp;
+            }
+        }
+        var el = kjua({text:'{$data[\'qrcodeUrl\']}',render:'image',size:224})
+        document.querySelector('#qrcode').appendChild(el);
+
+        function Copyconfig(url,id,jumpurl="") {
+            $.ajax({
+                url: url,
+                type: 'get',
+                async: false,
+                success: function(res) {
+                    if(res) {
+                        layer.open({ content: '获取成功' });
+                        $(id).data('data', res);
+                        console.log(res);
+                    } else {
+                        layer.open({ content: '获取失败，请稍后再试' });
+                    }
+                }
+            });
+            const clipboard = new Clipboard('.copy-config', {
+                text: function() {
+                    return $(id).data('data');
+                }
+            });
+            clipboard.on('success', function(e) {
+                if (jumpurl != "") {
+                    layer.open({ content: '复制成功，即将跳转到 APP' });
+                    window.setTimeout(function () {
+                        window.location.href = jumpurl;
+                    }, 1000);
+                } else {
+                    layer.open({ content: '复制成功' });
+                }
+            });
+            clipboard.on("error",function(e){
+                console.error('Action:', e.action);
+                console.error('Trigger:', e.trigger);
+                console.error('Text:', e.text);
+            });
+        }
+
+        // 复制成功提示
+        function showCopyTooltip() {
+            const tooltip = document.getElementById('copyTooltip');
+            tooltip.classList.add('show');
+            setTimeout(() => {
+                tooltip.classList.remove('show');
+            }, 2000);
+        }
+
+        // 简化到期日期计算
+        function calculateExpiryDate() {
+            const remainingDays = parseInt("{$data['endtime']}");
+            const today = new Date();
+            const expiryDate = new Date(today.setDate(today.getDate() + remainingDays));
+
+            const year = expiryDate.getFullYear();
+            const month = expiryDate.getMonth() + 1;
+            const day = expiryDate.getDate();
+
+            document.getElementById('expiryDate').innerHTML =
+                `${year}年${month}月${day}日`;
+
+            const warningEl = document.getElementById('expiryWarning');
+            if (remainingDays <= 7) {
+                warningEl.innerHTML = "⚠️ 您的服务即将到期，请及时续费！";
+                warningEl.style.color = "#ff4444";
+            } else if (remainingDays <= 30) {
+                warningEl.innerHTML = "提醒：建议提前续费以确保服务不中断";
+            }
+        }
+
+        // 页面加载完成后执行
+        window.addEventListener('load', function() {
+            calculateExpiryDate();
+            checkDeviceLimit();
+        });
+
+        // 检查设备数量是否超限
+        function checkDeviceLimit() {
+            const currentDevices = parseInt("{$data['drivers']}");
+            const maxDevices = parseInt("{$data['setdrivers']}");
+            const currentDevicesEl = document.getElementById('currentDevices');
+            const deviceWarningEl = document.getElementById('deviceWarning');
+            const deviceManagementTipEl = document.getElementById('deviceManagementTip');
+
+            // 更新设备数量显示颜色
+            if (currentDevices >= maxDevices) {
+                currentDevicesEl.style.color = '#ff6b6b'; // 红色警告
+                deviceWarningEl.style.display = 'block';
+                deviceManagementTipEl.style.display = 'block';
+
+                // 延迟显示弹窗，确保页面完全加载
+                setTimeout(function() {
+                    showModal('deviceLimitModal');
+                }, 1000);
+            } else if (currentDevices >= maxDevices * 0.8) {
+                // 当设备数量达到80%时显示黄色警告
+                currentDevicesEl.style.color = '#ffa726'; // 橙色警告
+                deviceWarningEl.style.display = 'block';
+                deviceWarningEl.innerHTML = '<i class="layui-icon layui-icon-alert"></i> 设备数量接近上限，请注意管理';
+                deviceWarningEl.style.color = '#ffa726';
+                deviceManagementTipEl.style.display = 'block';
+            }
+        }
+
+        // 处理设备数量超限
+        function handleDeviceLimit() {
+            closeModal('deviceLimitModal');
+            showModal('resetConfirmModal');
+        }
+
+        // 通用弹窗控制
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+        function closeModalAndReload(modalId) {
+            closeModal(modalId);
+            window.location.reload();
+        }
+
+        // 邮件发送逻辑
+        function sendSubscriptionEmail() {
+            var loadingIndex = layer.load(1);
+            $.ajax({
+                url: '/send',
+                type: 'POST',
+                data: {
+                    qq: '{$data["qq"]}',
+                    mobileUrl: '{$data["ms"]}',
+                    clashUrl: '{$data["cs"]}'
+                },
+                dataType: 'json',
+                success: function(res) {
+                    layer.close(loadingIndex);
+                    if (res.code === 0) {
+                        showModal('emailSuccessModal');
+                    } else {
+                        layer.alert(res.msg || '发送失败', {icon: 2});
+                    }
+                },
+                error: function() {
+                    layer.close(loadingIndex);
+                    layer.alert('网络请求失败', {icon: 2});
+                }
+            });
+        }
+
+        // 重置订阅地址逻辑
+        function confirmReset() {
+            closeModal('resetConfirmModal');
+            var loadingIndex = layer.load(1);
+            $.ajax({
+                url: '/reseturl',
+                type: 'POST',
+                dataType: 'json',
+                success: function(res) {
+                    layer.close(loadingIndex);
+                    if (res.status === 1) {
+                        window.location.reload(); // 直接刷新页面
+                    } else {
+                        // 失败时可选提示
+                        layer.alert(res.msg || '重置失败', {icon: 2});
+                    }
+                },
+                error: function() {
+                    layer.close(loadingIndex);
+                    window.location.reload(); // 网络异常也强制刷新页面
+                }
+            });
+        }
+    </script>
+    <script>
+         // 设备管理功能
+         let currentDeviceData = null;
+         let isDeviceListLoading = false;
+
+         // 页面加载完成后自动加载设备列表
+         window.addEventListener('load', function() {
+             setTimeout(function() {
+                 loadDeviceList();
+             }, 500);
+         });
+
+         // 刷新设备列表函数
+         function refreshDeviceList() {
+             if (isDeviceListLoading) {
+                 layer.msg('正在加载中，请稍候...', {icon: 16});
+                 return;
+             }
+
+             console.log('手动刷新设备列表');
+             loadDeviceList();
+         }
+
+
+         // 加载设备列表
+         function loadDeviceList() {
+             // 防止重复加载
+             if (isDeviceListLoading) {
+                 console.log('设备列表正在加载中，跳过重复请求');
+                 return;
+             }
+
+             isDeviceListLoading = true;
+
+             const loadingEl = document.getElementById('deviceLoading');
+             const deviceListEl = document.getElementById('deviceList');
+             const deviceEmptyEl = document.getElementById('deviceEmpty');
+             const deviceCountBadgeEl = document.getElementById('deviceCountBadge');
+             const refreshBtn = document.getElementById('refreshDeviceBtn');
+
+             // 显示加载状态
+             loadingEl.style.display = 'block';
+             deviceListEl.style.display = 'none';
+             deviceEmptyEl.style.display = 'none';
+             deviceCountBadgeEl.textContent = '加载中...';
+
+             // 禁用刷新按钮
+             if (refreshBtn) {
+                 refreshBtn.disabled = true;
+                 refreshBtn.innerHTML = '<i class="layui-icon layui-icon-loading layui-anim layui-anim-rotate layui-anim-loop"></i> 加载中...';
+             }
+
+             // 获取用户数据
+             const dingyueId = parseInt("{$data['id']}") || 0;
+             const qq = "{$data['qq']}" || '';
+
+             // 调试信息
+             console.log('调试信息 - dingyueId:', dingyueId, '类型:', typeof dingyueId);
+             console.log('调试信息 - qq:', qq, '类型:', typeof qq);
+
+             // 验证参数
+             if (!dingyueId || dingyueId <= 0) {
+                 console.error('dingyueId无效:', dingyueId);
+                 loadingEl.style.display = 'none';
+                 deviceCountBadgeEl.textContent = '参数错误';
+                 layer.alert('获取用户信息失败：订阅ID无效', {icon: 2});
+                 return;
+             }
+
+             if (!qq || !/^\d+$/.test(qq)) {
+                 console.error('qq无效:', qq);
+                 loadingEl.style.display = 'none';
+                 deviceCountBadgeEl.textContent = '参数错误';
+                 layer.alert('获取用户信息失败：QQ号无效', {icon: 2});
+                 return;
+             }
+
+             $.ajax({
+                 url: '/getDeviceList',
+                 type: 'POST',
+                 data: {
+                     dingyue_id: dingyueId,
+                     qq: qq
+                 },
+                 dataType: 'json',
+                 timeout: 10000,
+                 success: function(res) {
+                     // 重置加载状态
+                     isDeviceListLoading = false;
+                     loadingEl.style.display = 'none';
+
+                     // 恢复刷新按钮
+                     if (refreshBtn) {
+                         refreshBtn.disabled = false;
+                         refreshBtn.innerHTML = '<i class="layui-icon layui-icon-refresh"></i> 刷新设备列表';
+                     }
+
+                     // 调试信息
+                     console.log('设备列表响应:', res);
+
+                     if (res && res.code === 0) {
+                         currentDeviceData = res.data || [];
+
+                         // 更新设备数量徽章
+                         const currentDevices = res.current_devices || 0;
+                         const maxDevices = res.max_devices || 0;
+                         deviceCountBadgeEl.textContent = `${currentDevices}/${maxDevices}`;
+
+                         if (res.data && res.data.length > 0) {
+                             renderDeviceList(res.data);
+                             deviceListEl.style.display = 'block';
+                         } else {
+                             deviceEmptyEl.style.display = 'block';
+                         }
+
+                         // 显示成功提示（仅在手动刷新时）
+                         if (refreshBtn && refreshBtn.disabled === false) {
+                             layer.msg('设备列表刷新成功', {icon: 1, time: 1500});
+                         }
+                     } else {
+                         const errorMsg = (res && res.msg) ? res.msg : '获取设备列表失败';
+                         console.error('获取设备列表失败:', errorMsg);
+                         layer.alert(errorMsg, {icon: 2});
+                         deviceCountBadgeEl.textContent = '加载失败';
+                     }
+                 },
+                 error: function(xhr, status, error) {
+                     // 重置加载状态
+                     isDeviceListLoading = false;
+                     loadingEl.style.display = 'none';
+
+                     // 恢复刷新按钮
+                     if (refreshBtn) {
+                         refreshBtn.disabled = false;
+                         refreshBtn.innerHTML = '<i class="layui-icon layui-icon-refresh"></i> 刷新设备列表';
+                     }
+
+                     console.error('设备列表请求失败:', {
+                         status: status,
+                         error: error,
+                         responseText: xhr.responseText,
+                         statusCode: xhr.status
+                     });
+
+                     let errorMsg = '网络请求失败';
+                     if (status === 'timeout') {
+                         errorMsg = '请求超时，请稍后重试';
+                     } else if (xhr.status === 404) {
+                         errorMsg = '接口不存在，请检查路由配置';
+                     } else if (xhr.status === 500) {
+                         errorMsg = '服务器内部错误';
+                     }
+
+                     layer.alert(errorMsg, {icon: 2});
+                     deviceCountBadgeEl.textContent = '网络错误';
+                 }
+             });
+         }
+
+         // 渲染设备列表
+         function renderDeviceList(devices) {
+             const deviceListEl = document.getElementById('deviceList');
+             let html = '';
+
+             devices.forEach(function(device) {
+                 const normalizedUA = device.normalized_ua || '未知设备';
+                 const lastSeen = formatLastSeen(device.last_seen);
+                 const deviceLogo = getDeviceLogo(normalizedUA);
+
+                 html += `
+                     <div class="device-item" data-fingerprint="${device.fingerprint}">
+                         <div class="device-info">
+                             <div class="device-logo ${deviceLogo}">
+                                 <i class="${getSoftwareIcon(normalizedUA)}"></i>
+                             </div>
+                             <div class="device-details">
+                                 <div class="device-name">${normalizedUA}</div>
+                                 <div class="device-last-seen">最后访问: ${lastSeen}</div>
+                             </div>
+                         </div>
+                         <div class="device-actions-btns">
+                             <button class="device-remove-btn" onclick="removeDevice('${device.fingerprint}')">
+                                 <i class="layui-icon layui-icon-delete"></i>
+                                 删除
+                             </button>
+                         </div>
+                     </div>
+                 `;
+             });
+
+             deviceListEl.innerHTML = html;
+         }
+
+         // 获取设备logo样式类
+         function getDeviceLogo(normalizedUA) {
+             if (!normalizedUA) return 'default';
+
+             const name = normalizedUA.toLowerCase();
+
+             // 优先检查软件名称（按优先级排序）
+             if (name.includes('flclash')) return 'flclash';
+             if (name.includes('shadowrocket')) return 'shadowrocket';
+             if (name.includes('clash')) return 'clash';
+             if (name.includes('v2ray')) return 'v2ray';
+             if (name.includes('quantumult')) return 'quantumult';
+             if (name.includes('surge')) return 'surge';
+             if (name.includes('loon')) return 'loon';
+             if (name.includes('stash')) return 'stash';
+             if (name.includes('sparkle')) return 'sparkle';
+
+             // 如果标准化UA包含iPhone/iPad等苹果设备，默认为shadowrocket
+             if (name.includes('iphone') || name.includes('ipad') || name.includes('ipod')) {
+                 return 'shadowrocket';
+             }
+
+             return 'default';
+         }
+
+         // 获取软件图标
+         function getSoftwareIcon(normalizedUA) {
+             if (!normalizedUA) return 'fas fa-mobile-alt';
+
+             const name = normalizedUA.toLowerCase();
+
+             // 根据软件类型返回对应图标（按优先级排序）
+             if (name.includes('flclash')) {
+                 return 'fas fa-desktop';
+             }
+             if (name.includes('shadowrocket')) {
+                 return 'fas fa-rocket';
+             }
+             if (name.includes('clash')) {
+                 return 'fas fa-cat';
+             }
+             if (name.includes('v2ray')) {
+                 return 'fas fa-shield-alt';
+             }
+             if (name.includes('quantumult')) {
+                 return 'fas fa-atom';
+             }
+             if (name.includes('surge')) {
+                 return 'fas fa-bolt';
+             }
+             if (name.includes('loon')) {
+                 return 'fas fa-feather-alt';
+             }
+             if (name.includes('stash')) {
+                 return 'fas fa-box';
+             }
+             if (name.includes('sparkle')) {
+                 return 'fas fa-sparkles';
+             }
+
+             // 设备类型图标
+             if (name.includes('iphone')) {
+                 return 'fab fa-apple';
+             }
+             if (name.includes('ipad')) {
+                 return 'fas fa-tablet-alt';
+             }
+             if (name.includes('android')) {
+                 return 'fab fa-android';
+             }
+             if (name.includes('windows')) {
+                 return 'fab fa-windows';
+             }
+             if (name.includes('mac')) {
+                 return 'fab fa-apple';
+             }
+             if (name.includes('linux')) {
+                 return 'fab fa-linux';
+             }
+
+             return 'fas fa-mobile-alt';
+         }
+
+
+         // 格式化最后访问时间
+         function formatLastSeen(lastSeen) {
+             if (!lastSeen) return '未知';
+
+             // 检查是否为Unix时间戳（纯数字）
+             if (/^\d+$/.test(lastSeen)) {
+                 const timestamp = parseInt(lastSeen);
+                 const date = new Date(timestamp * 1000);
+
+                 const year = date.getFullYear();
+                 const month = String(date.getMonth() + 1).padStart(2, '0');
+                 const day = String(date.getDate()).padStart(2, '0');
+                 const hours = String(date.getHours()).padStart(2, '0');
+                 const minutes = String(date.getMinutes()).padStart(2, '0');
+                 const seconds = String(date.getSeconds()).padStart(2, '0');
+
+                 return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+             }
+
+             // 如果不是时间戳，直接返回原始值
+             return lastSeen;
+         }
+
+         // 删除设备
+         function removeDevice(fingerprint) {
+             const dingyueId = "{$data['id']}";
+             const qq = "{$data['qq']}";
+
+             // 调试信息
+             console.log('删除设备调试 - fingerprint:', fingerprint);
+             console.log('删除设备调试 - dingyueId:', dingyueId);
+             console.log('删除设备调试 - qq:', qq);
+
+             $.ajax({
+                 url: '/removeDevice',
+                 type: 'POST',
+                 data: {
+                     fingerprint: fingerprint,
+                     dingyue_id: dingyueId,
+                     qq: qq
+                 },
+                 dataType: 'json',
+                 success: function(res) {
+                     // 调试信息
+                     console.log('删除设备响应:', res);
+
+                     if (res.code === 0) {
+                         layer.msg('设备删除成功', {icon: 1});
+                         // 重新加载设备列表
+                         loadDeviceList();
+                         // 更新页面上的设备数量显示
+                         updateDeviceCount();
+                     } else {
+                         layer.alert(res.msg || '删除失败', {icon: 2});
+                     }
+                 },
+                 error: function(xhr, status, error) {
+                     console.error('删除设备请求失败:', {
+                         status: status,
+                         error: error,
+                         responseText: xhr.responseText,
+                         statusCode: xhr.status
+                     });
+                     layer.alert('网络请求失败: ' + error, {icon: 2});
+                 }
+             });
+         }
+
+         // 更新设备数量显示
+         function updateDeviceCount() {
+             // 重新获取设备数量并更新页面显示
+             setTimeout(function() {
+                 loadDeviceList();
+             }, 1000);
+         }
+     </script>
+     <script>
+    // GitHub加速服务配置（按稳定性排序）
+    const githubMirrors = [
+        'https://ghfast.top',
+        'https://ghproxy.com',
+        'https://github.91chi.fun'
+    ];
+
+    // 智能下载链接设置，使用最稳定的加速服务
+    async function setDownloadLink(repo, assetMatch, btnId) {
+        try {
+            const response = await fetch(`https://api.github.com/repos/${repo}/releases/latest`);
+            const data = await response.json();
+            const asset = data.assets.find(a => a.name.match(assetMatch));
+
+            if (asset) {
+                const btn = document.getElementById(btnId);
+                // 使用URL编码方式构建加速链接
+                const acceleratedUrl = githubMirrors[0] + '/?q=' + encodeURIComponent(asset.browser_download_url);
+                btn.href = acceleratedUrl;
+                btn.innerText = '下载最新版';
+                console.log(`设置下载链接: ${acceleratedUrl}`);
+            } else {
+                document.getElementById(btnId).innerText = '未找到安装包';
+            }
+        } catch (error) {
+            document.getElementById(btnId).innerText = '获取失败';
+            console.error('获取下载链接失败:', error);
+        }
+    }
+
+    setDownloadLink('xishang0128/sparkle', /windows.*x64.*setup.*\.exe$/i, 'dl-win');
+    setDownloadLink('xishang0128/sparkle', /macos.*x64.*(pkg|dmg)$/i, 'dl-mac-intel');
+    setDownloadLink('xishang0128/sparkle', /macos.*arm64.*(pkg|dmg)$/i, 'dl-mac-arm');
+    setDownloadLink('MetaCubeX/ClashMetaForAndroid', /arm64.*release.*\.apk$/i, 'dl-android');
+</script>
+</block>

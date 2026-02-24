@@ -1,0 +1,409 @@
+<extend name="Public:base" />
+<block name="title">通知设置</block>
+<block name="content">
+    <!-- Common CSS loaded via base.html admin-components.css -->
+    
+    <!-- 面包屑导航 -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Index/index')}">
+                    <i class="fa fa-home"></i>
+                    首页
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{:U('Admin/Index/index')}">
+                    后台管理
+                </a>
+            </li>
+            <li class="breadcrumb-item active">
+                通知设置
+            </li>
+        </ol>
+    </nav>
+    
+    <!-- 页面导航路径 -->
+    <div class="page-navigation">
+        <a href="{:U('Admin/Index/index')}" class="nav-item">
+            <i class="fa fa-home"></i>
+            首页
+        </a>
+        <div class="nav-separator">/</div>
+        <a href="{:U('Admin/Index/index')}" class="nav-item">
+            后台管理
+        </a>
+        <div class="nav-separator">/</div>
+        <div class="nav-item active">
+            通知设置
+        </div>
+    </div>
+    
+    <div class="page-content">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-start">
+                    <ul class="nav nav-tabs border-0">
+                        <li class="nav-item me-3">
+                            <a class="nav-link active" href="{:U('Admin/Notification/index')}">通知设置</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+                <style>
+                    /* 通知设置页面样式 */
+                    .notification-section {
+                        margin-bottom: 30px;
+                        background: #fff;
+                        border: 1px solid #e9ecef;
+                        border-radius: 8px;
+                        overflow: hidden;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    }
+                    
+                    .notification-header {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: #fff;
+                        padding: 15px 20px;
+                        border-bottom: 1px solid #e9ecef;
+                    }
+                    
+                    .notification-title {
+                        margin: 0;
+                        font-size: 16px;
+                        font-weight: 600;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                    }
+                    
+                    .notification-subtitle {
+                        margin: 5px 0 0 0;
+                        font-size: 12px;
+                        opacity: 0.9;
+                    }
+                    
+                    .notification-body {
+                        padding: 20px;
+                    }
+                    
+                    .form-group {
+                        margin-bottom: 20px;
+                    }
+                    
+                    .form-label {
+                        display: block;
+                        font-size: 14px;
+                        font-weight: 600;
+                        color: #333;
+                        margin-bottom: 8px;
+                    }
+                    
+                    .form-text {
+                        font-size: 12px;
+                        color: #666;
+                        margin-top: 5px;
+                        padding: 8px 12px;
+                        background: #f8f9fa;
+                        border-left: 3px solid #007bff;
+                        border-radius: 4px;
+                    }
+                    
+                    /* 复选框样式 */
+                    .form-check {
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        margin-bottom: 15px;
+                    }
+                    
+                    .form-check-input {
+                        width: 18px;
+                        height: 18px;
+                        accent-color: #007bff;
+                    }
+                    
+                    .form-check-label {
+                        font-size: 14px;
+                        color: #333;
+                        font-weight: 500;
+                    }
+                    
+                    /* 分隔线样式 */
+                    .section-divider {
+                        height: 1px;
+                        background: linear-gradient(90deg, transparent, #e9ecef, transparent);
+                        margin: 30px 0;
+                        border: none;
+                    }
+                    
+                    /* 操作按钮组 */
+                    .action-buttons {
+                        display: flex;
+                        gap: 10px;
+                        margin-top: 30px;
+                        padding-top: 20px;
+                        border-top: 1px solid #e9ecef;
+                        flex-wrap: wrap;
+                    }
+                    
+                    /* 状态指示器 */
+                    .status-indicator {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 5px;
+                        padding: 4px 8px;
+                        border-radius: 12px;
+                        font-size: 11px;
+                        font-weight: 500;
+                    }
+                    
+                    .status-enabled {
+                        background: rgba(40, 167, 69, 0.1);
+                        color: #28a745;
+                        border: 1px solid rgba(40, 167, 69, 0.2);
+                    }
+                    
+                    .status-disabled {
+                        background: rgba(108, 117, 125, 0.1);
+                        color: #6c757d;
+                        border: 1px solid rgba(108, 117, 125, 0.2);
+                    }
+                    
+                    /* 响应式设计 */
+                    @media (max-width: 768px) {
+                        .notification-body {
+                            padding: 15px;
+                        }
+                        
+                        .action-buttons {
+                            flex-direction: column;
+                        }
+
+                        .btn {
+                            width: 100%;
+                            justify-content: center;
+                            margin-right: 0;
+                        }
+                        
+                        .notification-title {
+                            font-size: 14px;
+                        }
+                        
+                        .notification-subtitle {
+                            font-size: 11px;
+                        }
+                    }
+                    
+                    /* 加载动画 */
+                    .loading {
+                        display: inline-block;
+                        width: 14px;
+                        height: 14px;
+                        border: 2px solid #ced4da;
+                        border-radius: 50%;
+                        border-top-color: #007bff;
+                        animation: spin 1s ease-in-out infinite;
+                    }
+                    
+                    @keyframes spin {
+                        to { transform: rotate(360deg); }
+                    }
+                </style>
+
+                <form method="post" action="{:U('Admin/Notification/save')}">
+                    <!-- Telegram 通知设置 -->
+                    <div class="notification-section">
+                        <div class="notification-header">
+                            <h3 class="notification-title">
+                                <i class="fa fa-telegram"></i>
+                                Telegram 通知
+                            </h3>
+                            <p class="notification-subtitle">通过 Telegram Bot 发送订单通知</p>
+                        </div>
+                        <div class="notification-body">
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input type="checkbox" name="telegram_enabled" class="form-check-input" value="1" <if condition="$config['telegram']['enabled'] eq 1">checked</if>>
+                                    <label class="form-check-label">启用 Telegram 通知</label>
+                                    <span class="status-indicator <if condition="$config['telegram']['enabled'] eq 1">status-enabled</if><if condition="$config['telegram']['enabled'] neq 1">status-disabled</if>">
+                                        <if condition="$config['telegram']['enabled'] eq 1">已启用</if><if condition="$config['telegram']['enabled'] neq 1">已禁用</if>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Bot Token</label>
+                                <input type="text" name="telegram_bot_token" class="form-control" value="{$config.telegram.bot_token}" placeholder="请输入 Telegram Bot Token">
+                                <div class="form-text">
+                                    <i class="fa fa-info-circle"></i>
+                                    从 @BotFather 获取的 Bot Token
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Chat ID</label>
+                                <input type="text" name="telegram_chat_id" class="form-control" value="{$config.telegram.chat_id}" placeholder="请输入接收消息的 Chat ID">
+                                <div class="form-text">
+                                    <i class="fa fa-info-circle"></i>
+                                    可以是用户ID或群组ID，从 @userinfobot 获取
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="btn btn-info" onclick="testNotification('telegram')">
+                                <i class="fa fa-paper-plane"></i>
+                                测试 Telegram 通知
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Bark 通知设置 -->
+                    <div class="notification-section">
+                        <div class="notification-header">
+                            <h3 class="notification-title">
+                                <i class="fa fa-bell"></i>
+                                Bark 通知
+                            </h3>
+                            <p class="notification-subtitle">通过 Bark App 发送推送通知</p>
+                        </div>
+                        <div class="notification-body">
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input type="checkbox" name="bark_enabled" class="form-check-input" value="1" <if condition="$config['bark']['enabled'] eq 1">checked</if>>
+                                    <label class="form-check-label">启用 Bark 通知</label>
+                                    <span class="status-indicator <if condition="$config['bark']['enabled'] eq 1">status-enabled</if><if condition="$config['bark']['enabled'] neq 1">status-disabled</if>">
+                                        <if condition="$config['bark']['enabled'] eq 1">已启用</if><if condition="$config['bark']['enabled'] neq 1">已禁用</if>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Bark Key</label>
+                                <input type="text" name="bark_key" class="form-control" value="{$config.bark.key}" placeholder="请输入 Bark 推送密钥">
+                                <div class="form-text">
+                                    <i class="fa fa-info-circle"></i>
+                                    从 Bark App 中获取的推送密钥
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">服务器地址</label>
+                                <input type="text" name="bark_server" class="form-control" value="{$config.bark.server}" placeholder="https://api.day.app">
+                                <div class="form-text">
+                                    <i class="fa fa-info-circle"></i>
+                                    Bark 服务器地址，默认为官方服务器
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="btn btn-warning" onclick="testNotification('bark')">
+                                <i class="fa fa-paper-plane"></i>
+                                测试 Bark 通知
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 邮件通知设置 -->
+                    <div class="notification-section">
+                        <div class="notification-header">
+                            <h3 class="notification-title">
+                                <i class="fa fa-envelope"></i>
+                                邮件通知
+                            </h3>
+                            <p class="notification-subtitle">通过邮件发送订单通知</p>
+                        </div>
+                        <div class="notification-body">
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input type="checkbox" name="email_enabled" class="form-check-input" value="1" <if condition="$config['email']['enabled'] eq 1">checked</if>>
+                                    <label class="form-check-label">启用邮件通知</label>
+                                    <span class="status-indicator <if condition="$config['email']['enabled'] eq 1">status-enabled</if><if condition="$config['email']['enabled'] neq 1">status-disabled</if>">
+                                        <if condition="$config['email']['enabled'] eq 1">已启用</if><if condition="$config['email']['enabled'] neq 1">已禁用</if>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">接收邮箱</label>
+                                <input type="email" name="email_to" class="form-control" value="{$config.email.to}" placeholder="请输入接收通知的邮箱地址">
+                                <div class="form-text">
+                                    <i class="fa fa-info-circle"></i>
+                                    订单支付成功后将发送通知到此邮箱
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="btn btn-success" onclick="testNotification('email')">
+                                <i class="fa fa-paper-plane"></i>
+                                测试邮件通知
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="action-buttons">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa fa-save"></i>
+                            保存设置
+                        </button>
+                        <button type="button" class="btn btn-default" onclick="history.back()">
+                            <i class="fa fa-arrow-left"></i>
+                            返回
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function testNotification(type) {
+            var btn = event.target;
+            var originalText = btn.innerHTML;
+            
+            // 显示加载状态
+            btn.innerHTML = '<span class="loading"></span> 测试中...';
+            btn.disabled = true;
+            
+            $.ajax({
+                url: '{:U("Admin/Notification/test")}',
+                type: 'GET',
+                data: {type: type},
+                dataType: 'json',
+                success: function(response) {
+                    if(response.status == 1) {
+                        alert('测试通知发送成功！');
+                    } else {
+                        alert('测试通知发送失败：' + response.info);
+                    }
+                },
+                error: function() {
+                    alert('请求失败，请检查网络连接');
+                },
+                complete: function() {
+                    // 恢复按钮状态
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            });
+        }
+        
+        // 表单提交前验证
+        $('form').submit(function(e) {
+            var hasEnabled = false;
+            
+            // 检查是否有启用的通知方式
+            if ($('input[name="telegram_enabled"]').is(':checked')) hasEnabled = true;
+            if ($('input[name="bark_enabled"]').is(':checked')) hasEnabled = true;
+            if ($('input[name="email_enabled"]').is(':checked')) hasEnabled = true;
+            
+            if (!hasEnabled) {
+                alert('请至少启用一种通知方式！');
+                e.preventDefault();
+                return false;
+            }
+            
+            return true;
+        });
+    </script>
+    
+</block>

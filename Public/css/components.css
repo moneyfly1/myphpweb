@@ -1,0 +1,137 @@
+/**
+ * 统一组件：按钮、卡片、表单、表格
+ * 依赖：design-tokens.css, base.css
+ */
+
+/* ---------- 按钮 ---------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--font-size);
+    font-family: inherit;
+    line-height: 1.5;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background-color .2s, border-color .2s, color .2s;
+    min-height: 36px;
+}
+
+@media (max-width: 767px) {
+    .btn { min-height: 44px; }
+}
+
+.btn:disabled { opacity: .6; cursor: not-allowed; }
+
+.btn-primary {
+    background: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-primary);
+}
+.btn-primary:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+}
+
+.btn-default {
+    background: var(--color-bg);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+.btn-default:hover:not(:disabled) {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.btn-danger {
+    background: var(--color-danger);
+    color: #fff;
+    border-color: var(--color-danger);
+}
+.btn-danger:hover:not(:disabled) {
+    opacity: .9;
+}
+
+.btn-success { background: var(--color-success); color: #fff; border-color: var(--color-success); }
+.btn-success:hover:not(:disabled) { opacity: .9; }
+
+/* ---------- 卡片 ---------- */
+.card {
+    background: var(--color-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    margin-bottom: var(--space-4);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    font-weight: 600;
+    font-size: var(--font-size-lg);
+}
+
+.card-body { padding: var(--space-4); }
+
+/* ---------- 表单 ---------- */
+.form-group {
+    margin-bottom: var(--space-4);
+}
+
+.form-label {
+    display: block;
+    margin-bottom: var(--space-2);
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size);
+    font-family: inherit;
+    line-height: 1.5;
+    color: var(--color-text);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+}
+.form-control:focus {
+    outline: 0;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(22, 119, 255, .2);
+}
+
+.form-control::placeholder { color: var(--color-text-placeholder); }
+
+/* ---------- 表格 ---------- */
+.table-wrap { overflow-x: auto; }
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size);
+}
+
+.table th,
+.table td {
+    padding: var(--space-3) var(--space-4);
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.table th {
+    font-weight: 600;
+    color: var(--color-text);
+    background: var(--color-bg-page);
+}
+
+.table tbody tr:hover { background: var(--color-bg-page); }
+
+@media (max-width: 767px) {
+    .table th, .table td { padding: var(--space-2) var(--space-3); font-size: var(--font-size-sm); }
+}

@@ -1,0 +1,328 @@
+port: 7890
+allow-lan: true
+mode: rule
+log-level: info
+unified-delay: true
+global-client-fingerprint: chrome
+dns:
+  enable: false
+  listen: :53
+  ipv6: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  default-nameserver:
+    - 223.5.5.5
+    - 8.8.8.8
+  nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  fallback:
+    - https://1.0.0.1/dns-query
+    - tls://dns.google
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+    ipcidr:
+      - 240.0.0.0/4
+
+proxies:
+  - name: 美国01
+    type: vless
+    server: 66.253.5.69
+    port: 61402
+    uuid: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    network: tcp
+    udp: true
+    tls: true
+    flow: xtls-rprx-vision
+    servername: apple.com
+    reality-opts:
+      public-key: fyTSUP-JHa-EfUCewwKLWn0p7_XEAwosq3d29cVZrSs
+      short-id: 40f9d4a4
+    client-fingerprint: chrome
+  
+  - name: 美国02
+    type: vmess
+    server: 66.253.5.69
+    port: 61014
+    uuid: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    alterId: 0
+    cipher: auto
+    udp: true
+    tls: false
+    network: ws
+    servername: www.bing.com
+    ws-opts:
+      path: "1dc9736a-968d-4e46-8170-15c0b9b87601-vm-ip1"
+      headers:
+        Host: www.bing.com
+  
+  - name: 美国03
+    type: hysteria2
+    server: 66.253.5.69
+    port: 54809
+    password: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    alpn:
+      - h3
+    sni: www.bing.com
+    skip-cert-verify: true
+    fast-open: true
+  
+  - name: 美国04
+    server: 66.253.5.69
+    port: 63909
+    type: tuic
+    uuid: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    password: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    alpn: [h3]
+    disable-sni: false
+    reduce-rtt: true
+    udp-relay-mode: native
+    congestion-controller: bbr
+    sni: www.bing.com
+    skip-cert-verify: true
+  
+  - name: 美国05
+    type: vless
+    server: 66.253.5.113
+    port: 39039
+    uuid: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    network: tcp
+    udp: true
+    tls: true
+    flow: xtls-rprx-vision
+    servername: apple.com
+    reality-opts:
+      public-key: fyTSUP-JHa-EfUCewwKLWn0p7_XEAwosq3d29cVZrSs
+      short-id: 40f9d4a4
+    client-fingerprint: chrome
+  
+  - name: 美国06
+    type: vmess
+    server: 66.253.5.113
+    port: 49299
+    uuid: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    alterId: 0
+    cipher: auto
+    udp: true
+    tls: false
+    network: ws
+    servername: www.bing.com
+    ws-opts:
+      path: "1dc9736a-968d-4e46-8170-15c0b9b87601-vm-ip2"
+      headers:
+        Host: www.bing.com
+  
+  - name: 美国07
+    type: hysteria2
+    server: 66.253.5.113
+    port: 25881
+    password: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    alpn:
+      - h3
+    sni: www.bing.com
+    skip-cert-verify: true
+    fast-open: true
+  
+  - name: 美国08
+    server: 66.253.5.113
+    port: 38248
+    type: tuic
+    uuid: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    password: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    alpn: [h3]
+    disable-sni: false
+    reduce-rtt: true
+    udp-relay-mode: native
+    congestion-controller: bbr
+    sni: www.bing.com
+    skip-cert-verify: true
+  
+  - name: 美国09
+    type: vless
+    server: 66.253.5.159
+    port: 37544
+    uuid: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    network: tcp
+    udp: true
+    tls: true
+    flow: xtls-rprx-vision
+    servername: apple.com
+    reality-opts:
+      public-key: fyTSUP-JHa-EfUCewwKLWn0p7_XEAwosq3d29cVZrSs
+      short-id: 40f9d4a4
+    client-fingerprint: chrome
+  
+  - name: 美国10
+    type: vmess
+    server: 66.253.5.159
+    port: 40526
+    uuid: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    alterId: 0
+    cipher: auto
+    udp: true
+    tls: false
+    network: ws
+    servername: www.bing.com
+    ws-opts:
+      path: "1dc9736a-968d-4e46-8170-15c0b9b87601-vm-ip3"
+      headers:
+        Host: www.bing.com
+  
+  - name: 美国11
+    type: hysteria2
+    server: 66.253.5.159
+    port: 61055
+    password: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    alpn:
+      - h3
+    sni: www.bing.com
+    skip-cert-verify: true
+    fast-open: true
+  
+  - name: 美国12
+    server: 66.253.5.159
+    port: 45461
+    type: tuic
+    uuid: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    password: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    alpn: [h3]
+    disable-sni: false
+    reduce-rtt: true
+    udp-relay-mode: native
+    congestion-controller: bbr
+    sni: www.bing.com
+    skip-cert-verify: true
+  
+  - name: 美国13
+    type: vless
+    server: 66.253.7.112
+    port: 32865
+    uuid: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    network: tcp
+    udp: true
+    tls: true
+    flow: xtls-rprx-vision
+    servername: apple.com
+    reality-opts:
+      public-key: fyTSUP-JHa-EfUCewwKLWn0p7_XEAwosq3d29cVZrSs
+      short-id: 40f9d4a4
+    client-fingerprint: chrome
+  
+  - name: 美国14
+    type: vmess
+    server: 66.253.7.112
+    port: 46967
+    uuid: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    alterId: 0
+    cipher: auto
+    udp: true
+    tls: false
+    network: ws
+    servername: www.bing.com
+    ws-opts:
+      path: "1dc9736a-968d-4e46-8170-15c0b9b87601-vm-ip4"
+      headers:
+        Host: www.bing.com
+  
+  - name: 美国15
+    type: hysteria2
+    server: 66.253.7.112
+    port: 16304
+    password: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    alpn:
+      - h3
+    sni: www.bing.com
+    skip-cert-verify: true
+    fast-open: true
+  
+  - name: 美国16
+    server: 66.253.7.112
+    port: 62386
+    type: tuic
+    uuid: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    password: 1dc9736a-968d-4e46-8170-15c0b9b87601
+    alpn: [h3]
+    disable-sni: false
+    reduce-rtt: true
+    udp-relay-mode: native
+    congestion-controller: bbr
+    sni: www.bing.com
+    skip-cert-verify: true
+  
+  
+
+proxy-groups:
+- name: 负载均衡
+  type: load-balance
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  strategy: round-robin
+  proxies:
+    - 美国01
+    - 美国02
+    - 美国03
+    - 美国04
+    - 美国05
+    - 美国06
+    - 美国07
+    - 美国08
+    - 美国09
+    - 美国10
+    - 美国11
+    - 美国12
+    - 美国13
+    - 美国14
+    - 美国15
+    - 美国16
+
+- name: 自动选择
+  type: url-test
+  url: https://www.gstatic.com/generate_204
+  interval: 300
+  tolerance: 50
+  proxies:
+    - 美国01
+    - 美国02
+    - 美国03
+    - 美国04
+    - 美国05
+    - 美国06
+    - 美国07
+    - 美国08
+    - 美国09
+    - 美国10
+    - 美国11
+    - 美国12
+    - 美国13
+    - 美国14
+    - 美国15
+    - 美国16
+
+- name: 🌍选择代理节点
+  type: select
+  proxies:
+    - 负载均衡
+    - 自动选择
+    - DIRECT
+    - 美国01
+    - 美国02
+    - 美国03
+    - 美国04
+    - 美国05
+    - 美国06
+    - 美国07
+    - 美国08
+    - 美国09
+    - 美国10
+    - 美国11
+    - 美国12
+    - 美国13
+    - 美国14
+    - 美国15
+    - 美国16
+
+rules:
+  - GEOIP,LAN,DIRECT
+  - GEOIP,CN,DIRECT
+  - MATCH,🌍选择代理节点

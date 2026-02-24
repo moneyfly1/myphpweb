@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的订单 - 订阅服务</title>
+    <link rel="stylesheet" href="/Public/statics/user/layui.css">
+    <script src="/Public/statics/js/wechat-detect.js"></script>    
+    <style>
+        :root {
+            --primary-color: #42a5f5;
+            --secondary-color: #6777ef;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --text-color: #1c273c;
+            --bg-color: #f7fafd;
+            --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .orders-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+
+        .orders-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .orders-body {
+            padding: 2rem;
+        }
+
+        .order-card {
+            border: 1px solid #e9ecef;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .order-card:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .order-header {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .order-number {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .order-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-paid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .order-body {
+            padding: 1.5rem;
+        }
+
+        .order-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .detail-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .price-highlight {
+            color: var(--danger-color);
+            font-size: 1.3rem;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            color: white;
+            text-decoration: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .navigation {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .nav-btn {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .order-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .order-details {
+                grid-template-columns: 1fr;
+            }
+
+            .order-actions {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>我的订单</h1>
+            <p>查看您的购买记录和订单状态</p>
+        </div>
+
+        <div class="orders-container">
+            <div class="orders-header">
+                <h2>订单列表</h2>
+            </div>
+
+            <div class="orders-body">
+                <if condition="$orders">
+                    <volist name="orders" id="order">
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div class="order-number">订单号：{$order.order_no}</div>
+                                <div class="order-status 
+                                    <if condition='$order.status eq 0'>status-pending
+                                    <elseif condition='$order.status eq 1'/>status-paid
+                                    <else/>status-cancelled
+                                    </if>">
+                                    <if condition="$order.status eq 0">
+                                        待支付
+                                    <elseif condition="$order.status eq 1"/>
+                                        已支付
+                                    <else/>
+                                        已取消
+                                    </if>
+                                </div>
+                            </div>
+
+                            <div class="order-body">
+                                <div class="order-details">
+                                    <div class="detail-item">
+                                        <div class="detail-label">套餐名称</div>
+                                        <div class="detail-value">{$order.package_name}</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">有效期</div>
+                                        <div class="detail-value">{$order.duration} 天</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">支付金额</div>
+                                        <div class="detail-value price-highlight">¥{$order.price}</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">创建时间</div>
+                                        <div class="detail-value">{$order.create_time|date="Y-m-d H:i:s",###}</div>
+                                    </div>
+                                    <if condition="$order.pay_time">
+                                        <div class="detail-item">
+                                            <div class="detail-label">支付时间</div>
+                                            <div class="detail-value">{$order.pay_time|date="Y-m-d H:i:s",###}</div>
+                                        </div>
+                                    </if>
+                                </div>
+
+                                <div class="order-actions">
+                                    <if condition="$order.status eq 0">
+                                        <if condition="$order.expire_time gt time()">
+                                            <a href="/Package/pay/order_id/{$order.id}" class="btn btn-primary">继续支付</a>
+                                        <else/>
+                                            <span style="color: #666; font-size: 0.9rem;">订单已过期</span>
+                                        </if>
+                                    <elseif condition="$order.status eq 1"/>
+                                        <span style="color: var(--success-color); font-size: 0.9rem;">✓ 支付成功</span>
+                                    </if>
+                                </div>
+                            </div>
+                        </div>
+                    </volist>
+                <else/>
+                    <div class="empty-state">
+                        <div class="empty-icon">📋</div>
+                        <h3>暂无订单</h3>
+                        <p>您还没有任何订单记录</p>
+                        <a href="/Package/index" class="btn btn-primary" style="margin-top: 1rem;">立即购买套餐</a>
+                    </div>
+                </if>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <a href="/" class="nav-btn">返回首页</a>
+            <a href="/Package/index" class="nav-btn">购买套餐</a>
+        </div>
+    </div>
+
+    <script src="/Public/statics/js/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // 添加一些交互效果
+            $('.order-card').hover(
+                function() {
+                    $(this).css('transform', 'translateY(-5px)');
+                },
+                function() {
+                    $(this).css('transform', 'translateY(0)');
+                }
+            );
+        });
+    </script>
+</body>
+</html>

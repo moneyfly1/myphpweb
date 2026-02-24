@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>重置密码 | 享受高速科学服务 尽享外贸生活</title>
+    <script src="/Public/statics/js/wechat-detect.js"></script>    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --input-bg: rgba(255, 255, 255, 0.1);
+            --input-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --shadow-heavy: 0 20px 40px rgba(0, 0, 0, 0.1);
+            --transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
+            --border-radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        /* 动态背景粒子效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            animation: float 6s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 98px,
+                rgba(255, 255, 255, 0.03) 100px
+            );
+            z-index: 1;
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 
+                var(--shadow-light),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(0);
+            transition: all 0.4s var(--transition-ease);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .login-container:hover {
+            transform: translateY(-8px);
+            box-shadow: 
+                var(--shadow-heavy),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            margin: -80px auto 2rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+            padding: 6px;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.15),
+                inset 0 2px 4px rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: rotate 3s linear infinite;
+            z-index: 0;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2.5rem;
+            text-align: center;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: stretch;
+            margin-bottom: 1rem;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            font-size: 1rem;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: var(--border-radius);
+            color: var(--text-primary);
+            outline: none;
+            transition: all 0.3s var(--transition-ease);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .input-group input::placeholder {
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .input-group input:focus {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            background: var(--secondary-gradient);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            margin-top: 0.5rem;
+            transition: all 0.3s var(--transition-ease);
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .login-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .login-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .login-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
+        }
+
+        .login-button:hover::before {
+            opacity: 1;
+        }
+
+        .login-button:active::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .login-links {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .login-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            transition: all 0.3s var(--transition-ease);
+            position: relative;
+            display: inline-block;
+        }
+
+        .login-links a:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .login-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--secondary-gradient);
+            transition: all 0.3s var(--transition-ease);
+            transform: translateX(-50%);
+        }
+
+        .login-links a:hover::after {
+            width: 80%;
+        }
+
+        /* 动画效果 */
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-10px) rotate(1deg); }
+            66% { transform: translateY(5px) rotate(-1deg); }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+            
+            .login-container {
+                padding: 2.5rem 2rem;
+                max-width: 100%;
+                border-radius: 20px;
+            }
+            
+            .avatar {
+                width: 85px;
+                height: 85px;
+                margin-top: -65px;
+            }
+            
+            .login-title {
+                font-size: 1.75rem;
+                margin-bottom: 2rem;
+            }
+            
+            .input-group input {
+                padding: 0.875rem 1rem;
+                font-size: 0.95rem;
+            }
+            
+            .login-button {
+                padding: 0.875rem 1.25rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .login-container {
+                padding: 2rem 1.5rem;
+            }
+            
+            .login-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="avatar">
+            <img src="/Public/statics/user/login/img/user_icon_copy.png" alt="用户头像">
+        </div>
+        <h1 class="login-title">找回密码</h1>
+        <form class="login-form" method="post">
+            <div class="input-group">
+                <input 
+                    name="newpassword" 
+                    placeholder="请输入新密码:8-16位" 
+                    maxlength="16" 
+                    type="password" 
+                    autocomplete="off"
+                    required
+                >
+            </div>
+            <div class="input-group">
+                <input 
+                    name="confirmpassword" 
+                    placeholder="请确认密码" 
+                    maxlength="16" 
+                    type="password" 
+                    autocomplete="off"
+                    required
+                >
+            </div>
+            <button type="submit" class="login-button">重置</button>
+        </form>
+        <div class="login-links">
+            <p>密码重置完成？<a href="/login">立即登录</a></p>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        document.addEventListener('keypress', function(e) {
+            // 回车键事件  
+            if(e.which == 13) {
+                var btn = document.querySelector('button[type="submit"], input[type="submit"]'); if (btn) btn.click();
+            }
+        });
+    </script>
+</body>
+</html>
