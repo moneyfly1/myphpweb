@@ -1,28 +1,43 @@
 <?php
 // sync_user_with_short.php
-// 直接使用代码内置的数据库配置，对比yg_user和yg_short_dingyue表，删除不在yg_short_dingyue中的用户账号信息
+// 对比yg_user和yg_short_dingyue表，删除不在yg_short_dingyue中的用户账号信息
 
-// 数据库配置（请根据实际情况修改）
-$dbHost = '127.0.0.1';
-$dbName = 'demomoneyfly';
-$dbUser = 'demomoneyfly';
-$dbPass = 'adzwCAzXBM7yGryW';
-$dbPort = '3306';
-$dbPrefix = 'yg_';
+// 从 .env 读取数据库配置
+$envFile = dirname(dirname(__FILE__)) . '/.env';
+if (!file_exists($envFile)) {
+    echo ".env 文件不存在\n";
+    exit(1);
+}
+$envLines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+$env = [];
+foreach ($envLines as $line) {
+    $line = trim($line);
+    if ($line === '' || $line[0] === '#') continue;
+    if (strpos($line, '=') === false) continue;
+    list($key, $val) = explode('=', $line, 2);
+    $env[trim($key)] = trim($val);
+}
+
+$dbHost = isset($env['DB_HOST']) ? $env['DB_HOST'] : '127.0.0.1';
+$dbName = isset($env['DB_NAME']) ? $env['DB_NAME'] : '';
+$dbUser = isset($env['DB_USER']) ? $env['DB_USER'] : '';
+$dbPass = isset($env['DB_PASSWORD']) ? $env['DB_PASSWORD'] : '';
+$dbPort = isset($env['DB_PORT']) ? $env['DB_PORT'] : '3306';
+$dbPrefix = isset($env['DB_PREFIX']) ? $env['DB_PREFIX'] : 'yg_';
 
 try {
     $dsn = "mysql:host=$dbHost;port=$dbPort;dbname=$dbName;charset=utf8mb4";
     $pdo = new PDO($dsn, $dbUser, $dbPass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // 1. 获取yg_short_dingyue所有qq
+    // 1. 获取short_dingyue所有qq
     $shortQq = [];
     $stmt = $pdo->query("SELECT qq FROM {$dbPrefix}short_dingyue");
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $shortQq[] = $row['qq'];
     }
 
-    // 2. 获取yg_user所有username
+    // 2. 获取user所有username
     $stmt = $pdo->query("SELECT id, username FROM {$dbPrefix}user");
     $deleteCount = 0;
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -40,4 +55,4 @@ try {
 } catch (PDOException $e) {
     echo "数据库连接失败：" . $e->getMessage() . "\n";
     exit(1);
-} 
+}

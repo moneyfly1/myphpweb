@@ -28,6 +28,7 @@ class EmailQueueProcessor {
     private $pidFile;
     private $logFile;
     private $mysqli;
+    private $prefix = 'yg_';
     
     public function __construct() {
         global $scriptDir;
@@ -61,6 +62,8 @@ class EmailQueueProcessor {
             $port = getenv('DB_PORT') ?: '3306';
             $prefix = getenv('DB_PREFIX') ?: 'yg_';
             
+            $this->prefix = $prefix;
+
             $this->mysqli = new mysqli($host, $username, $password, $dbname, $port);
             
             if ($this->mysqli->connect_error) {
@@ -227,7 +230,7 @@ class EmailQueueProcessor {
      * 获取待发送的邮件
      */
     private function getPendingEmails($limit = 10) {
-        $sql = "SELECT * FROM yg_email_queue 
+        $sql = "SELECT * FROM {$this->prefix}email_queue
                 WHERE status = 'pending' 
                 AND scheduled_at <= ? 
                 AND retry_count < max_retries 
@@ -248,7 +251,7 @@ class EmailQueueProcessor {
      * 标记邮件为处理中
      */
     private function markAsProcessing($id) {
-        $sql = "UPDATE yg_email_queue SET status = 'processing', updated_at = ? WHERE id = ?";
+        $sql = "UPDATE {$this->prefix}email_queue SET status = 'processing', updated_at = ? WHERE id = ?";
         $stmt = $this->mysqli->prepare($sql);
         $stmt->bind_param('ii', $time, $id);
         $time = time();
@@ -260,7 +263,7 @@ class EmailQueueProcessor {
      * 标记邮件发送成功
      */
     private function markAsSent($id) {
-        $sql = "UPDATE yg_email_queue SET status = 'sent', sent_at = ?, updated_at = ? WHERE id = ?";
+        $sql = "UPDATE {$this->prefix}email_queue SET status = 'sent', sent_at = ?, updated_at = ? WHERE id = ?";
         $stmt = $this->mysqli->prepare($sql);
         $stmt->bind_param('iii', $time, $time, $id);
         $time = time();
@@ -273,7 +276,7 @@ class EmailQueueProcessor {
      */
     private function markAsFailed($id, $error = '') {
         // 先获取当前重试次数
-        $sql = "SELECT retry_count, max_retries FROM yg_email_queue WHERE id = ?";
+        $sql = "SELECT retry_count, max_retries FROM {$this->prefix}email_queue WHERE id = ?";
         $stmt = $this->mysqli->prepare($sql);
         $stmt->bind_param('i', $id);
         $stmt->execute();
@@ -291,11 +294,11 @@ class EmailQueueProcessor {
         
         if ($status === 'pending') {
             $delay = pow(2, $retryCount) * 60; // 2^n 分钟后重试
-            $sql = "UPDATE yg_email_queue SET status = ?, retry_count = ?, error_message = ?, updated_at = ?, scheduled_at = ? WHERE id = ?";
+            $sql = "UPDATE {$this->prefix}email_queue SET status = ?, retry_count = ?, error_message = ?, updated_at = ?, scheduled_at = ? WHERE id = ?";
             $stmt = $this->mysqli->prepare($sql);
             $stmt->bind_param('isssii', $status, $retryCount, $error, $time, $time + $delay, $id);
         } else {
-            $sql = "UPDATE yg_email_queue SET status = ?, retry_count = ?, error_message = ?, updated_at = ? WHERE id = ?";
+            $sql = "UPDATE {$this->prefix}email_queue SET status = ?, retry_count = ?, error_message = ?, updated_at = ? WHERE id = ?";
             $stmt = $this->mysqli->prepare($sql);
             $stmt->bind_param('isssi', $status, $retryCount, $error, $time, $id);
         }
@@ -324,7 +327,7 @@ class EmailQueueProcessor {
     private function getQueueStatistics() {
         $stats = [];
         
-        $sql = "SELECT status, COUNT(*) as count FROM yg_email_queue GROUP BY status";
+        $sql = "SELECT status, COUNT(*) as count FROM {$this->prefix}email_queue GROUP BY status";
         $stmt = $this->mysqli->prepare($sql);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -339,7 +342,7 @@ class EmailQueueProcessor {
             $stats[$row['status']] = $row['count'];
         }
         
-        $sql = "SELECT COUNT(*) as total FROM yg_email_queue";
+        $sql = "SELECT COUNT(*) as total FROM {$this->prefix}email_queue";
         $stmt = $this->mysqli->prepare($sql);
         $stmt->execute();
         $stats['total'] = $stmt->get_result()->fetch_assoc()['total'];
@@ -359,7 +362,7 @@ class EmailQueueProcessor {
             $cutoffTime = time() - ($days * 24 * 60 * 60);
             
             // 清理已发送的邮件
-            $sql = "DELETE FROM yg_email_queue WHERE status = 'sent' AND sent_at < ?";
+            $sql = "DELETE FROM {$this->prefix}email_queue WHERE status = 'sent' AND sent_at < ?";
             $stmt = $this->mysqli->prepare($sql);
             $stmt->bind_param('i', $cutoffTime);
             $stmt->execute();
@@ -367,7 +370,7 @@ class EmailQueueProcessor {
             $stmt->close();
             
             // 清理已失败的邮件
-            $sql = "DELETE FROM yg_email_queue WHERE status = 'failed' AND updated_at < ?";
+            $sql = "DELETE FROM {$this->prefix}email_queue WHERE status = 'failed' AND updated_at < ?";
             $stmt = $this->mysqli->prepare($sql);
             $stmt->bind_param('i', $cutoffTime);
             $stmt->execute();
@@ -378,7 +381,7 @@ class EmailQueueProcessor {
             $this->log("清理邮件记录：已发送 {$sentAffected} 条，已失败 {$failedAffected} 条，总计 {$totalAffected} 条");
         } else {
             // 清理所有已发送和已失败的邮件
-            $sql = "DELETE FROM yg_email_queue WHERE status IN ('sent', 'failed')";
+            $sql = "DELETE FROM {$this->prefix}email_queue WHERE status IN ('sent', 'failed')";
             $stmt = $this->mysqli->prepare($sql);
             $stmt->execute();
             $totalAffected = $stmt->affected_rows;
@@ -397,12 +400,12 @@ private function cleanExpiredUsers() {
     
     try {
         // 检查主表是否存在
-        if (!$this->tableExists('yg_shortdingyue')) {
-            $this->log("表 yg_shortdingyue 不存在，跳过清理过期用户");
+        if (!$this->tableExists($this->prefix . 'shortdingyue')) {
+            $this->log("表 {$this->prefix}shortdingyue 不存在，跳过清理过期用户");
             return 0;
         }
 
-        $sql = "SELECT qq FROM yg_shortdingyue WHERE endtime > 0 AND endtime < ?";
+        $sql = "SELECT qq FROM {$this->prefix}shortdingyue WHERE endtime > 0 AND endtime < ?";
         $stmt = $this->mysqli->prepare($sql);
         if ($stmt === false) {
             throw new Exception("准备SQL语句失败: " . $this->mysqli->error);
@@ -424,10 +427,10 @@ private function cleanExpiredUsers() {
                 
                 // 删除订阅信息 - 检查每个表是否存在
                 $tables = [
-                    'yg_shortdingyue' => 'qq',
-                    'yg_dingyue' => 'qq',
-                    'yg_short_dingyue_history' => 'qq',
-                    'yg_user' => 'username'
+                    $this->prefix . 'shortdingyue' => 'qq',
+                    $this->prefix . 'dingyue' => 'qq',
+                    $this->prefix . 'short_dingyue_history' => 'qq',
+                    $this->prefix . 'user' => 'username'
                 ];
                 
                 foreach ($tables as $table => $field) {
@@ -445,8 +448,8 @@ private function cleanExpiredUsers() {
                 
                 // 删除邮件队列
                 $email = $qq . "@qq.com";
-                if ($this->tableExists('yg_email_queue')) {
-                    $sql = "DELETE FROM yg_email_queue WHERE to_email = ?";
+                if ($this->tableExists($this->prefix . 'email_queue')) {
+                    $sql = "DELETE FROM {$this->prefix}email_queue WHERE to_email = ?";
                     $stmt = $this->mysqli->prepare($sql);
                     if ($stmt === false) {
                         throw new Exception("准备邮件队列删除语句失败: " . $this->mysqli->error);
@@ -457,8 +460,8 @@ private function cleanExpiredUsers() {
                 }
                 
                 // 删除设备日志（如果表存在）
-                if ($this->tableExists('yg_device_log')) {
-                    $sql = "DELETE FROM yg_device_log WHERE qq = ?";
+                if ($this->tableExists($this->prefix . 'device_log')) {
+                    $sql = "DELETE FROM {$this->prefix}device_log WHERE qq = ?";
                     $stmt = $this->mysqli->prepare($sql);
                     if ($stmt === false) {
                         throw new Exception("准备设备日志删除语句失败: " . $this->mysqli->error);

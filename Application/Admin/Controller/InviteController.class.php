@@ -15,14 +15,14 @@ class InviteController extends AdminBaseController {
         }
 
         $model = M('invite_code')->alias('c')
-            ->join('LEFT JOIN yg_user u ON c.user_id = u.id');
+            ->join('LEFT JOIN __USER__ u ON c.user_id = u.id');
 
         $count = $model->where($map)->count();
         $page = new_page($count, 15);
 
         $list = M('invite_code')->alias('c')
             ->field('c.*, u.username as creator_name')
-            ->join('LEFT JOIN yg_user u ON c.user_id = u.id')
+            ->join('LEFT JOIN __USER__ u ON c.user_id = u.id')
             ->where($map)
             ->order('c.id desc')
             ->limit($page->firstRow . ',' . $page->listRows)
@@ -42,18 +42,18 @@ class InviteController extends AdminBaseController {
      */
     public function relations() {
         $model = M('invite_relation')->alias('r')
-            ->join('LEFT JOIN yg_user inviter ON r.inviter_id = inviter.id')
-            ->join('LEFT JOIN yg_user invitee ON r.invitee_id = invitee.id')
-            ->join('LEFT JOIN yg_invite_code c ON r.invite_code_id = c.id');
+            ->join('LEFT JOIN __USER__ inviter ON r.inviter_id = inviter.id')
+            ->join('LEFT JOIN __USER__ invitee ON r.invitee_id = invitee.id')
+            ->join('LEFT JOIN __INVITE_CODE__ c ON r.invite_code_id = c.id');
 
         $count = $model->count();
         $page = new_page($count, 15);
 
         $list = M('invite_relation')->alias('r')
             ->field('r.*, inviter.username as inviter_name, invitee.username as invitee_name, c.code as invite_code')
-            ->join('LEFT JOIN yg_user inviter ON r.inviter_id = inviter.id')
-            ->join('LEFT JOIN yg_user invitee ON r.invitee_id = invitee.id')
-            ->join('LEFT JOIN yg_invite_code c ON r.invite_code_id = c.id')
+            ->join('LEFT JOIN __USER__ inviter ON r.inviter_id = inviter.id')
+            ->join('LEFT JOIN __USER__ invitee ON r.invitee_id = invitee.id')
+            ->join('LEFT JOIN __INVITE_CODE__ c ON r.invite_code_id = c.id')
             ->order('r.id desc')
             ->limit($page->firstRow . ',' . $page->listRows)
             ->select();

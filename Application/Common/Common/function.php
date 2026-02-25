@@ -224,7 +224,13 @@ function file_format($str)
  */
 function get_uid()
 {
-    return $_SESSION['user']['id'];
+    if (isset($_SESSION['admin']['id'])) {
+        return $_SESSION['admin']['id'];
+    }
+    if (isset($_SESSION['users']['id'])) {
+        return $_SESSION['users']['id'];
+    }
+    return 0;
 }
 
 /**

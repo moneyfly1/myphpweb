@@ -81,7 +81,7 @@ class IndexController extends AdminBaseController{
 		// 最近工单 (last 5)
 		try {
 			$recentTickets = M('ticket')->alias('t')
-				->join('LEFT JOIN yg_user u ON t.user_id = u.id')
+				->join('LEFT JOIN __USER__ u ON t.user_id = u.id')
 				->field('t.*, u.username')
 				->order('t.id desc')->limit(5)->select();
 		} catch (\Exception $e) {

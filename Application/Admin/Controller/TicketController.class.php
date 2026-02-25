@@ -24,7 +24,7 @@ class TicketController extends AdminBaseController {
 
         // 分页查询（join user 获取用户名）
         $countQuery = $model->alias('t')
-            ->join('LEFT JOIN yg_user u ON u.id = t.user_id')
+            ->join('LEFT JOIN __USER__ u ON u.id = t.user_id')
             ->where($map)
             ->count();
 
@@ -38,7 +38,7 @@ class TicketController extends AdminBaseController {
 
         $list = $model->alias('t')
             ->field('t.*, u.username')
-            ->join('LEFT JOIN yg_user u ON u.id = t.user_id')
+            ->join('LEFT JOIN __USER__ u ON u.id = t.user_id')
             ->where($map)
             ->order('t.id desc')
             ->limit($Page->firstRow . ',' . $Page->listRows)
@@ -91,7 +91,7 @@ class TicketController extends AdminBaseController {
 
         $ticket = M('ticket')->alias('t')
             ->field('t.*, u.username')
-            ->join('LEFT JOIN yg_user u ON u.id = t.user_id')
+            ->join('LEFT JOIN __USER__ u ON u.id = t.user_id')
             ->where(array('t.id' => $id))
             ->find();
         if (!$ticket) {
@@ -99,7 +99,7 @@ class TicketController extends AdminBaseController {
         }
         $replies = M('ticket_reply')->alias('r')
             ->field('r.*, u.username')
-            ->join('LEFT JOIN yg_user u ON u.id = r.user_id')
+            ->join('LEFT JOIN __USER__ u ON u.id = r.user_id')
             ->where(array('r.ticket_id' => $id))
             ->order('r.id asc')
             ->select();

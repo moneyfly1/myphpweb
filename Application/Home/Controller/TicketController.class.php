@@ -73,7 +73,7 @@ class TicketController extends Controller {
         }
         $replies = M('ticket_reply')->alias('r')
             ->field('r.*, u.username')
-            ->join('LEFT JOIN yg_user u ON u.id = r.user_id')
+            ->join('LEFT JOIN __USER__ u ON u.id = r.user_id')
             ->where(array('r.ticket_id' => $id))
             ->order('r.id asc')
             ->select();

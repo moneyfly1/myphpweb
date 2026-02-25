@@ -41,16 +41,22 @@ class AdminNavModel extends BaseModel{
 			$data=\Org\Nx\Data::channelLevel($data,0,'&nbsp;','id');
 			// 显示有权限的菜单
 			$auth=new \Think\Auth();
-			foreach ($data as $k => $v) {
-				if ($auth->check($v['mca'],$_SESSION['user']['id'])) {
-					foreach ($v['_data'] as $m => $n) {
-						if(!$auth->check($n['mca'],$_SESSION['user']['id'])){
-							unset($data[$k]['_data'][$m]);
+			$adminId = isset($_SESSION['admin']['id']) ? $_SESSION['admin']['id'] : 0;
+			// 超级管理员跳过菜单权限过滤
+			$superAdminIds = C('SUPER_ADMIN_IDS');
+			if (!is_array($superAdminIds)) $superAdminIds = array(88);
+			if (!in_array($adminId, $superAdminIds)) {
+				foreach ($data as $k => $v) {
+					if ($auth->check($v['mca'], $adminId)) {
+						foreach ($v['_data'] as $m => $n) {
+							if(!$auth->check($n['mca'], $adminId)){
+								unset($data[$k]['_data'][$m]);
+							}
 						}
+					}else{
+						// 删除无权限的菜单
+						unset($data[$k]);
 					}
-				}else{
-					// 删除无权限的菜单
-					unset($data[$k]);
 				}
 			}
 		}
