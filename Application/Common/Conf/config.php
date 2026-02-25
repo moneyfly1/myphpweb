@@ -33,8 +33,8 @@ return array(
     'SESSION_OPTIONS' => array(
         'name' => env('SESSION_NAME', 'BJYADMIN'),//设置session名
         'expire' => env('SESSION_EXPIRE', 24 * 3600 * 15), //SESSION保存15天
-        'use_trans_sid' => 1,//跨页传递
-        'use_only_cookies' => 0,//是否只开启基于cookies的session的会话方式
+        'use_trans_sid' => 0,//跨页传递（关闭，避免session ID泄露到URL）
+        'use_only_cookies' => 1,//只通过cookie传递session（更安全、兼容性更好）
     ),
     //***********************************页面设置**************************************
     'TMPL_EXCEPTION_FILE' => APP_DEBUG ? THINK_PATH . 'Tpl/think_exception.tpl' : './Template/default/Home/Public/404.html',
