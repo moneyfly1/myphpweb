@@ -86,10 +86,7 @@ class IndexController extends Controller
     public function index()
     {
         if (!check_user_login()) {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'请登录后操作','url'=>'/login'));
-            }
-            $this->error('请登录后操作', '/login', 0);
+            redirect('/login');
         }
 
         $qq = $_SESSION['users']['username'];
