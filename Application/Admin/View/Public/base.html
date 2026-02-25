@@ -282,7 +282,7 @@
         }
 
         .has-submenu.active .submenu {
-            max-height: 200px;
+            max-height: 500px;
         }
 
         .submenu li {
@@ -305,6 +305,13 @@
             position: relative;
             width: 100%;
             border: 1px solid transparent;
+        }
+
+        .submenu-link i {
+            margin-right: 8px;
+            font-size: 13px;
+            width: 16px;
+            text-align: center;
         }
 
         .submenu-link:hover {
@@ -1001,158 +1008,88 @@
         </div>
         <!-- 导航菜单 -->
         <ul class="nav-list">
+            <!-- 仪表盘 -->
             <li class="nav-item">
                 <a href="{:U('Admin/Index/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Index\"'}active{/if}">
                     <i class="fa fa-dashboard"></i>
                     <span class="menu-text">仪表盘</span>
                 </a>
             </li>
-            
-            <li class="nav-item">
-                <a href="{:U('Admin/Dingyue/list')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Dingyue\"'}active{/if}">
-                    <i class="fa fa-list"></i>
-                    <span class="menu-text">订阅管理</span>
-                </a>
-            </li>
-            
-            <li class="nav-item">
-                <a href="{:U('Admin/Customer/list')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Customer\"'}active{/if}">
+
+            <!-- 用户与订阅 -->
+            <li class="has-submenu <?php if(in_array(CONTROLLER_NAME,array('Customer','Admin','Dingyue'))) echo 'active'; ?>">
+                <a href="javascript:;" class="nav-link">
                     <i class="fa fa-users"></i>
-                    <span class="menu-text">用户管理</span>
+                    <span class="menu-text">用户与订阅</span>
+                    <i class="fa fa-angle-down submenu-arrow"></i>
                 </a>
+                <ul class="submenu">
+                    <li><a href="{:U('Admin/Customer/list')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Customer\"'}active{/if}"><i class="fa fa-user"></i> 用户管理</a></li>
+                    <li><a href="{:U('Admin/Admin/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Admin\" and $Think.ACTION_NAME eq \"index\"'}active{/if}"><i class="fa fa-user-secret"></i> 管理员</a></li>
+                    <li><a href="{:U('Admin/Dingyue/list')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Dingyue\"'}active{/if}"><i class="fa fa-list"></i> 订阅管理</a></li>
+                </ul>
             </li>
 
-            <li class="nav-item">
-                <a href="{:U('Admin/Admin/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Admin\" and $Think.ACTION_NAME eq \"index\"'}active{/if}">
-                    <i class="fa fa-user-secret"></i>
-                    <span class="menu-text">管理员</span>
-                </a>
-            </li>
-            
-            <li class="nav-item">
-                <a href="{:U('Admin/Level/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Level\"'}active{/if}">
-                    <i class="fa fa-cube"></i>
-                    <span class="menu-text">套餐管理</span>
-                </a>
-            </li>
-            
-            <li class="nav-item">
-                <a href="{:U('Admin/Order/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Order\" and $Think.ACTION_NAME eq \"index\"'}active{/if}">
+            <!-- 商品与订单 -->
+            <li class="has-submenu <?php if(in_array(CONTROLLER_NAME,array('Level','Order','UserLevel','Coupon','Invite'))) echo 'active'; ?>">
+                <a href="javascript:;" class="nav-link">
                     <i class="fa fa-shopping-cart"></i>
-                    <span class="menu-text">订单列表</span>
+                    <span class="menu-text">商品与订单</span>
+                    <i class="fa fa-angle-down submenu-arrow"></i>
                 </a>
+                <ul class="submenu">
+                    <li><a href="{:U('Admin/Level/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Level\"'}active{/if}"><i class="fa fa-cube"></i> 套餐管理</a></li>
+                    <li><a href="{:U('Admin/UserLevel/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"UserLevel\"'}active{/if}"><i class="fa fa-star"></i> VIP等级</a></li>
+                    <li><a href="{:U('Admin/Order/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Order\" and $Think.ACTION_NAME eq \"index\"'}active{/if}"><i class="fa fa-shopping-cart"></i> 订单列表</a></li>
+                    <li><a href="{:U('Admin/Coupon/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Coupon\"'}active{/if}"><i class="fa fa-tag"></i> 优惠券</a></li>
+                    <li><a href="{:U('Admin/Invite/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Invite\"'}active{/if}"><i class="fa fa-share-alt"></i> 邀请管理</a></li>
+                </ul>
             </li>
 
-            <li class="nav-item">
-                <a href="{:U('Admin/Ticket/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Ticket\"'}active{/if}">
-                    <i class="fa fa-ticket"></i>
-                    <span class="menu-text">工单管理</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{:U('Admin/Announcement/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Announcement\"'}active{/if}">
-                    <i class="fa fa-bullhorn"></i>
-                    <span class="menu-text">公告管理</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{:U('Admin/Invite/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Invite\"'}active{/if}">
-                    <i class="fa fa-share-alt"></i>
-                    <span class="menu-text">邀请管理</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{:U('Admin/Coupon/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Coupon\"'}active{/if}">
-                    <i class="fa fa-tag"></i>
-                    <span class="menu-text">优惠券管理</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{:U('Admin/UserLevel/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"UserLevel\"'}active{/if}">
-                    <i class="fa fa-star"></i>
-                    <span class="menu-text">VIP等级</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{:U('Admin/NodeMgr/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"NodeMgr\"'}active{/if}">
+            <!-- 节点与设备 -->
+            <li class="has-submenu <?php if(in_array(CONTROLLER_NAME,array('NodeMgr','Device'))) echo 'active'; ?>">
+                <a href="javascript:;" class="nav-link">
                     <i class="fa fa-server"></i>
-                    <span class="menu-text">节点管理</span>
+                    <span class="menu-text">节点与设备</span>
+                    <i class="fa fa-angle-down submenu-arrow"></i>
                 </a>
+                <ul class="submenu">
+                    <li><a href="{:U('Admin/NodeMgr/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"NodeMgr\"'}active{/if}"><i class="fa fa-server"></i> 节点管理</a></li>
+                    <li><a href="{:U('Admin/Device/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Device\"'}active{/if}"><i class="fa fa-mobile"></i> 设备管理</a></li>
+                </ul>
             </li>
 
-            <li class="nav-item">
-                <a href="{:U('Admin/Device/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Device\"'}active{/if}">
-                    <i class="fa fa-mobile"></i>
-                    <span class="menu-text">设备管理</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{:U('Admin/EmailQueue/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"EmailQueue\"'}active{/if}">
+            <!-- 消息与通知 -->
+            <li class="has-submenu <?php if(in_array(CONTROLLER_NAME,array('Ticket','Announcement','EmailQueue','EmailTemplate','Notification'))) echo 'active'; ?>">
+                <a href="javascript:;" class="nav-link">
                     <i class="fa fa-envelope"></i>
-                    <span class="menu-text">邮件队列</span>
+                    <span class="menu-text">消息与通知</span>
+                    <i class="fa fa-angle-down submenu-arrow"></i>
                 </a>
+                <ul class="submenu">
+                    <li><a href="{:U('Admin/Ticket/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Ticket\"'}active{/if}"><i class="fa fa-ticket"></i> 工单管理</a></li>
+                    <li><a href="{:U('Admin/Announcement/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Announcement\"'}active{/if}"><i class="fa fa-bullhorn"></i> 公告管理</a></li>
+                    <li><a href="{:U('Admin/EmailQueue/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"EmailQueue\"'}active{/if}"><i class="fa fa-envelope"></i> 邮件队列</a></li>
+                    <li><a href="{:U('Admin/EmailTemplate/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"EmailTemplate\"'}active{/if}"><i class="fa fa-file-text"></i> 邮件模板</a></li>
+                    <li><a href="{:U('Admin/Notification/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Notification\"'}active{/if}"><i class="fa fa-bell"></i> 通知设置</a></li>
+                </ul>
             </li>
 
-            <li class="nav-item">
-                <a href="{:U('Admin/EmailTemplate/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"EmailTemplate\"'}active{/if}">
-                    <i class="fa fa-file-text"></i>
-                    <span class="menu-text">邮件模板</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{:U('Admin/Notification/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Notification\"'}active{/if}">
-                    <i class="fa fa-bell"></i>
-                    <span class="menu-text">通知设置</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{:U('Admin/Backup/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Backup\"'}active{/if}">
-                    <i class="fa fa-database"></i>
-                    <span class="menu-text">数据备份</span>
-                </a>
-            </li>
-            
-            <li class="nav-item">
-                <a href="{:U('Admin/Nav/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Nav\"'}active{/if}">
-                    <i class="fa fa-bars"></i>
-                    <span class="menu-text">菜单管理</span>
-                </a>
-            </li>
-            
-            <li class="nav-item">
-                <a href="{:U('Admin/Rule/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Rule\"'}active{/if}">
-                    <i class="fa fa-shield"></i>
-                    <span class="menu-text">权限管理</span>
-                </a>
-            </li>
-            
-            <li class="nav-item">
-                <a href="{:U('Admin/ConfigFile/edit')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"ConfigFile\"'}active{/if}">
+            <!-- 系统管理 -->
+            <li class="has-submenu <?php if(in_array(CONTROLLER_NAME,array('ConfigFile','Nav','Rule','Backup','Cron')) || (CONTROLLER_NAME=='Order' && ACTION_NAME=='paysite')) echo 'active'; ?>">
+                <a href="javascript:;" class="nav-link">
                     <i class="fa fa-cog"></i>
-                    <span class="menu-text">系统设置</span>
+                    <span class="menu-text">系统管理</span>
+                    <i class="fa fa-angle-down submenu-arrow"></i>
                 </a>
-            </li>
-            
-            <li class="nav-item">
-                <a href="{:U('Admin/Order/paysite')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Order\" and $Think.ACTION_NAME eq \"paysite\"'}active{/if}">
-                    <i class="fa fa-credit-card"></i>
-                    <span class="menu-text">支付宝配置</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="{:U('Admin/Cron/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Cron\"'}active{/if}">
-                    <i class="fa fa-clock-o"></i>
-                    <span class="menu-text">定时任务</span>
-                </a>
+                <ul class="submenu">
+                    <li><a href="{:U('Admin/ConfigFile/edit')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"ConfigFile\"'}active{/if}"><i class="fa fa-cog"></i> 系统设置</a></li>
+                    <li><a href="{:U('Admin/Order/paysite')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Order\" and $Think.ACTION_NAME eq \"paysite\"'}active{/if}"><i class="fa fa-credit-card"></i> 支付宝配置</a></li>
+                    <li><a href="{:U('Admin/Nav/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Nav\"'}active{/if}"><i class="fa fa-bars"></i> 菜单管理</a></li>
+                    <li><a href="{:U('Admin/Rule/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Rule\"'}active{/if}"><i class="fa fa-shield"></i> 权限管理</a></li>
+                    <li><a href="{:U('Admin/Backup/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Backup\"'}active{/if}"><i class="fa fa-database"></i> 数据备份</a></li>
+                    <li><a href="{:U('Admin/Cron/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Cron\"'}active{/if}"><i class="fa fa-clock-o"></i> 定时任务</a></li>
+                </ul>
             </li>
         </ul>
         

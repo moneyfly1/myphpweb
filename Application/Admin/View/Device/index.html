@@ -93,7 +93,12 @@
                             </tr>
                         </foreach>
                     </table>
-                    <div class="page-pagination">{$page}</div>
+                    <div class="page-footer">
+                        <div class="pagination-info">共 {$total} 条记录</div>
+                        <div class="pagination-container">
+                            <div class="pagination">{$page}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -216,7 +216,7 @@ class NodeMgrController extends AdminBaseController {
 
     // ==================== 节点分配 ====================
 
-    public function assign() {
+    public function assignNode() {
         $nodes = D('NodeMgr')->getData();
         $users = M('user')->field('id,username')->order('id asc')->select();
         // 获取已有分配

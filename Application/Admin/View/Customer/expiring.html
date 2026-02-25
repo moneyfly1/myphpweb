@@ -334,6 +334,46 @@
             }
         }
         
+        /* 批量操作工具栏 */
+        .batch-toolbar {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+        }
+
+        .batch-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .batch-left label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* 页面底部 */
+        .page-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .pagination-info {
+            color: #8c8c8c;
+            font-size: 14px;
+        }
+
         @media (min-width: 769px) {
             .mobile-expiring-list {
                 display: none;
@@ -433,6 +473,17 @@
                     <strong>提醒：</strong>以下用户将在7天内过期，建议及时发送续费提醒邮件。
                 </div>
                 
+                <!-- 批量操作工具栏 -->
+                <div class="batch-toolbar">
+                    <div class="batch-left">
+                        <label><input type="checkbox" class="alls"> 全选</label>
+                        <button type="button" id="batchReminder" class="btn btn-warning btn-sm"><i class="fa fa-envelope"></i> 批量过期提醒</button>
+                        <button type="button" id="allPush" class="btn btn-success btn-sm"><i class="fa fa-paper-plane"></i> 批量发送邮件</button>
+                        <button type="button" id="allDisable" class="btn btn-danger btn-sm"><i class="fa fa-ban"></i> 批量禁用</button>
+                        <button type="button" id="allEnable" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> 批量启用</button>
+                    </div>
+                </div>
+
                 <!-- 桌面端表格 -->
                 <table class="table table-striped table-bordered table-hover table-condensed">
                     <tr>
@@ -503,30 +554,14 @@
                         </div>
                     </foreach>
                 </div>
-                
-                <!-- 批量操作 -->
-                <div style="margin:10px 0;">
-                    <span class="inputword">全选</span> <input type="checkbox" class="alls">
-                </div>
-                
-                <div class="form-actions">
-                    <div class="btn-group">
-                        <button type="button" id="batchReminder" class="btn btn-warning">
-                            <i class="fa fa-envelope"></i> 批量发送过期提醒
-                        </button>
-                        <button type="button" id="allPush" class="btn btn-success">
-                            <i class="fa fa-paper-plane"></i> 批量发送订阅邮件
-                        </button>
-                        <button type="button" id="allDisable" class="btn btn-danger">
-                            <i class="fa fa-ban"></i> 批量禁用
-                        </button>
-                        <button type="button" id="allEnable" class="btn btn-primary">
-                            <i class="fa fa-check"></i> 批量启用
-                        </button>
+
+                <div class="page-footer">
+                    <div class="pagination-info">共 {$totalCount} 条记录</div>
+                    <div class="pagination-container">
+                        <div class="pagination">{$page}</div>
                     </div>
                 </div>
             </div>
-            <div class="pagination">{$page}</div>
         </div>
     </div>
     

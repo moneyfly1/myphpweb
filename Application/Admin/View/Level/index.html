@@ -170,21 +170,16 @@
                 <div onClick="return confirm('确定全部禁用?');" id="allDisable" class="btn btn-success">全部禁用</div>
                 <div onClick="return confirm('确定全部启用?');" id="allEnable" class="btn btn-success">全部启用</div> -->
             </div>
-            <div class="batch-actions-with-pagination">
-                <div class="batch-actions">
-                    <!-- 批量操作按钮可以在这里添加 -->
-                </div>
-                <div class="pagination-wrapper">
-                    <div class="pagination" id="pagination-container">{$page}</div>
+            <div class="page-footer">
+                <div class="pagination-info">共 {$totalCount} 条记录</div>
+                <div class="pagination-container">
+                    <div class="pagination">{$page}</div>
                     <div class="pagination-jump">
-                        <span class="jump-label">跳转到</span>
+                        <span>跳转到</span>
                         <input type="number" id="jumpPage" min="1" placeholder="页码">
                         <button id="jumpButton" class="btn btn-primary">确定</button>
                     </div>
                 </div>
-            </div>
-            <div class="pagination-info">
-                <span class="text-muted">共 {$totalCount} 条记录</span>
             </div>
         </div>
     </div>

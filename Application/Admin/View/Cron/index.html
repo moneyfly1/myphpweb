@@ -73,7 +73,7 @@
                     <div class="task-desc">{$task.desc}</div>
                     <div class="task-status" id="status-{$tid}">
                         <if condition="isset($logs[$tid])">
-                            <span class="dot <if condition='$logs[$tid][\"status\"] eq \"success\"'>dot-success<else/>dot-failed</if>"></span>
+                            <span class="dot <?php echo ($logs[$tid]['status']=='success')?'dot-success':'dot-failed'; ?>"></span>
                             上次执行：{$logs[$tid]['time']} ({$logs[$tid]['duration']})
                             <if condition="$logs[$tid]['status'] neq 'success'"> — 失败</if>
                         <else/>

@@ -1163,21 +1163,16 @@
 
                 <!-- 分页区域 -->
                 <if condition="!empty($page)">
-                <div class="batch-actions-with-pagination">
-                    <div class="batch-actions">
-                        <!-- 批量操作按钮可以在这里添加 -->
-                    </div>
-                    <div class="pagination-wrapper">
+                <div class="page-footer">
+                    <div class="pagination-info">共 {$stats.total|default='0'} 封邮件</div>
+                    <div class="pagination-container">
                         <div class="pagination" id="pagination-container">{$page}</div>
                         <div class="pagination-jump">
-                            <span class="jump-label">跳转到</span>
+                            <span>跳转到</span>
                             <input type="number" id="jumpPageEmail" min="1" placeholder="页码">
                             <button id="jumpButtonEmail" class="btn btn-primary">确定</button>
                         </div>
                     </div>
-                </div>
-                <div class="pagination-info">
-                    <span class="text-muted">共 {$stats.total|default='0'} 封邮件</span>
                 </div>
                 </if>
             </div>

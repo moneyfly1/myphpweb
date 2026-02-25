@@ -290,6 +290,88 @@
     cursor: pointer;
 }
 
+/* ---------- 批量操作工具栏 ---------- */
+.batch-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.batch-toolbar .batch-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.batch-toolbar .batch-left label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #595959;
+    cursor: pointer;
+}
+
+.batch-toolbar .batch-left label input[type="checkbox"] {
+    transform: scale(1.2);
+}
+
+/* ---------- 统一分页区域 ---------- */
+.page-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.page-footer .pagination-info {
+    font-size: 13px;
+    color: #8c8c8c;
+}
+
+/* page-nav 兼容 Invite 页面 */
+.page-nav {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.page-nav a, .page-nav span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 8px;
+    margin: 0 2px;
+    border: 1px solid var(--color-border, #d9d9d9);
+    border-radius: var(--radius, 6px);
+    text-decoration: none;
+    font-size: 14px;
+    color: var(--color-text-secondary, #595959);
+    transition: all 0.2s;
+}
+
+.page-nav a:hover {
+    color: var(--color-primary, #1677ff);
+    border-color: var(--color-primary, #1677ff);
+}
+
+.page-nav .current {
+    background: var(--color-primary, #1677ff);
+    color: #fff;
+    border-color: var(--color-primary, #1677ff);
+}
+
 /* ---------- 响应式 ---------- */
 @media (max-width: 768px) {
     .table th, .table td { padding: 10px 8px; font-size: 13px; }
