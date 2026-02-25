@@ -94,25 +94,13 @@ class UserController extends Controller {
                 $loginData['lasttime'] = time();
                 M('user')->where(['id'=>$get['id']])->save($loginData);
 				D('LoginHistory')->addRecord($get['id'], get_client_ip(), $_SERVER['HTTP_USER_AGENT']);
-				if(IS_AJAX){
-					$this->ajaxReturn(array('status'=>1, 'msg'=>'登录成功', 'url'=>'/'));
-				}else{
-					$this->success('登录成功','/',0);
-				}
+				$this->ajaxReturn(array('status'=>1, 'msg'=>'登录成功', 'url'=>'/'));
 			}else{
-				if(IS_AJAX){
-					$this->ajaxReturn(array('status'=>0, 'msg'=>'账户未激活，请联系管理员'));
-				}else{
-					$this->error('账户未激活，请联系管理员','/login',5);
-				}
+				$this->ajaxReturn(array('status'=>0, 'msg'=>'账户未激活，请联系管理员'));
 			}
 
 		}else{
-			if(IS_AJAX){
-				$this->ajaxReturn(array('status'=>0, 'msg'=>'账号或密码错误'));
-			}else{
-				$this->error('账号或密码错误');
-			}
+			$this->ajaxReturn(array('status'=>0, 'msg'=>'账号或密码错误'));
 		}
 	}else{
 		$data=check_user_login() ? $_SESSION['users']['username'].'已登录' : '未登录';

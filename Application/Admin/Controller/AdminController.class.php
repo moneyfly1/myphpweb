@@ -52,24 +52,13 @@ class AdminController extends AdminBaseController
 					'username' => $get['username'],
 					'avatar' => $get['avatar']
 				);
-				if (IS_AJAX) {
-					$this->ajaxReturn(array('status' => 1, 'msg' => '登录成功', 'url' => '/admin.php?s=/Index/index'));
-				} else {
-					$this->success('登录成功', '/admin.php?s=/Index/index');
-				}
+				$this->ajaxReturn(array('status' => 1, 'msg' => '登录成功', 'url' => '/admin.php?s=/Index/index'));
 			} else {
-				if (IS_AJAX) {
-					$this->ajaxReturn(array('status' => 0, 'msg' => '账号或密码错误'));
-				} else {
-					$this->error('账号或密码错误');
-				}
+				$this->ajaxReturn(array('status' => 0, 'msg' => '账号或密码错误'));
 			}
 		} else {
 			$data = isset($_SESSION['admin']['username']) ? $_SESSION['admin']['username'] . '已登录' : '未登录';
-			$assign = array(
-				'data' => $data
-			);
-			$this->assign($assign);
+			$this->assign(array('data' => $data));
 			$this->display();
 		}
 	}
