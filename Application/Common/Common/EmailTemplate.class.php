@@ -495,7 +495,7 @@ class EmailTemplate {
      * 获取站点域名，优先用.env中的SITE_DOMAIN
      */
     private static function getSiteDomain() {
-        $domain = getenv('SITE_DOMAIN');
+        $domain = isset($_ENV['SITE_DOMAIN']) ? $_ENV['SITE_DOMAIN'] : (function_exists('getenv') ? getenv('SITE_DOMAIN') : false);
         if ($domain) return $domain;
         if (!empty($_SERVER['HTTP_HOST'])) return $_SERVER['HTTP_HOST'];
         return 'yourdomain.com';

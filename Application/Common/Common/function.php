@@ -19,7 +19,9 @@ function loadEnv($envFile = null)
             $value = trim($value);
             $value = trim($value, '"\'\'');
             $_ENV[$key] = $value;
-            putenv("$key=$value");
+            if (function_exists('putenv')) {
+                putenv("$key=$value");
+            }
         }
     }
     return true;
@@ -27,9 +29,16 @@ function loadEnv($envFile = null)
 
 function env($key, $default = null)
 {
-    $value = getenv($key);
-    if ($value === false) {
-        $value = isset($_ENV[$key]) ? $_ENV[$key] : $default;
+    // 优先从 $_ENV 读取（兼容 putenv 被禁用的环境）
+    $value = isset($_ENV[$key]) ? $_ENV[$key] : null;
+    if ($value === null && function_exists('getenv')) {
+        $val = getenv($key);
+        if ($val !== false) {
+            $value = $val;
+        }
+    }
+    if ($value === null) {
+        return $default;
     }
     if (is_string($value)) {
         switch (strtolower($value)) {
