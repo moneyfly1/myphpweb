@@ -43,11 +43,11 @@
         <div class="card">
             <div class="card-header">
                 <div class="ticket-tabs">
-                    <a href="{:U('Admin/Ticket/index')}" class="<if condition='$status eq &quot;&quot;'>active</if>">全部 <span class="badge badge-blue">{$countAll}</span></a>
-                    <a href="{:U('Admin/Ticket/index', array('status'=>0))}" class="<if condition='$status eq &quot;0&quot;'>active</if>">待处理 <span class="badge badge-orange">{$countNew}</span></a>
-                    <a href="{:U('Admin/Ticket/index', array('status'=>1))}" class="<if condition='$status eq &quot;1&quot;'>active</if>">处理中 <span class="badge badge-blue">{$countOpen}</span></a>
-                    <a href="{:U('Admin/Ticket/index', array('status'=>2))}" class="<if condition='$status eq &quot;2&quot;'>active</if>">已回复 <span class="badge badge-green">{$countReply}</span></a>
-                    <a href="{:U('Admin/Ticket/index', array('status'=>3))}" class="<if condition='$status eq &quot;3&quot;'>active</if>">已关闭 <span class="badge badge-gray">{$countClose}</span></a>
+                    <a href="{:U('Admin/Ticket/index')}" class="<?php if($status==='') echo 'active'; ?>">全部 <span class="badge badge-blue">{$countAll}</span></a>
+                    <a href="{:U('Admin/Ticket/index', array('status'=>0))}" class="<?php if($status==='0'||$status===0) echo 'active'; ?>">待处理 <span class="badge badge-orange">{$countNew}</span></a>
+                    <a href="{:U('Admin/Ticket/index', array('status'=>1))}" class="<?php if($status==='1'||$status===1) echo 'active'; ?>">处理中 <span class="badge badge-blue">{$countOpen}</span></a>
+                    <a href="{:U('Admin/Ticket/index', array('status'=>2))}" class="<?php if($status==='2'||$status===2) echo 'active'; ?>">已回复 <span class="badge badge-green">{$countReply}</span></a>
+                    <a href="{:U('Admin/Ticket/index', array('status'=>3))}" class="<?php if($status==='3'||$status===3) echo 'active'; ?>">已关闭 <span class="badge badge-gray">{$countClose}</span></a>
                 </div>
             </div>
             <div class="card-body">
