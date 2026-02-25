@@ -210,7 +210,41 @@ class EmailTemplate {
             
         return self::getBaseTemplate($title, $content, '开启您的专属网络体验');
     }
-    
+
+    /**
+     * 邮箱验证码模板
+     */
+    public static function getVerifyCodeTemplate($username, $code, $purpose = '注册') {
+        $dbContent = self::loadDbTemplate('verify_code', array(
+            'username' => $username,
+            'code' => $code,
+            'purpose' => $purpose,
+        ));
+        if ($dbContent !== false) {
+            return $dbContent;
+        }
+        $title = '验证码 - ' . htmlspecialchars($purpose);
+        $content = '
+            <h2>邮箱验证</h2>
+            <p>亲爱的用户 <strong>' . htmlspecialchars($username) . '</strong>，</p>
+            <p>您正在进行<strong>' . htmlspecialchars($purpose) . '</strong>操作，您的验证码为：</p>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <div style="display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; letter-spacing: 8px; font-size: 32px; font-weight: 700; color: #ffffff;">' . htmlspecialchars($code) . '</div>
+            </div>
+
+            <div class="info-box">
+                <p><strong>重要提醒：</strong></p>
+                <ul>
+                    <li>验证码有效期为 <strong>5 分钟</strong></li>
+                    <li>请勿将验证码泄露给他人</li>
+                    <li>如非本人操作，请忽略此邮件</li>
+                </ul>
+            </div>';
+
+        return self::getBaseTemplate($title, $content, '安全验证');
+    }
+
     /**
      * 订阅地址通知邮件模板
      */

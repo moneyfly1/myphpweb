@@ -407,10 +407,10 @@
                 <div class="d-flex justify-content-start">
                     <ul class="nav nav-tabs border-0">
                         <li class="nav-item">
-                            <a class="nav-link active" href="{:U('Users/list')}">用户列表</a>
+                            <a class="nav-link active" href="{:U('Customer/list')}">用户列表</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{:U('Users/add')}">添加用户</a>
+                            <a class="nav-link" href="{:U('Customer/add')}">添加用户</a>
                         </li>
                     </ul>
                 </div>
@@ -432,8 +432,8 @@
                         <tr>
                             <th><input type="checkbox" class="alls"></th>
                             <th width="10%">qq号码</th>
-                            <th><a href="{:U('Users/list',['order'=>'regtime','type'=>$ordertype])}">注册时间</a></th>
-                            <th><a href="{:U('Users/list',['order'=>'lasttime','type'=>$ordertype])}">最后登录时间</a></th>
+                            <th><a href="{:U('Customer/list',['order'=>'regtime','type'=>$ordertype])}">注册时间</a></th>
+                            <th><a href="{:U('Customer/list',['order'=>'lasttime','type'=>$ordertype])}">最后登录时间</a></th>
                             <th>状态</th>
                             <th>激活</th>
                             <th>操作</th>
@@ -448,9 +448,9 @@
                                 <td>{$v['activation']}</td>
                                 <td style="min-width: 160px;">
                                     <div style="display: flex; gap: 4px; flex-wrap: wrap;">
-                                        <a class="btn btn-xs btn-warning" href="{:U('Users/edit',array('id'=>$v['id']))}">修改</a> 
+                                        <a class="btn btn-xs btn-warning" href="{:U('Customer/edit',array('id'=>$v['id']))}">修改</a> 
                                         <a class="btn btn-xs btn-danger user-del-btn" data-id="{$v['id']}" href="javascript:void(0);">删除</a>
-                                        <a class="btn btn-xs btn-info" href="{:U('Users/userLogs',array('id'=>$v['id']))}">操作日志</a>
+                                        <a class="btn btn-xs btn-info" href="{:U('Customer/userLogs',array('id'=>$v['id']))}">操作日志</a>
                                     </div>
                                 </td>
                             </tr>
@@ -485,13 +485,13 @@
                             </div>
                             
                             <div class="mobile-card-actions">
-                                <a class="btn btn-xs btn-warning" href="{:U('Users/edit',array('id'=>$v['id']))}">
+                                <a class="btn btn-xs btn-warning" href="{:U('Customer/edit',array('id'=>$v['id']))}">
                                     <i class="fa fa-edit"></i> 修改
                                 </a>
                                 <a class="btn btn-xs btn-danger user-del-btn" data-id="{$v['id']}" href="javascript:void(0);">
                                     <i class="fa fa-trash"></i> 删除
                                 </a>
-                                <a class="btn btn-xs btn-info" href="{:U('Users/userLogs',array('id'=>$v['id']))}">
+                                <a class="btn btn-xs btn-info" href="{:U('Customer/userLogs',array('id'=>$v['id']))}">
                                     <i class="fa fa-list-alt"></i> 操作日志
                                 </a>
                             </div>
@@ -551,12 +551,14 @@
                 alert('请选择要删除的选项');
             }else{
                 if(confirm('确定要删除选中的用户吗？此操作将删除用户的所有相关数据（订阅、订单、设备日志等）！')){
-                    $.post("{:U('Users/allDel')}",{id:id}, function(res){
-                        showSuccessMessage('批量删除成功！');
-                        setTimeout(function(){
-                            location.reload();
-                        }, 1000);
-                    });
+                    $.post("{:U('Customer/allDel')}",{id:id}, function(res){
+                        if(res.status==1){
+                            showSuccessMessage(res.info || '批量删除成功！');
+                            setTimeout(function(){ location.reload(); }, 1000);
+                        }else{
+                            alert(res.info || '操作失败');
+                        }
+                    }, 'json');
                 }
             }
         });
@@ -572,9 +574,13 @@
                 alert('请选择要推送的选项');
             }else{
                 if(confirm('确定要推送选中的用户吗？')){
-                    $.post("{:U('Users/allPush')}",{id:id}, function(res){
-                        showSuccessMessage('批量推送成功！');
-                    });
+                    $.post("{:U('Customer/allPush')}",{id:id}, function(res){
+                        if(res.status==1){
+                            showSuccessMessage(res.info || '批量推送成功！');
+                        }else{
+                            alert(res.info || '操作失败');
+                        }
+                    }, 'json');
                 }
             }
         });
@@ -590,12 +596,14 @@
                 alert('请选择要禁用的选项');
             }else{
                 if(confirm('确定要禁用选中的用户吗？')){
-                    $.post("{:U('Users/allDisable')}",{id:id}, function(res){
-                        showSuccessMessage('批量禁用成功！');
-                        setTimeout(function(){
-                            location.reload();
-                        }, 1000);
-                    });
+                    $.post("{:U('Customer/allDisable')}",{id:id}, function(res){
+                        if(res.status==1){
+                            showSuccessMessage(res.info || '批量禁用成功！');
+                            setTimeout(function(){ location.reload(); }, 1000);
+                        }else{
+                            alert(res.info || '操作失败');
+                        }
+                    }, 'json');
                 }
             }
         });
@@ -611,12 +619,14 @@
                 alert('请选择要启用的选项');
             }else{
                 if(confirm('确定要启用选中的用户吗？')){
-                    $.post("{:U('Users/allEnable')}",{id:id}, function(res){
-                        showSuccessMessage('批量启用成功！');
-                        setTimeout(function(){
-                            location.reload();
-                        }, 1000);
-                    });
+                    $.post("{:U('Customer/allEnable')}",{id:id}, function(res){
+                        if(res.status==1){
+                            showSuccessMessage(res.info || '批量启用成功！');
+                            setTimeout(function(){ location.reload(); }, 1000);
+                        }else{
+                            alert(res.info || '操作失败');
+                        }
+                    }, 'json');
                 }
             }
         });
@@ -638,20 +648,21 @@
             var $this = $(this);
             if(confirm('确定删除?')){
                 $.ajax({
-                    url: '{:U("Users/del", array("id"=>"__id__"))}'.replace('__id__', id),
+                    url: '{:U("Customer/del", array("id"=>"__id__"))}'.replace('__id__', id),
                     type: 'get',
-                    dataType: 'html',
+                    dataType: 'json',
                     success: function(res){
-                        showSuccessMessage('删除成功！');
-                        $this.closest('tr, .mobile-card').fadeOut(function(){
-                            $(this).remove();
-                        });
+                        if(res.status==1){
+                            showSuccessMessage(res.info || '删除成功！');
+                            $this.closest('tr, .mobile-card').fadeOut(function(){
+                                $(this).remove();
+                            });
+                        }else{
+                            alert(res.info || '删除失败');
+                        }
                     },
                     error: function(){
-                        showSuccessMessage('删除成功！');
-                        $this.closest('tr, .mobile-card').fadeOut(function(){
-                            $(this).remove();
-                        });
+                        alert('请求失败，请重试');
                     }
                 });
             }

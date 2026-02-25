@@ -6,7 +6,7 @@ set_time_limit(0);
  * 前台用户控制器
  * 管理用户的增删改查、批量操作、邮件发送等功能
  */
-class UsersController extends AdminBaseController {
+class CustomerController extends AdminBaseController {
 	/**
 	 * 用户列表（支持搜索和排序）
 	 */
@@ -85,7 +85,7 @@ class UsersController extends AdminBaseController {
 					$shortres = M('ShortDingyue')->add($shortData);
 					if ($shortres) {
 						if(IS_AJAX) {
-							$this->ajaxReturn(array('status'=>1,'msg'=>'创建用户及短链成功','url'=>U('Admin/Users/list')));
+							$this->ajaxReturn(array('status'=>1,'msg'=>'创建用户及短链成功','url'=>U('Admin/Customer/list')));
 						} else {
 							$this->success('创建用户及短链成功');
 						}
@@ -118,7 +118,7 @@ class UsersController extends AdminBaseController {
 			$result = D('User')->editData(['id' => $temp['id']], $data);
 			if ($result) {
 				if(IS_AJAX) {
-					$this->ajaxReturn(array('status'=>1,'msg'=>'修改成功','url'=>U('Admin/Users/list')));
+					$this->ajaxReturn(array('status'=>1,'msg'=>'修改成功','url'=>U('Admin/Customer/list')));
 				} else {
 					$this->success('修改成功');
 				}
@@ -150,27 +150,26 @@ class UsersController extends AdminBaseController {
 	public function del() {
 		$id = I('get.id', 'int');
 		$user = D('User')->getData(['id' => $id]);
-		if (!$user) $this->error('用户不存在', U('Users/list'));
+		if (!$user) {
+			$this->ajaxReturn(['status'=>0,'info'=>'用户不存在']);
+			return;
+		}
 		$qq = $user['username'];
-		$userResult = D('User')->deleteData(['id' => $id]); // 删除用户表
-		M('ShortDingyue')->where(['qq' => $qq])->delete(); // 删除订阅表
-		M('order')->where(['user_name' => $qq])->delete(); // 删除订单表
-		M('DeviceLog')->where(['qq' => $qq])->delete(); // 删除设备日志
+		$userResult = D('User')->deleteData(['id' => $id]);
+		M('ShortDingyue')->where(['qq' => $qq])->delete();
+		M('order')->where(['user_name' => $qq])->delete();
+		M('DeviceLog')->where(['qq' => $qq])->delete();
 		$emailQueueDb = M('email_queue');
-		$emailQueueDb->where(['user_name' => $qq])->delete(); // 邮件队列
+		$emailQueueDb->where(['user_name' => $qq])->delete();
 		$emailQueueDb->where(['qq' => $qq])->delete();
-		M('short_dingyue_history')->where(['qq' => $qq])->delete(); // 历史订阅表
-		M('dingyue')->where(['qq' => $qq])->delete(); // yg_dingyue表
-		M('auth_group_access')->where(['uid' => $id])->delete(); // 用户组关联
-		M('user_action_log')->where(['qq' => $qq])->delete(); // 用户操作日志
+		M('short_dingyue_history')->where(['qq' => $qq])->delete();
+		M('dingyue')->where(['qq' => $qq])->delete();
+		M('auth_group_access')->where(['uid' => $id])->delete();
+		M('user_action_log')->where(['qq' => $qq])->delete();
 		if ($userResult) {
-			$url = U('Users/list');
-			echo "<script>alert('删除成功（用户、订阅、订单等数据已同步清理）'); window.location.href='{$url}';</script>";
-			exit();
+			$this->ajaxReturn(['status'=>1,'info'=>'删除成功（用户、订阅、订单等数据已同步清理）']);
 		} else {
-			$url = U('Users/list');
-			echo "<script>alert('删除失败'); window.location.href='{$url}';</script>";
-			exit();
+			$this->ajaxReturn(['status'=>0,'info'=>'删除失败']);
 		}
 	}
 
@@ -208,9 +207,9 @@ class UsersController extends AdminBaseController {
 		$map['id'] = ['in', $data['id']];
 		$result = D('ShortDingyue')->deleteData($map);
 		if ($result) {
-			die('删除成功');
+			$this->ajaxReturn(['status'=>1,'info'=>'删除成功']);
 		} else {
-			die('删除失败');
+			$this->ajaxReturn(['status'=>0,'info'=>'删除失败']);
 		}
 	}
 
@@ -231,7 +230,7 @@ class UsersController extends AdminBaseController {
 				D('ShortDingyue')->editData(['id' => $v['id']], $temp);
 			}
 		}
-		die('发送成功');
+		$this->ajaxReturn(['status'=>1,'info'=>'发送成功']);
 	}
 
 	/**
@@ -245,7 +244,7 @@ class UsersController extends AdminBaseController {
 			$temp['status'] = 0;
 			D('User')->editData(['id' => $v['id']], $temp);
 		}
-		die('禁用成功');
+		$this->ajaxReturn(['status'=>1,'info'=>'禁用成功']);
 	}
 
 	/**
@@ -259,7 +258,7 @@ class UsersController extends AdminBaseController {
 			$temp['status'] = 1;
 			D('User')->editData(['id' => $v['id']], $temp);
 		}
-		die('启用成功');
+		$this->ajaxReturn(['status'=>1,'info'=>'启用成功']);
 	}
 
 	/**
@@ -268,7 +267,12 @@ class UsersController extends AdminBaseController {
 	public function editTime() {
 		$data = I('post.');
 		$temp['endtime'] = strtotime($data['endtime']);
-		D('ShortDingyue')->editData(['id' => $data['id']], $temp);
+		$result = D('ShortDingyue')->editData(['id' => $data['id']], $temp);
+		if ($result !== false) {
+			$this->ajaxReturn(['status'=>1,'info'=>'已保存']);
+		} else {
+			$this->ajaxReturn(['status'=>0,'info'=>'保存失败']);
+		}
 	}
 
 	/**
@@ -327,7 +331,7 @@ class UsersController extends AdminBaseController {
 			}
 		}
 		file_put_contents($logFile, "==== 批量发送结束: 成功: {$successCount} 失败: {$failCount} ====" . PHP_EOL, FILE_APPEND);
-		die("发送完成！成功：{$successCount}，失败：{$failCount}");
+		$this->ajaxReturn(['status'=>1,'info'=>"发送完成！成功：{$successCount}，失败：{$failCount}"]);
 	}
 
 	/**
@@ -356,7 +360,7 @@ class UsersController extends AdminBaseController {
 			$this->ajaxReturn(array('code' => 1, 'msg' => '用户不存在'));
 		}
 
-		$operator = isset($_SESSION['user']['username']) ? $_SESSION['user']['username'] : 'admin';
+		$operator = isset($_SESSION['admin']['username']) ? $_SESSION['admin']['username'] : 'admin';
 		$result = D('RechargeRecord')->changeBalance($userId, $amount, 4, $remark, null, $operator);
 
 		if ($result) {

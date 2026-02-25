@@ -501,7 +501,7 @@
                 </a>
             </li>
             <li class="breadcrumb-item">
-                <a href="{:U('Admin/Users/list')}">
+                <a href="{:U('Admin/Customer/list')}">
                     用户列表
                 </a>
             </li>
@@ -522,7 +522,7 @@
             后台管理
         </a>
         <div class="nav-separator">/</div>
-        <a href="{:U('Admin/Users/list')}" class="nav-item">
+        <a href="{:U('Admin/Customer/list')}" class="nav-item">
             用户列表
         </a>
         <div class="nav-separator">/</div>
@@ -537,10 +537,10 @@
                 <div class="d-flex justify-content-start">
                     <ul class="nav nav-tabs border-0">
                         <li class="nav-item">
-                            <a class="nav-link" href="{:U('Admin/Users/list')}">用户列表</a>
+                            <a class="nav-link" href="{:U('Admin/Customer/list')}">用户列表</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="{:U('Admin/Users/edit',['id'=>$data['id']])}">修改用户</a>
+                            <a class="nav-link active" href="{:U('Admin/Customer/edit',['id'=>$data['id']])}">修改用户</a>
                         </li>
                     </ul>
                 </div>
@@ -741,19 +741,19 @@
             submitBtn.prop('disabled', true).val('修改中...');
             
             $.ajax({
-                url: '{:U("Admin/Users/edit")}',
+                url: '{:U("Admin/Customer/edit")}',
                 type: 'POST',
                 data: formData,
                 success: function(response) {
                     showSuccessMessage('修改成功！');
                     setTimeout(function() {
-                        window.location.href = '{:U("Admin/Users/list")}';
+                        window.location.href = '{:U("Admin/Customer/list")}';
                     }, 1000);
                 },
                 error: function() {
                     showSuccessMessage('修改成功！');
                     setTimeout(function() {
-                        window.location.href = '{:U("Admin/Users/list")}';
+                        window.location.href = '{:U("Admin/Customer/list")}';
                     }, 1000);
                 },
                 complete: function() {
@@ -775,19 +775,19 @@
             submitBtn.prop('disabled', true).val('修改中...');
             
             $.ajax({
-                url: '{:U("Admin/Users/edit")}',
+                url: '{:U("Admin/Customer/edit")}',
                 type: 'POST',
                 data: formData,
                 success: function(response) {
                     showSuccessMessage('修改成功！');
                     setTimeout(function() {
-                        window.location.href = '{:U("Admin/Users/list")}';
+                        window.location.href = '{:U("Admin/Customer/list")}';
                     }, 1000);
                 },
                 error: function() {
                     showSuccessMessage('修改成功！');
                     setTimeout(function() {
-                        window.location.href = '{:U("Admin/Users/list")}';
+                        window.location.href = '{:U("Admin/Customer/list")}';
                     }, 1000);
                 },
                 complete: function() {
@@ -815,7 +815,7 @@
 
             submitBtn.prop('disabled', true).text('处理中...');
             $.ajax({
-                url: '{:U("Admin/Users/adjustBalance")}',
+                url: '{:U("Admin/Customer/adjustBalance")}',
                 type: 'POST',
                 data: formData,
                 dataType: 'json',

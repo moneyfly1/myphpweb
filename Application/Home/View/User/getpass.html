@@ -5,7 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>找回密码 | 享受高速科学服务 尽享外贸生活</title>
-    <script src="/Public/statics/js/wechat-detect.js"></script>    
+    <script src="/Public/statics/js/wechat-detect.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -385,18 +386,33 @@
         <h1 class="login-title">找回密码</h1>
         <form class="login-form" method="post" id="retrieveForm">
             <div class="input-group">
-                <input 
-                    type="text" 
-                    name="user" 
-                    placeholder="请输入QQ号码" 
-                    maxlength="16" 
+                <input
+                    type="text"
+                    name="user"
+                    id="qqInput"
+                    placeholder="请输入QQ号码"
+                    maxlength="16"
                     autocomplete="off"
                     required
                 >
                 <span class="input-suffix">@qq.com</span>
             </div>
-            <p class="tips">我们将发送密码重置链接到您的QQ邮箱</p>
-            <button type="submit" class="login-button">立即找回</button>
+            <div class="input-group" style="display:flex; gap:10px; margin-top:15px;">
+                <input type="text" name="verify_code" id="verifyCodeInput" placeholder="6位验证码" maxlength="6" required style="flex:1;">
+                <button type="button" id="sendResetCodeBtn" style="
+                    flex-shrink:0; width:120px; border:none; border-radius:12px;
+                    background: var(--secondary-gradient, linear-gradient(135deg, #f093fb 0%, #f5576c 100%));
+                    color:#fff; font-size:14px; cursor:pointer; transition:all 0.3s ease; height:50px;
+                ">发送验证码</button>
+            </div>
+            <div class="input-group" style="margin-top:15px;">
+                <input type="password" name="new_password" id="newPwdInput" placeholder="新密码（不少于8位）" minlength="8" maxlength="16" required>
+            </div>
+            <div class="input-group" style="margin-top:15px;">
+                <input type="password" name="confirm_password" id="confirmPwdInput" placeholder="确认新密码" minlength="8" maxlength="16" required>
+            </div>
+            <p class="tips">验证码将发送到您的QQ邮箱</p>
+            <button type="submit" class="login-button">重置密码</button>
         </form>
         <div class="login-links">
             <p>还没有账号？<a href="/reg">立即注册</a></p>
@@ -404,46 +420,103 @@
     </div>
 
     <script>
+        // 发送验证码按钮
+        document.getElementById('sendResetCodeBtn').addEventListener('click', function(){
+            var user = document.getElementById('qqInput').value.trim();
+            var btn = this;
+            if(!/^\d+$/.test(user)){
+                alert('请先输入正确的QQ号码');
+                return;
+            }
+            btn.disabled = true;
+            btn.textContent = '发送中...';
+            jQuery.ajax({
+                url: '/sendResetCode',
+                type: 'POST',
+                data: {user: user},
+                dataType: 'json',
+                success: function(res){
+                    if(res.status == 1){
+                        alert(res.msg || '验证码已发送');
+                        var seconds = 60;
+                        btn.textContent = seconds + '秒后重发';
+                        var timer = setInterval(function(){
+                            seconds--;
+                            if(seconds <= 0){
+                                clearInterval(timer);
+                                btn.disabled = false;
+                                btn.textContent = '发送验证码';
+                            }else{
+                                btn.textContent = seconds + '秒后重发';
+                            }
+                        }, 1000);
+                    }else{
+                        alert(res.msg || '发送失败');
+                        btn.disabled = false;
+                        btn.textContent = '发送验证码';
+                    }
+                },
+                error: function(){
+                    alert('发送失败，请重试');
+                    btn.disabled = false;
+                    btn.textContent = '发送验证码';
+                }
+            });
+        });
+
+        // 表单提交
         document.getElementById('retrieveForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            var user = document.getElementById('qqInput').value.trim();
+            var code = document.getElementById('verifyCodeInput').value.trim();
+            var newPwd = document.getElementById('newPwdInput').value;
+            var confirmPwd = document.getElementById('confirmPwdInput').value;
+
+            if(!/^\d+$/.test(user)){
+                alert('请输入正确的QQ号码');
+                return;
+            }
+            if(!/^\d{6}$/.test(code)){
+                alert('请输入6位数字验证码');
+                return;
+            }
+            if(newPwd.length < 8){
+                alert('新密码不能少于8位');
+                return;
+            }
+            if(newPwd !== confirmPwd){
+                alert('两次输入的密码不一致');
+                return;
+            }
 
             const submitBtn = document.querySelector('.login-button');
             const originalBtnText = submitBtn.textContent;
-
-            // 显示加载状态
             submitBtn.textContent = '处理中...';
             submitBtn.disabled = true;
 
-            // 获取表单数据
-            const formData = new FormData(this);
-
-            // 使用 jQuery AJAX 发送请求
             jQuery.ajax({
                 url: '/getpass',
                 type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
+                data: {user: user, verify_code: code, new_password: newPwd, confirm_password: confirmPwd},
                 dataType: 'json',
                 success: function(response) {
                     if(response.status == 1) {
-                        alert(response.msg || '邮件已发送，请查看您的QQ邮箱（如未收到请检查垃圾箱）');
+                        alert(response.msg || '密码重置成功');
                         setTimeout(function() {
                             window.location.href = response.url || '/login';
                         }, 1000);
                     } else {
-                        alert(response.msg || '发送失败，请重试');
+                        alert(response.msg || '重置失败，请重试');
                         submitBtn.textContent = originalBtnText;
                         submitBtn.disabled = false;
                     }
                 },
                 error: function(xhr) {
-                    var errorMsg = '邮件已发送成功，请检查您的QQ邮箱,点击邮箱中的连接进行密码重置';
+                    var errorMsg = '操作失败，请重试';
                     try {
                         var response = JSON.parse(xhr.responseText);
                         if(response.msg) errorMsg = response.msg;
                     } catch(e) {}
-
                     alert(errorMsg);
                     submitBtn.textContent = originalBtnText;
                     submitBtn.disabled = false;

@@ -11,6 +11,7 @@ Upload/image/*
 Upload/Users/*
 Upload/true/*
 Upload/false/*
+Upload/backup/*
 !Upload/.gitkeep
 
 # 环境配置（含敏感信息）

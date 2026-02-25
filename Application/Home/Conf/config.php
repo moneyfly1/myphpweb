@@ -17,6 +17,8 @@ return array(
 		'resetpass' => 'User/resetpass',
 		'respass' => 'User/respass',
 		'getpass' => 'User/getpass',
+		'sendVerifyCode' => 'User/sendVerifyCode',
+		'sendResetCode' => 'User/sendResetCode',
 		'tc' => 'Order/tc',
 		'pay' => 'Order/pay',
 		'notify' => 'Order/notify',

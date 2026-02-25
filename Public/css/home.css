@@ -8,8 +8,10 @@
     left: 0;
     right: 0;
     height: var(--header-height);
-    background: var(--color-bg);
-    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: var(--shadow-sm);
     z-index: 1000;
 }
@@ -31,7 +33,9 @@
     text-decoration: none;
 }
 
-.site-header .logo:hover { text-decoration: none; }
+.site-header .logo:hover {
+    text-decoration: none;
+}
 
 .nav-desktop {
     display: flex;
@@ -44,7 +48,9 @@
     text-decoration: none;
 }
 
-.nav-desktop a:hover { color: var(--color-primary); }
+.nav-desktop a:hover {
+    color: var(--color-primary);
+}
 
 .nav-toggle {
     display: none;
@@ -58,8 +64,15 @@
 }
 
 @media (max-width: 767px) {
-    .nav-desktop { display: none; }
-    .nav-toggle { display: flex; align-items: center; justify-content: center; }
+    .nav-desktop {
+        display: none;
+    }
+
+    .nav-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 }
 
 .nav-mobile {
@@ -73,7 +86,9 @@
     padding: var(--space-2);
 }
 
-.nav-mobile.show { display: block; }
+.nav-mobile.show {
+    display: block;
+}
 
 .nav-mobile a {
     display: block;
@@ -86,7 +101,10 @@
     padding-bottom: 0;
 }
 
-.nav-mobile a:hover { background: var(--color-bg-page); color: var(--color-primary); }
+.nav-mobile a:hover {
+    background: var(--color-bg-page);
+    color: var(--color-primary);
+}
 
 .site-footer {
     padding: var(--space-6) var(--space-4);
@@ -96,7 +114,9 @@
     border-top: 1px solid var(--color-border);
 }
 
-.site-footer a { color: var(--color-text-secondary); }
+.site-footer a {
+    color: var(--color-text-secondary);
+}
 
 /* ---------- 用户菜单下拉 ---------- */
 .user-menu {
@@ -138,7 +158,9 @@
     overflow: hidden;
 }
 
-.user-menu .dropdown-menu.show { display: block; }
+.user-menu .dropdown-menu.show {
+    display: block;
+}
 
 .user-menu .dropdown-menu a {
     display: flex;

@@ -13,7 +13,7 @@ class ConfigFileController extends AdminBaseController
         parent::_initialize();
         $superAdminIds = C('SUPER_ADMIN_IDS');
         if (!is_array($superAdminIds)) $superAdminIds = array(88);
-        $uid = $_SESSION['user']['id'];
+        $uid = $_SESSION['admin']['id'];
         if (!in_array($uid, $superAdminIds)) {
             $group = M('auth_group_access')->where(['uid'=>$uid])->getField('group_id');
             if ($group != 1) {

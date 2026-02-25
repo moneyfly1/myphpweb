@@ -8,8 +8,8 @@ class OrderController extends Controller
     public function tc()
     {
         if (!check_user_login()) {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'请登录后操作','url'=>'/login'));
+            if (IS_AJAX) {
+                $this->ajaxReturn(array('status' => 0, 'msg' => '请登录后操作', 'url' => '/login'));
             }
             $this->error('请登录后操作', '/login', 0);
         }
@@ -199,7 +199,7 @@ class OrderController extends Controller
                 echo "success";
                 return;
             }
-            
+
             // 记录成功日志
             error_log('订阅更新成功 - 用户: ' . $order['user_name'] . ', 新到期时间: ' . date('Y-m-d H:i:s', $newEndTime) . ', 设备限制: ' . (isset($updateData['setdrivers']) ? $updateData['setdrivers'] : '未更新'));
 
@@ -340,8 +340,8 @@ class OrderController extends Controller
     public function pay()
     {
         if (!isset($_SESSION['users']['username'])) {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'请先登录','url'=>'/user/login'));
+            if (IS_AJAX) {
+                $this->ajaxReturn(array('status' => 0, 'msg' => '请先登录', 'url' => '/user/login'));
             }
             $this->error('请先登录', '/user/login');
         }
@@ -353,15 +353,15 @@ class OrderController extends Controller
 
         $allowedMethods = ['支付宝', 'alipay', 'balance'];
         if (!in_array($paymentMethod, $allowedMethods)) {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'不支持的支付方式'));
+            if (IS_AJAX) {
+                $this->ajaxReturn(array('status' => 0, 'msg' => '不支持的支付方式'));
             }
             $this->error('不支持的支付方式');
         }
 
         if (!$orderNo) {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'订单不存在'));
+            if (IS_AJAX) {
+                $this->ajaxReturn(array('status' => 0, 'msg' => '订单不存在'));
             }
             $this->error('订单不存在');
         }
@@ -377,8 +377,8 @@ class OrderController extends Controller
         ])->find();
 
         if (!$plan) {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'套餐不存在或已下架'));
+            if (IS_AJAX) {
+                $this->ajaxReturn(array('status' => 0, 'msg' => '套餐不存在或已下架'));
             }
             $this->error('套餐不存在或已下架');
         }
@@ -408,8 +408,8 @@ class OrderController extends Controller
                 $couponDiscount = floatval($couponResult['data']['discount']);
                 $finalAmount = round($finalAmount - $couponDiscount, 2);
             } else {
-                if(IS_AJAX) {
-                    $this->ajaxReturn(array('status'=>0,'msg'=>$couponResult['msg']));
+                if (IS_AJAX) {
+                    $this->ajaxReturn(array('status' => 0, 'msg' => $couponResult['msg']));
                 }
                 $this->error($couponResult['msg']);
             }
@@ -422,8 +422,8 @@ class OrderController extends Controller
 
         if ($dd) {
             if ($dd['status'] != 0) {
-                if(IS_AJAX) {
-                    $this->ajaxReturn(array('status'=>0,'msg'=>'订单已处理，无法重复支付'));
+                if (IS_AJAX) {
+                    $this->ajaxReturn(array('status' => 0, 'msg' => '订单已处理，无法重复支付'));
                 }
                 $this->error('订单已处理，无法重复支付');
             }
@@ -443,8 +443,8 @@ class OrderController extends Controller
             ];
 
             if (!$orderModel->add($orderData)) {
-                if(IS_AJAX) {
-                    $this->ajaxReturn(array('status'=>0,'msg'=>'订单创建失败'));
+                if (IS_AJAX) {
+                    $this->ajaxReturn(array('status' => 0, 'msg' => '订单创建失败'));
                 }
                 $this->error('订单创建失败');
             }
@@ -457,8 +457,8 @@ class OrderController extends Controller
             if ($result === true) {
                 $this->redirect('/tc?pay_success=1');
             } else {
-                if(IS_AJAX) {
-                    $this->ajaxReturn(array('status'=>0,'msg'=>$result));
+                if (IS_AJAX) {
+                    $this->ajaxReturn(array('status' => 0, 'msg' => $result));
                 }
                 $this->error($result);
             }
@@ -466,14 +466,17 @@ class OrderController extends Controller
         }
 
         // --- 支付宝支付 ---
+        // 确保使用前是最新的配置
+        sync_alipay_config();
+
         $alipayConfig = D('paysite')->where([
             'pay_type' => 'zfb',
             'status' => 1
         ])->find();
 
         if (!$alipayConfig) {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'支付宝配置错误'));
+            if (IS_AJAX) {
+                $this->ajaxReturn(array('status' => 0, 'msg' => '支付宝配置错误'));
             }
             $this->error('支付宝配置错误');
         }
@@ -496,8 +499,8 @@ class OrderController extends Controller
             $this->display();
         } else {
             error_log('Order pay: 二维码生成失败 ' . json_encode($alipayResult));
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'二维码生成失败，请稍后重试'));
+            if (IS_AJAX) {
+                $this->ajaxReturn(array('status' => 0, 'msg' => '二维码生成失败，请稍后重试'));
             }
             $this->error('二维码生成失败，请稍后重试');
         }
@@ -601,18 +604,24 @@ class OrderController extends Controller
         $qrPayRequestBuilder->setUndiscountableAmount($undiscountableAmount);
         $qrPayRequestBuilder->setExtendParams($extendParamsArr);
 
+        // 动态生成回调URL
+        $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https://' : 'http://';
+        $host = $_SERVER['HTTP_HOST'];
+        $notifyUrl = $scheme . $host . '/notify';
+        $returnUrl = $scheme . $host . '/return';
+
         // 构造参数
         $parameter = [
             'app_id' => $alipayConfig['app_id'],
             'alipay_public_key' => $alipayConfig['alipay_public_key'],
             'merchant_private_key' => $alipayConfig['merchant_private_key'],
-            'gatewayUrl' => 'https://openapi.alipay.com/gateway.do',
-            'return_url' => $alipayConfig['return_url'],
+            'gatewayUrl' => env('ALIPAY_GATEWAY_URL', 'https://openapi.alipay.com/gateway.do'),
+            'return_url' => $returnUrl,
             'charset' => 'UTF-8',
             'sign_type' => 'RSA2',
             'MaxQueryRetry' => '10',
             'QueryDuration' => '3',
-            'notify_url' => $alipayConfig['notify_url'],
+            'notify_url' => $notifyUrl,
         ];
 
         // 调用qrPay方法获取当面付应答
@@ -646,14 +655,16 @@ class OrderController extends Controller
 
     public function alipayReturn()
     {
+        sync_alipay_config();
+
         $alipayConfig = D('paysite')->where([
             'pay_type' => 'zfb',
             'status' => 1
         ])->find();
 
         if (!$alipayConfig) {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'支付宝配置错误'));
+            if (IS_AJAX) {
+                $this->ajaxReturn(array('status' => 0, 'msg' => '支付宝配置错误'));
             }
             $this->error('支付宝配置错误');
         }
@@ -675,13 +686,13 @@ class OrderController extends Controller
             if ($outTradeNo !== '' && $tradeNo !== '') {
                 $this->handlePayment($outTradeNo, $tradeNo);
             }
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>1,'msg'=>'支付成功'));
+            if (IS_AJAX) {
+                $this->ajaxReturn(array('status' => 1, 'msg' => '支付成功'));
             }
             $this->success('支付成功');
         } else {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'支付验证失败'));
+            if (IS_AJAX) {
+                $this->ajaxReturn(array('status' => 0, 'msg' => '支付验证失败'));
             }
             $this->error('支付验证失败');
         }
@@ -689,6 +700,8 @@ class OrderController extends Controller
 
     public function alipayNotify()
     {
+        sync_alipay_config();
+
         $alipayConfig = D('paysite')->where([
             'pay_type' => 'zfb',
             'status' => 1
@@ -725,37 +738,37 @@ class OrderController extends Controller
     private function handlePayment($orderNo, $tradeNo)
     {
         error_log('handlePayment 开始 - 订单号: ' . $orderNo . ', 交易号: ' . $tradeNo);
-        
+
         $order = M('order')->where(['order_no' => $orderNo])->find();
         if (!$order) {
             error_log('handlePayment: 订单不存在 - 订单号: ' . $orderNo);
             return;
         }
-        
+
         if ($order['status'] != 0) {
             error_log('handlePayment: 订单已处理 - 订单号: ' . $orderNo . ', 当前状态: ' . $order['status']);
             return;
         }
-        
+
         error_log('handlePayment: 找到订单 - 订单号: ' . $orderNo . ', 用户: ' . $order['user_name'] . ', 套餐ID: ' . $order['plan_id'] . ', 天数: ' . $order['days']);
-        
+
         // 更新订单状态
         $orderUpdateResult = M('order')->where(['id' => $order['id']])->save([
             'status' => 1,
             'pay_time' => date('Y-m-d H:i:s'),
             'trade_no' => $tradeNo
         ]);
-        
+
         if ($orderUpdateResult === false) {
             error_log('handlePayment: 订单更新失败 - 订单号: ' . $orderNo . ', 错误: ' . M('order')->getDbError());
             return;
         }
-        
+
         error_log('handlePayment: 订单更新成功，开始开通套餐 - 订单号: ' . $orderNo . ', 用户: ' . $order['user_name']);
-        
+
         // 开通套餐服务
         $this->grantService($order);
-        
+
         error_log('handlePayment 完成 - 订单号: ' . $orderNo);
     }
 

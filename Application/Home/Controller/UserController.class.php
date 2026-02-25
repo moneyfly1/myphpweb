@@ -65,6 +65,7 @@ class UserController extends Controller {
     		}else{
     			$this->error('您已登录，请勿乱操作');
     		}
+    		return;
     	}
 	if (IS_POST) {
 		$data = I('post.');
@@ -100,9 +101,9 @@ class UserController extends Controller {
 				}
 			}else{
 				if(IS_AJAX){
-					$this->ajaxReturn(array('status'=>0, 'msg'=>'恭喜注册成功，激活邮件已经发送到你QQ邮箱，请去邮箱点击链接激活账户'));
+					$this->ajaxReturn(array('status'=>0, 'msg'=>'账户未激活，请联系管理员'));
 				}else{
-					$this->error('恭喜注册成功，激活邮件已经发送到你QQ邮箱，请去邮箱点击链接激活账户','/login',10);
+					$this->error('账户未激活，请联系管理员','/login',5);
 				}
 			}
 
@@ -129,6 +130,46 @@ class UserController extends Controller {
         exit;
     }
 
+    /**
+     * 发送邮箱验证码（注册用）
+     */
+    public function sendVerifyCode(){
+        if(!IS_POST){
+            $this->ajaxReturn(array('status'=>0, 'msg'=>'请求方式错误'));
+            return;
+        }
+        $username = I('post.user', '', 'trim');
+        if(!is_numeric($username) || strlen($username) < 5 || strlen($username) > 16){
+            $this->ajaxReturn(array('status'=>0, 'msg'=>'请输入正确的QQ号码'));
+            return;
+        }
+        // 检查是否已注册
+        $exists = M('user')->where(['username'=>$username])->find();
+        if($exists){
+            $this->ajaxReturn(array('status'=>0, 'msg'=>'该QQ号已注册，请直接登录'));
+            return;
+        }
+        // 60秒内不能重复发送
+        $cooldownKey = 'verify_cooldown_' . $username;
+        if(S($cooldownKey)){
+            $this->ajaxReturn(array('status'=>0, 'msg'=>'发送太频繁，请稍后再试'));
+            return;
+        }
+        // 生成6位验证码
+        $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        // 存入缓存，5分钟有效
+        S('verify_code_' . $username, $code, 300);
+        // 设置60秒冷却
+        S($cooldownKey, 1, 60);
+        // 发送邮件
+        $result = send_verify_code_email($username . '@qq.com', $username, $code, '注册');
+        if($result){
+            $this->ajaxReturn(array('status'=>1, 'msg'=>'验证码已发送到 ' . $username . '@qq.com'));
+        }else{
+            $this->ajaxReturn(array('status'=>0, 'msg'=>'验证码发送失败，请稍后重试'));
+        }
+    }
+
     public function reg(){
     	if(check_user_login()){
     		if(IS_AJAX){
@@ -141,13 +182,27 @@ class UserController extends Controller {
 		$data = I('post.');
 		$username = $data['user'];
 		$password = $data['pwd'];
+		$verifyCode = isset($data['verify_code']) ? trim($data['verify_code']) : '';
 		if(!is_numeric($username) || strlen($password)<8){
 			if(IS_AJAX){
 				$this->ajaxReturn(array('status'=>0, 'msg'=>'账号或密码填写有误，账号必须为QQ号码,密码不少于8位'));
 			}else{
 				$this->error('账号或密码填写有误，账号必须为QQ号码,密码不少于8位');
 			}
+			return;
 		}
+		// 验证邮箱验证码
+		if(empty($verifyCode) || !preg_match('/^\d{6}$/', $verifyCode)){
+			$this->ajaxReturn(array('status'=>0, 'msg'=>'请输入6位数字验证码'));
+			return;
+		}
+		$cachedCode = S('verify_code_' . $username);
+		if(!$cachedCode || $cachedCode !== $verifyCode){
+			$this->ajaxReturn(array('status'=>0, 'msg'=>'验证码错误或已过期，请重新获取'));
+			return;
+		}
+		// 验证通过，删除缓存
+		S('verify_code_' . $username, null);
 		$get = M('user')->where(['username'=>$username])->find();
 		if ($get) {
 			if(IS_AJAX){
@@ -160,7 +215,7 @@ class UserController extends Controller {
 			$saveData['password'] = secure_password_hash($password);
 			$saveData['regtime'] = time();
 			$saveData['status'] = 1;
-			$saveData['activation'] = 0;
+			$saveData['activation'] = 1; // 验证码已验证邮箱，直接激活
 			$reg = M('user')->add($saveData);
 			if($reg){
 				$checkold = M('dingyue')->where(['qq'=>$username])->find();
@@ -175,13 +230,10 @@ class UserController extends Controller {
 				}
 				$shortres = M('ShortDingyue')->add($shortData);
 				if($shortres){
-					$keys = authcode($username,'true');
-					$activationLink = "https://".$_SERVER['HTTP_HOST']."/active/reg/".$keys;
-					send_activation_email($username.'@qq.com', $username, $activationLink, false);
 					if(IS_AJAX){
-						$this->ajaxReturn(array('status'=>1, 'msg'=>'恭喜！注册并创建订阅地址成功', 'url'=>'/login'));
+						$this->ajaxReturn(array('status'=>1, 'msg'=>'恭喜！注册成功，请登录', 'url'=>'/login'));
 					}else{
-						$this->success('恭喜！注册并创建订阅地址成功','/login');
+						$this->success('恭喜！注册成功，请登录','/login');
 					}
 				}else{
 					if(IS_AJAX){
@@ -220,6 +272,42 @@ class UserController extends Controller {
     	}
     }
 
+    /**
+     * 发送密码重置验证码
+     */
+    public function sendResetCode(){
+        if(!IS_POST){
+            $this->ajaxReturn(array('status'=>0, 'msg'=>'请求方式错误'));
+            return;
+        }
+        $username = I('post.user', '', 'trim');
+        if(!is_numeric($username) || strlen($username) < 5 || strlen($username) > 16){
+            $this->ajaxReturn(array('status'=>0, 'msg'=>'请输入正确的QQ号码'));
+            return;
+        }
+        // 检查用户是否存在
+        $user = M('user')->where(['username'=>$username])->find();
+        if(!$user){
+            $this->ajaxReturn(array('status'=>0, 'msg'=>'该账号不存在'));
+            return;
+        }
+        // 60秒内不能重复发送
+        $cooldownKey = 'reset_cooldown_' . $username;
+        if(S($cooldownKey)){
+            $this->ajaxReturn(array('status'=>0, 'msg'=>'发送太频繁，请稍后再试'));
+            return;
+        }
+        $code = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+        S('reset_code_' . $username, $code, 300);
+        S($cooldownKey, 1, 60);
+        $result = send_verify_code_email($username . '@qq.com', $username, $code, '密码重置');
+        if($result){
+            $this->ajaxReturn(array('status'=>1, 'msg'=>'验证码已发送到 ' . $username . '@qq.com'));
+        }else{
+            $this->ajaxReturn(array('status'=>0, 'msg'=>'验证码发送失败，请稍后重试'));
+        }
+    }
+
     public function getpass(){
     	if(check_user_login()){
     		if(IS_AJAX){
@@ -227,32 +315,54 @@ class UserController extends Controller {
     		}else{
     			$this->error('您已登录，如需重置密码，请稍等将自动跳转','/resetpass');
     		}
+    		return;
     	}
     	if(IS_POST){
-    		$username = I('post.user');
-    		$keys = authcode($username,'true');
-    		$resetLink = "https://".$_SERVER['HTTP_HOST']."/respass/reset/".$keys;
+    		$username = I('post.user', '', 'trim');
+    		$verifyCode = I('post.verify_code', '', 'trim');
+    		$newPassword = I('post.new_password');
+    		$confirmPassword = I('post.confirm_password');
 
-    		// 使用邮件模板发送密码重置邮件，直接发送不走队列
-    		$result = send_password_reset_email($username.'@qq.com', $username, $resetLink, false);
-
-    		if($result){
-    			if(IS_AJAX){
-    				$this->ajaxReturn(array('status'=>1, 'msg'=>'重置链接已发送至邮箱，请自行登录查看', 'url'=>'/login'));
-    			}else{
-    				$this->success('重置链接已发送至邮箱，请自行登录查看','/login');
-    			}
+    		if(!is_numeric($username)){
+    			$this->ajaxReturn(array('status'=>0, 'msg'=>'请输入正确的QQ号码'));
+    			return;
+    		}
+    		if(empty($verifyCode) || !preg_match('/^\d{6}$/', $verifyCode)){
+    			$this->ajaxReturn(array('status'=>0, 'msg'=>'请输入6位数字验证码'));
+    			return;
+    		}
+    		if(strlen($newPassword) < 8){
+    			$this->ajaxReturn(array('status'=>0, 'msg'=>'新密码不能少于8位'));
+    			return;
+    		}
+    		if($newPassword !== $confirmPassword){
+    			$this->ajaxReturn(array('status'=>0, 'msg'=>'两次输入的密码不一致'));
+    			return;
+    		}
+    		// 验证验证码
+    		$cachedCode = S('reset_code_' . $username);
+    		if(!$cachedCode || $cachedCode !== $verifyCode){
+    			$this->ajaxReturn(array('status'=>0, 'msg'=>'验证码错误或已过期，请重新获取'));
+    			return;
+    		}
+    		// 验证用户存在
+    		$user = M('user')->where(['username'=>$username])->find();
+    		if(!$user){
+    			$this->ajaxReturn(array('status'=>0, 'msg'=>'该账号不存在'));
+    			return;
+    		}
+    		// 重置密码
+    		S('reset_code_' . $username, null);
+    		$newHash = secure_password_hash($newPassword);
+    		$res = M('user')->where(['username'=>$username])->save(['password'=>$newHash]);
+    		if($res !== false){
+    			$this->ajaxReturn(array('status'=>1, 'msg'=>'密码重置成功，请登录', 'url'=>'/login'));
     		}else{
-    			if(IS_AJAX){
-    				$this->ajaxReturn(array('status'=>0, 'msg'=>'邮件发送失败，请稍后重试'));
-    			}else{
-    				$this->error('邮件发送失败，请稍后重试');
-    			}
+    			$this->ajaxReturn(array('status'=>0, 'msg'=>'密码重置失败，请重试'));
     		}
     	}else{
     		$this->display();
     	}
-
     }
 
     public function respass(){

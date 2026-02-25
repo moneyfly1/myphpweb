@@ -1,6 +1,7 @@
 <?php
 header("Content-type:text/html;charset=utf-8");
-function loadEnv($envFile = null) {
+function loadEnv($envFile = null)
+{
     if ($envFile === null) {
         // 使用更可靠的方法计算项目根目录
         $envFile = dirname(dirname(dirname(__DIR__))) . '/.env';
@@ -25,7 +26,8 @@ function loadEnv($envFile = null) {
     return true;
 }
 
-function env($key, $default = null) {
+function env($key, $default = null)
+{
     $value = getenv($key);
     if ($value === false) {
         $value = isset($_ENV[$key]) ? $_ENV[$key] : $default;
@@ -50,7 +52,8 @@ function env($key, $default = null) {
 }
 
 loadEnv();
-function p($data) {
+function p($data)
+{
     $str = '<pre style="display: block;padding: 9.5px;margin: 44px 0 0 0;font-size: 13px;line-height: 1.42857;color: #333;word-break: break-all;word-wrap: break-word;background-color: #F5F5F5;border: 1px solid #CCC;border-radius: 4px;">';
     if (is_bool($data)) {
         $show_data = $data ? 'true' : 'false';
@@ -68,23 +71,24 @@ function p($data) {
  * app 图片上传
  * @return string 上传后的图片名
  */
-function app_upload_image($path,$maxSize=52428800){
+function app_upload_image($path, $maxSize = 52428800)
+{
     ini_set('max_execution_time', '0');
     // 去除两边的/
-    $path=trim($path,'.');
-    $path=trim($path,'/');
-    $config=array(
-        'rootPath'  =>'./',         //文件上传保存的根路径
-        'savePath'  =>'./'.$path.'/',   
-        'exts'      => array('jpg', 'gif', 'png', 'jpeg','bmp'),
-        'maxSize'   => $maxSize,
-        'autoSub'   => true,
-        );
+    $path = trim($path, '.');
+    $path = trim($path, '/');
+    $config = array(
+        'rootPath' => './',         //文件上传保存的根路径
+        'savePath' => './' . $path . '/',
+        'exts' => array('jpg', 'gif', 'png', 'jpeg', 'bmp'),
+        'maxSize' => $maxSize,
+        'autoSub' => true,
+    );
     $upload = new \Think\Upload($config);// 实例化上传类
     $info = $upload->upload();
-    if($info) {
+    if ($info) {
         foreach ($info as $k => $v) {
-            $data[]=trim($v['savepath'],'.').$v['savename'];
+            $data[] = trim($v['savepath'], '.') . $v['savename'];
         }
         return $data;
     }
@@ -94,15 +98,16 @@ function app_upload_image($path,$maxSize=52428800){
  * 实例化阿里云oos
  * @return object 实例化得到的对象
  */
-function new_oss(){
+function new_oss()
+{
     vendor('Alioss.autoload');
-    $config=array(
+    $config = array(
         'KEY_ID' => env('ALIOSS_KEY_ID'),
         'KEY_SECRET' => env('ALIOSS_KEY_SECRET'),
         'END_POINT' => env('ALIOSS_END_POINT'),
         'BUCKET' => env('ALIOSS_BUCKET')
     );
-    $oss=new \OSS\OssClient($config['KEY_ID'],$config['KEY_SECRET'],$config['END_POINT']);
+    $oss = new \OSS\OssClient($config['KEY_ID'], $config['KEY_SECRET'], $config['END_POINT']);
     return $oss;
 }
 
@@ -111,17 +116,18 @@ function new_oss(){
  * @param  string $path 文件路径
  * @return bollear      是否上传
  */
-function oss_upload($path){
+function oss_upload($path)
+{
     // 获取bucket名称
-    $bucket=env('ALIOSS_BUCKET');
+    $bucket = env('ALIOSS_BUCKET');
     // 先统一去除左侧的.或者/ 再添加./
-    $oss_path=ltrim($path,'./');
-    $path='./'.$oss_path;
+    $oss_path = ltrim($path, './');
+    $path = './' . $oss_path;
     if (file_exists($path)) {
         // 实例化oss类
-        $oss=new_oss();
+        $oss = new_oss();
         // 上传到oss    
-        $oss->uploadFile($bucket,$oss_path,$path);
+        $oss->uploadFile($bucket, $oss_path, $path);
         // 如需上传到oss后 自动删除本地的文件 则删除下面的注释 
         // unlink($path);
         return true;
@@ -133,35 +139,37 @@ function oss_upload($path){
  * 删除oss上指定文件
  * @param  string $object 文件路径 例如删除 /Public/README.md文件  传Public/README.md 即可
  */
-function oss_delet_object($object){
+function oss_delet_object($object)
+{
     // 实例化oss类
-    $oss=new_oss();
+    $oss = new_oss();
     // 获取bucket名称
-    $bucket=env('ALIOSS_BUCKET');
-    $test=$oss->deleteObject($bucket,$object);
+    $bucket = env('ALIOSS_BUCKET');
+    $test = $oss->deleteObject($bucket, $object);
 }
 
 /**
  * app 视频上传
  * @return string 上传后的视频名
  */
-function app_upload_video($path,$maxSize=52428800){
+function app_upload_video($path, $maxSize = 52428800)
+{
     ini_set('max_execution_time', '0');
     // 去除两边的/
-    $path=trim($path,'.');
-    $path=trim($path,'/');
-    $config=array(
-        'rootPath'  =>'./',         //文件上传保存的根路径
-        'savePath'  =>'./'.$path.'/',   
-        'exts'      => array('mp4','avi','3gp','rmvb','gif','wmv','mkv','mpg','vob','mov','flv','swf','mp3','ape','wma','aac','mmf','amr','m4a','m4r','ogg','wav','wavpack'),
-        'maxSize'   => $maxSize,
-        'autoSub'   => true,
-        );
+    $path = trim($path, '.');
+    $path = trim($path, '/');
+    $config = array(
+        'rootPath' => './',         //文件上传保存的根路径
+        'savePath' => './' . $path . '/',
+        'exts' => array('mp4', 'avi', '3gp', 'rmvb', 'gif', 'wmv', 'mkv', 'mpg', 'vob', 'mov', 'flv', 'swf', 'mp3', 'ape', 'wma', 'aac', 'mmf', 'amr', 'm4a', 'm4r', 'ogg', 'wav', 'wavpack'),
+        'maxSize' => $maxSize,
+        'autoSub' => true,
+    );
     $upload = new \Think\Upload($config);// 实例化上传类
     $info = $upload->upload();
-    if($info) {
+    if ($info) {
         foreach ($info as $k => $v) {
-            $data[]=trim($v['savepath'],'.').$v['savename'];
+            $data[] = trim($v['savepath'], '.') . $v['savename'];
         }
         return $data;
     }
@@ -172,17 +180,18 @@ function app_upload_video($path,$maxSize=52428800){
  * @param  string $str 文件名
  * @return string      文件格式
  */
-function file_format($str){
+function file_format($str)
+{
     // 取文件后缀名
-    $str=strtolower(pathinfo($str, PATHINFO_EXTENSION));
+    $str = strtolower(pathinfo($str, PATHINFO_EXTENSION));
     // 图片格式
-    $image=array('webp','jpg','png','ico','bmp','gif','tif','pcx','tga','bmp','pxc','tiff','jpeg','exif','fpx','svg','psd','cdr','pcd','dxf','ufo','eps','ai','hdri');
+    $image = array('webp', 'jpg', 'png', 'ico', 'bmp', 'gif', 'tif', 'pcx', 'tga', 'bmp', 'pxc', 'tiff', 'jpeg', 'exif', 'fpx', 'svg', 'psd', 'cdr', 'pcd', 'dxf', 'ufo', 'eps', 'ai', 'hdri');
     // 视频格式
-    $video=array('mp4','avi','3gp','rmvb','gif','wmv','mkv','mpg','vob','mov','flv','swf','mp3','ape','wma','aac','mmf','amr','m4a','m4r','ogg','wav','wavpack');
+    $video = array('mp4', 'avi', '3gp', 'rmvb', 'gif', 'wmv', 'mkv', 'mpg', 'vob', 'mov', 'flv', 'swf', 'mp3', 'ape', 'wma', 'aac', 'mmf', 'amr', 'm4a', 'm4r', 'ogg', 'wav', 'wavpack');
     // 压缩格式
-    $zip=array('rar','zip','tar','cab','uue','jar','iso','z','7-zip','ace','lzh','arj','gzip','bz2','tz');
+    $zip = array('rar', 'zip', 'tar', 'cab', 'uue', 'jar', 'iso', 'z', '7-zip', 'ace', 'lzh', 'arj', 'gzip', 'bz2', 'tz');
     // 文档格式
-    $text=array('exe','doc','ppt','xls','wps','txt','lrc','wfs','torrent','html','htm','java','js','css','less','php','pdf','pps','host','box','docx','word','perfect','dot','dsf','efe','ini','json','lnk','log','msi','ost','pcs','tmp','xlsb');
+    $text = array('exe', 'doc', 'ppt', 'xls', 'wps', 'txt', 'lrc', 'wfs', 'torrent', 'html', 'htm', 'java', 'js', 'css', 'less', 'php', 'pdf', 'pps', 'host', 'box', 'docx', 'word', 'perfect', 'dot', 'dsf', 'efe', 'ini', 'json', 'lnk', 'log', 'msi', 'ost', 'pcs', 'tmp', 'xlsb');
     // 匹配不同的结果
     switch ($str) {
         case in_array($str, $image):
@@ -213,7 +222,8 @@ function file_format($str){
  * 返回用户id
  * @return integer 用户id
  */
-function get_uid(){
+function get_uid()
+{
     return $_SESSION['user']['id'];
 }
 
@@ -224,18 +234,19 @@ function get_uid(){
  * @param  integer $error_code    状态码： 0：成功  1：失败
  * @return string                 json格式的数据
  */
-function ajax_return($data='',$error_message='成功',$error_code=1){
-    $all_data=array(
-        'error_code'=>$error_code,
-        'error_message'=>$error_message,
-        );
-    if ($data!=='') {
-        $all_data['data']=$data;
+function ajax_return($data = '', $error_message = '成功', $error_code = 1)
+{
+    $all_data = array(
+        'error_code' => $error_code,
+        'error_message' => $error_message,
+    );
+    if ($data !== '') {
+        $all_data['data'] = $data;
         // app 禁止使用和为了统一字段做的判断
-        $reserved_words=array('id','title','price','product_title','product_id','product_category','product_number');
+        $reserved_words = array('id', 'title', 'price', 'product_title', 'product_id', 'product_category', 'product_number');
         foreach ($reserved_words as $k => $v) {
             if (array_key_exists($v, $data)) {
-                echo 'app不允许使用【'.$v.'】这个键名 —— 此提示是function.php 中的ajax_return函数返回的';
+                echo 'app不允许使用【' . $v . '】这个键名 —— 此提示是function.php 中的ajax_return函数返回的';
                 die;
             }
         }
@@ -250,26 +261,27 @@ function ajax_return($data='',$error_message='成功',$error_code=1){
  * @param  string $path 文件路径
  * @return string       http连接
  */
-function get_url($path){
+function get_url($path)
+{
     // 如果是空；返回空
     if (empty($path)) {
         return '';
     }
     // 如果已经有http直接返回
-    if (strpos($path, 'http://')!==false) {
+    if (strpos($path, 'http://') !== false) {
         return $path;
     }
     // 判断是否使用了oss
-    $alioss=array(
+    $alioss = array(
         'KEY_ID' => env('ALIOSS_KEY_ID'),
         'KEY_SECRET' => env('ALIOSS_KEY_SECRET'),
         'END_POINT' => env('ALIOSS_END_POINT'),
         'BUCKET' => env('ALIOSS_BUCKET')
     );
     if (empty($alioss['KEY_ID'])) {
-        return 'http://'.$_SERVER['HTTP_HOST'].$path;
-    }else{
-        return 'http://'.$alioss['BUCKET'].'.'.$alioss['END_POINT'].$path;
+        return 'http://' . $_SERVER['HTTP_HOST'] . $path;
+    } else {
+        return 'http://' . $alioss['BUCKET'] . '.' . $alioss['END_POINT'] . $path;
     }
 }
 
@@ -277,10 +289,12 @@ function get_url($path){
  * 检测是否登录
  * @return boolean 是否登录
  */
-function check_login(){
-    if (!empty($_SESSION['user']['id'])){
+function check_login()
+{
+    // 检测后台管理员是否登录，使用 $_SESSION['admin']
+    if (!empty($_SESSION['admin']['id'])) {
         return true;
-    }else{
+    } else {
         return false;
     }
 }
@@ -289,10 +303,11 @@ function check_login(){
  * 检测前台是否登录
  * @return boolean 是否登录
  */
-function check_user_login(){
-    if (!empty($_SESSION['users']['id'])){
+function check_user_login()
+{
+    if (!empty($_SESSION['users']['id'])) {
         return true;
-    }else{
+    } else {
         return false;
     }
 }
@@ -308,19 +323,20 @@ function check_user_login(){
  * @param string $content 是否删除标签内的内容 0保留内容 1不保留内容
  * @return string
  */
-function strip_html_tags($tags,$str,$content=0){
-    if($content){
-        $html=array();
+function strip_html_tags($tags, $str, $content = 0)
+{
+    if ($content) {
+        $html = array();
         foreach ($tags as $tag) {
-            $html[]='/(<'.$tag.'.*?>[\s|\S]*?<\/'.$tag.'>)/';
+            $html[] = '/(<' . $tag . '.*?>[\s|\S]*?<\/' . $tag . '>)/';
         }
-        $data=preg_replace($html,'',$str);
-    }else{
-        $html=array();
+        $data = preg_replace($html, '', $str);
+    } else {
+        $html = array();
         foreach ($tags as $tag) {
-            $html[]="/(<(?:\/".$tag."|".$tag.")[^>]*>)/i";
+            $html[] = "/(<(?:\/" . $tag . "|" . $tag . ")[^>]*>)/i";
         }
-        $data=preg_replace($html, '', $str);
+        $data = preg_replace($html, '', $str);
     }
     return $data;
 }
@@ -330,9 +346,10 @@ function strip_html_tags($tags,$str,$content=0){
  * @param  string $str 含有图片链接的字符串
  * @return array       匹配的图片数组
  */
-function get_ueditor_image_path($str){
-    $preg='/\/Upload\/image\/u(m)?editor\/\d*\/\d*\.[jpg|jpeg|png|bmp]*/i';
-    preg_match_all($preg, $str,$data);
+function get_ueditor_image_path($str)
+{
+    $preg = '/\/Upload\/image\/u(m)?editor\/\d*\/\d*\.[jpg|jpeg|png|bmp]*/i';
+    preg_match_all($preg, $str, $data);
     return current($data);
 }
 
@@ -345,43 +362,46 @@ function get_ueditor_image_path($str){
  * @param string $charset 编码格式
  * @return string
  */
-function re_substr($str, $start, $length, $suffix=true, $charset="utf-8") {
-    if(function_exists("mb_substr"))
+function re_substr($str, $start, $length, $suffix = true, $charset = "utf-8")
+{
+    if (function_exists("mb_substr"))
         $slice = mb_substr($str, $start, $length, $charset);
-    elseif(function_exists('iconv_substr')) {
-        $slice = iconv_substr($str,$start,$length,$charset);
-    }else{
-        $re['utf-8']   = "/[\x01-\x7f]|[\xc2-\xdf][\x80-\xbf]|[\xe0-\xef][\x80-\xbf]{2}|[\xf0-\xff][\x80-\xbf]{3}/";
+    elseif (function_exists('iconv_substr')) {
+        $slice = iconv_substr($str, $start, $length, $charset);
+    } else {
+        $re['utf-8'] = "/[\x01-\x7f]|[\xc2-\xdf][\x80-\xbf]|[\xe0-\xef][\x80-\xbf]{2}|[\xf0-\xff][\x80-\xbf]{3}/";
         $re['gb2312'] = "/[\x01-\x7f]|[\xb0-\xf7][\xa0-\xfe]/";
-        $re['gbk']  = "/[\x01-\x7f]|[\x81-\xfe][\x40-\xfe]/";
-        $re['big5']   = "/[\x01-\x7f]|[\x81-\xfe]([\x40-\x7e]|\xa1-\xfe])/";
+        $re['gbk'] = "/[\x01-\x7f]|[\x81-\xfe][\x40-\xfe]/";
+        $re['big5'] = "/[\x01-\x7f]|[\x81-\xfe]([\x40-\x7e]|\xa1-\xfe])/";
         preg_match_all($re[$charset], $str, $match);
-        $slice = join("",array_slice($match[0], $start, $length));
+        $slice = join("", array_slice($match[0], $start, $length));
     }
-    $omit=mb_strlen($str) >=$length ? '...' : '';
-    return $suffix ? $slice.$omit : $slice;
+    $omit = mb_strlen($str) >= $length ? '...' : '';
+    return $suffix ? $slice . $omit : $slice;
 }
 
 // 设置验证码
-function show_verify($config=''){
-    if($config==''){
-        $config=array(
-            'codeSet'=>'1234567890',
-            'fontSize'=>30,
-            'useCurve'=>false,
-            'imageH'=>60,
-            'imageW'=>240,
-            'length'=>4,
-            'fontttf'=>'4.ttf',
-            );
+function show_verify($config = '')
+{
+    if ($config == '') {
+        $config = array(
+            'codeSet' => '1234567890',
+            'fontSize' => 30,
+            'useCurve' => false,
+            'imageH' => 60,
+            'imageW' => 240,
+            'length' => 4,
+            'fontttf' => '4.ttf',
+        );
     }
-    $verify=new \Think\Verify($config);
+    $verify = new \Think\Verify($config);
     return $verify->entry();
 }
 
 // 检测验证码
-function check_verify($code){
-    $verify=new \Think\Verify();
+function check_verify($code)
+{
+    $verify = new \Think\Verify();
     return $verify->check($code);
 }
 
@@ -390,7 +410,8 @@ function check_verify($code){
  * @param type $domain 域名
  * @return string 返回根域名
  */
-function get_url_to_domain($domain) {
+function get_url_to_domain($domain)
+{
     $re_domain = '';
     $domain_postfix_cn_array = array("com", "net", "org", "gov", "edu", "com.cn", "cn");
     $array_domain = explode(".", $domain);
@@ -421,21 +442,22 @@ function get_url_to_domain($domain) {
     cut_str($str,'/',-2);  返回 456
     具体参考 http://www.baijunyao.com/index.php/Home/Index/article/aid/18
 */
-function cut_str($str,$sign,$number){
-    $array=explode($sign, $str);
-    $length=count($array);
-    if($number<0){
-        $new_array=array_reverse($array);
-        $abs_number=abs($number);
-        if($abs_number>$length){
+function cut_str($str, $sign, $number)
+{
+    $array = explode($sign, $str);
+    $length = count($array);
+    if ($number < 0) {
+        $new_array = array_reverse($array);
+        $abs_number = abs($number);
+        if ($abs_number > $length) {
             return 'error';
-        }else{
-            return $new_array[$abs_number-1];
+        } else {
+            return $new_array[$abs_number - 1];
         }
-    }else{
-        if($number>=$length){
+    } else {
+        if ($number >= $length) {
             return 'error';
-        }else{
+        } else {
             return $array[$number];
         }
     }
@@ -448,59 +470,60 @@ function cut_str($str,$sign,$number){
  * @param  string $content 内容
  * @return boolean       是否成功
  */
-function send_email($address,$subject,$content){
-    $email_smtp=env('EMAIL_SMTP') ?: env('MAIL_HOST');
-    $email_username=env('EMAIL_USERNAME') ?: env('MAIL_USER');
-    $email_password=env('EMAIL_PASSWORD') ?: env('MAIL_PASS');
-    $email_from_name=env('EMAIL_FROM_NAME');
-    $email_smtp_secure=env('EMAIL_SMTP_SECURE') ?: env('MAIL_SECURE');
-    $email_port=env('EMAIL_PORT') ?: env('MAIL_PORT');
-    if(empty($email_smtp) || empty($email_username) || empty($email_password) || empty($email_from_name)){
-        return array("error"=>1,"message"=>'邮箱配置不完整');
+function send_email($address, $subject, $content)
+{
+    $email_smtp = env('EMAIL_SMTP') ?: env('MAIL_HOST');
+    $email_username = env('EMAIL_USERNAME') ?: env('MAIL_USER');
+    $email_password = env('EMAIL_PASSWORD') ?: env('MAIL_PASS');
+    $email_from_name = env('EMAIL_FROM_NAME');
+    $email_smtp_secure = env('EMAIL_SMTP_SECURE') ?: env('MAIL_SECURE');
+    $email_port = env('EMAIL_PORT') ?: env('MAIL_PORT');
+    if (empty($email_smtp) || empty($email_username) || empty($email_password) || empty($email_from_name)) {
+        return array("error" => 1, "message" => '邮箱配置不完整');
     }
     require_once './ThinkPHP/Library/Org/Nx/class.phpmailer.php';
     require_once './ThinkPHP/Library/Org/Nx/class.smtp.php';
-    $phpmailer=new \Phpmailer();
+    $phpmailer = new \Phpmailer();
     // 设置PHPMailer使用SMTP服务器发送Email
     $phpmailer->IsSMTP();
     // 设置设置smtp_secure
-    $phpmailer->SMTPSecure=$email_smtp_secure;
+    $phpmailer->SMTPSecure = $email_smtp_secure;
     // 设置port
-    $phpmailer->Port=$email_port;
+    $phpmailer->Port = $email_port;
     // 设置为html格式
     $phpmailer->IsHTML(true);
     // 设置邮件的字符编码'
-    $phpmailer->CharSet='UTF-8';
+    $phpmailer->CharSet = 'UTF-8';
     // 设置SMTP服务器。
-    $phpmailer->Host=$email_smtp;
+    $phpmailer->Host = $email_smtp;
     // 设置为"需要验证"
-    $phpmailer->SMTPAuth=true;
+    $phpmailer->SMTPAuth = true;
     // 设置用户名
-    $phpmailer->Username=$email_username;
+    $phpmailer->Username = $email_username;
     // 设置密码
-    $phpmailer->Password=$email_password;
+    $phpmailer->Password = $email_password;
     // 设置邮件头的From字段。
-    $phpmailer->From=$email_username;
+    $phpmailer->From = $email_username;
     // 设置发件人名字
-    $phpmailer->FromName=$email_from_name;
+    $phpmailer->FromName = $email_from_name;
     // 添加收件人地址，可以多次使用来添加多个收件人
-    if(is_array($address)){
-        foreach($address as $addressv){
+    if (is_array($address)) {
+        foreach ($address as $addressv) {
             $phpmailer->AddAddress($addressv);
         }
-    }else{
+    } else {
         $phpmailer->AddAddress($address);
     }
     // 设置邮件标题
-    $phpmailer->Subject=$subject;
+    $phpmailer->Subject = $subject;
     // 设置邮件正文
-    $phpmailer->Body=$content;
+    $phpmailer->Body = $content;
     // 发送邮件。
-    if(!$phpmailer->Send()) {
-        $phpmailererror=$phpmailer->ErrorInfo;
-        return array("error"=>1,"message"=>$phpmailererror);
-    }else{
-        return array("error"=>0);
+    if (!$phpmailer->Send()) {
+        $phpmailererror = $phpmailer->ErrorInfo;
+        return array("error" => 1, "message" => $phpmailererror);
+    } else {
+        return array("error" => 0);
     }
 }
 
@@ -513,8 +536,9 @@ function send_email($address,$subject,$content){
  * @param integer $max 最大值
  * @return string
  */
-function rand_number ($min=1, $max=9999) {
-    return sprintf("%0".strlen($max)."d", mt_rand($min,$max));
+function rand_number($min = 1, $max = 9999)
+{
+    return sprintf("%0" . strlen($max) . "d", mt_rand($min, $max));
 }
 
 /**
@@ -525,24 +549,25 @@ function rand_number ($min=1, $max=9999) {
  * 0 字母 1 数字 其它 混合
  * @return string
  */
-function build_count_rand ($number,$length=4,$mode=1) {
-    if($mode==1 && $length<strlen($number) ) {
+function build_count_rand($number, $length = 4, $mode = 1)
+{
+    if ($mode == 1 && $length < strlen($number)) {
         //不足以生成一定数量的不重复数字
         return false;
     }
-    $rand   =  array();
-    for($i=0; $i<$number; $i++) {
-        $rand[] = rand_string($length,$mode);
+    $rand = array();
+    for ($i = 0; $i < $number; $i++) {
+        $rand[] = rand_string($length, $mode);
     }
     $unqiue = array_unique($rand);
-    if(count($unqiue)==count($rand)) {
+    if (count($unqiue) == count($rand)) {
         return $rand;
     }
-    $count   = count($rand)-count($unqiue);
-    for($i=0; $i<$count*3; $i++) {
-        $rand[] = rand_string($length,$mode);
+    $count = count($rand) - count($unqiue);
+    for ($i = 0; $i < $count * 3; $i++) {
+        $rand[] = rand_string($length, $mode);
     }
-    $rand = array_slice(array_unique ($rand),0,$number);
+    $rand = array_slice(array_unique($rand), 0, $number);
     return $rand;
 }
 
@@ -553,13 +578,14 @@ function build_count_rand ($number,$length=4,$mode=1) {
  * @param  int $length 需要生成的随机数个数
  * @return array       生成的随机数
  */
-function get_rand_number($start=1,$end=10,$length=4){
-    $connt=0;
-    $temp=array();
-    while($connt<$length){
-        $temp[]=rand($start,$end);
-        $data=array_unique($temp);
-        $connt=count($data);
+function get_rand_number($start = 1, $end = 10, $length = 4)
+{
+    $connt = 0;
+    $temp = array();
+    while ($connt < $length) {
+        $temp[] = rand($start, $end);
+        $data = array_unique($temp);
+        $connt = count($data);
     }
     sort($data);
     return $data;
@@ -571,8 +597,9 @@ function get_rand_number($start=1,$end=10,$length=4){
  * @param  integer  $limit 每页数量
  * @return subject       page类
  */
-function new_page($count,$limit=10){
-    return new \Org\Nx\Page($count,$limit);
+function new_page($count, $limit = 10)
+{
+    return new \Org\Nx\Page($count, $limit);
 }
 
 /**
@@ -583,21 +610,22 @@ function new_page($count,$limit=10){
  * @param  integer  $limit  每页数量
  * @return array            分页数据
  */
-function get_page_data($model,$map,$order='',$limit=10){
-    $count=$model
+function get_page_data($model, $map, $order = '', $limit = 10)
+{
+    $count = $model
         ->where($map)
         ->count();
-    $page=new_page($count,$limit);
+    $page = new_page($count, $limit);
     // 获取分页数据
-    $list=$model
-            ->where($map)
-            ->order($order)
-            ->limit($page->firstRow.','.$page->listRows)
-            ->select();
-    $data=array(
-        'data'=>$list,
-        'page'=>$page->show()
-        );
+    $list = $model
+        ->where($map)
+        ->order($order)
+        ->limit($page->firstRow . ',' . $page->listRows)
+        ->select();
+    $data = array(
+        'data' => $list,
+        'page' => $page->show()
+    );
     return $data;
 }
 
@@ -608,46 +636,47 @@ function get_page_data($model,$map,$order='',$limit=10){
  * @param  string $maxSize 允许的上传文件最大值 52428800
  * @return array           返回ajax的json格式数据
  */
-function post_upload($path='file',$format='empty',$maxSize='52428800'){
+function post_upload($path = 'file', $format = 'empty', $maxSize = '52428800')
+{
     ini_set('max_execution_time', '0');
     // 去除两边的/
-    $path=trim($path,'/');
+    $path = trim($path, '/');
     // 添加Upload根目录
-    $path=strtolower(substr($path, 0,6))==='upload' ? ucfirst($path) : 'Upload/'.$path;
+    $path = strtolower(substr($path, 0, 6)) === 'upload' ? ucfirst($path) : 'Upload/' . $path;
     // 上传文件类型控制
-    $ext_arr= array(
-            'image' => array('gif', 'jpg', 'jpeg', 'png', 'bmp'),
-            'photo' => array('jpg', 'jpeg', 'png'),
-            'flash' => array('swf', 'flv'),
-            'media' => array('swf', 'flv', 'mp3', 'wav', 'wma', 'wmv', 'mid', 'avi', 'mpg', 'asf', 'rm', 'rmvb'),
-            'file' => array('doc', 'docx', 'xls', 'xlsx', 'ppt', 'htm', 'html', 'txt', 'zip', 'rar', 'gz', 'bz2','pdf')
-        );
-    if(!empty($_FILES)){
+    $ext_arr = array(
+        'image' => array('gif', 'jpg', 'jpeg', 'png', 'bmp'),
+        'photo' => array('jpg', 'jpeg', 'png'),
+        'flash' => array('swf', 'flv'),
+        'media' => array('swf', 'flv', 'mp3', 'wav', 'wma', 'wmv', 'mid', 'avi', 'mpg', 'asf', 'rm', 'rmvb'),
+        'file' => array('doc', 'docx', 'xls', 'xlsx', 'ppt', 'htm', 'html', 'txt', 'zip', 'rar', 'gz', 'bz2', 'pdf')
+    );
+    if (!empty($_FILES)) {
         // 上传文件配置
-        $config=array(
-                'maxSize'   =>  $maxSize,       //   上传文件最大为50M
-                'rootPath'  =>  './',           //文件上传保存的根路径
-                'savePath'  =>  './'.$path.'/',         //文件上传的保存路径（相对于根路径）
-                'saveName'  =>  array('uniqid',''),     //上传文件的保存规则，支持数组和字符串方式定义
-                'autoSub'   =>  true,                   //  自动使用子目录保存上传文件 默认为true
-                'exts'    =>    isset($ext_arr[$format])?$ext_arr[$format]:'',
-            );
+        $config = array(
+            'maxSize' => $maxSize,       //   上传文件最大为50M
+            'rootPath' => './',           //文件上传保存的根路径
+            'savePath' => './' . $path . '/',         //文件上传的保存路径（相对于根路径）
+            'saveName' => array('uniqid', ''),     //上传文件的保存规则，支持数组和字符串方式定义
+            'autoSub' => true,                   //  自动使用子目录保存上传文件 默认为true
+            'exts' => isset($ext_arr[$format]) ? $ext_arr[$format] : '',
+        );
         // 实例化上传
-        $upload=new \Think\Upload($config);
+        $upload = new \Think\Upload($config);
         // 调用上传方法
-        $info=$upload->upload();
-        $data=array();
-        if(!$info){
+        $info = $upload->upload();
+        $data = array();
+        if (!$info) {
             // 返回错误信息
-            $error=$upload->getError();
-            $data['error_info']=$error;
+            $error = $upload->getError();
+            $data['error_info'] = $error;
             return $data;
-        }else{
+        } else {
             // 返回成功信息
-            foreach($info as $file){
-                $data['name']=trim($file['savepath'].$file['savename'],'.');
+            foreach ($info as $file) {
+                $data['name'] = trim($file['savepath'] . $file['savename'], '.');
                 return $data;
-            }               
+            }
         }
     }
 }
@@ -659,46 +688,47 @@ function post_upload($path='file',$format='empty',$maxSize='52428800'){
  * @param  integer  $maxSize 允许的上传文件最大值 52428800
  * @return booler       返回ajax的json格式数据
  */
-function upload($path='file',$format='empty',$maxSize='52428800'){
+function upload($path = 'file', $format = 'empty', $maxSize = '52428800')
+{
     ini_set('max_execution_time', '0');
     // 去除两边的/
-    $path=trim($path,'/');
+    $path = trim($path, '/');
     // 添加Upload根目录
-    $path=strtolower(substr($path, 0,6))==='upload' ? ucfirst($path) : 'Upload/'.$path;
+    $path = strtolower(substr($path, 0, 6)) === 'upload' ? ucfirst($path) : 'Upload/' . $path;
     // 上传文件类型控制
-    $ext_arr= array(
-            'image' => array('gif', 'jpg', 'jpeg', 'png', 'bmp'),
-            'photo' => array('jpg', 'jpeg', 'png'),
-            'flash' => array('swf', 'flv'),
-            'media' => array('swf', 'flv', 'mp3', 'wav', 'wma', 'wmv', 'mid', 'avi', 'mpg', 'asf', 'rm', 'rmvb'),
-            'file' => array('doc', 'docx', 'xls', 'xlsx', 'ppt', 'htm', 'html', 'txt', 'zip', 'rar', 'gz', 'bz2','pdf')
-        );
-    if(!empty($_FILES)){
+    $ext_arr = array(
+        'image' => array('gif', 'jpg', 'jpeg', 'png', 'bmp'),
+        'photo' => array('jpg', 'jpeg', 'png'),
+        'flash' => array('swf', 'flv'),
+        'media' => array('swf', 'flv', 'mp3', 'wav', 'wma', 'wmv', 'mid', 'avi', 'mpg', 'asf', 'rm', 'rmvb'),
+        'file' => array('doc', 'docx', 'xls', 'xlsx', 'ppt', 'htm', 'html', 'txt', 'zip', 'rar', 'gz', 'bz2', 'pdf')
+    );
+    if (!empty($_FILES)) {
         // 上传文件配置
-        $config=array(
-                'maxSize'   =>  $maxSize,       //   上传文件最大为50M
-                'rootPath'  =>  './',           //文件上传保存的根路径
-                'savePath'  =>  './'.$path.'/',         //文件上传的保存路径（相对于根路径）
-                'saveName'  =>  array('uniqid',''),     //上传文件的保存规则，支持数组和字符串方式定义
-                'autoSub'   =>  true,                   //  自动使用子目录保存上传文件 默认为true
-                'exts'    =>    isset($ext_arr[$format])?$ext_arr[$format]:'',
-            );
+        $config = array(
+            'maxSize' => $maxSize,       //   上传文件最大为50M
+            'rootPath' => './',           //文件上传保存的根路径
+            'savePath' => './' . $path . '/',         //文件上传的保存路径（相对于根路径）
+            'saveName' => array('uniqid', ''),     //上传文件的保存规则，支持数组和字符串方式定义
+            'autoSub' => true,                   //  自动使用子目录保存上传文件 默认为true
+            'exts' => isset($ext_arr[$format]) ? $ext_arr[$format] : '',
+        );
         // 实例化上传
-        $upload=new \Think\Upload($config);
+        $upload = new \Think\Upload($config);
         // 调用上传方法
-        $info=$upload->upload();
-        $data=array();
-        if(!$info){
+        $info = $upload->upload();
+        $data = array();
+        if (!$info) {
             // 返回错误信息
-            $error=$upload->getError();
-            $data['error_info']=$error;
+            $error = $upload->getError();
+            $data['error_info'] = $error;
             echo json_encode($data);
-        }else{
+        } else {
             // 返回成功信息
-            foreach($info as $file){
-                $data['name']=trim($file['savepath'].$file['savename'],'.');
+            foreach ($info as $file) {
+                $data['name'] = trim($file['savepath'] . $file['savename'], '.');
                 echo json_encode($data);
-            }               
+            }
         }
     }
 }
@@ -708,16 +738,17 @@ function upload($path='file',$format='empty',$maxSize='52428800'){
  * @param  string $url url连接
  * @return string      获取到的数据
  */
-function curl_get_contents($url){
-    $ch=curl_init();
+function curl_get_contents($url)
+{
+    $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);                //设置访问的url地址
     // curl_setopt($ch,CURLOPT_HEADER,1);               //是否显示头部信息
     curl_setopt($ch, CURLOPT_TIMEOUT, 5);               //设置超时
     curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);   //用户访问代理 User-Agent
-    curl_setopt($ch, CURLOPT_REFERER,$_SERVER['HTTP_HOST']);        //设置 referer
-    curl_setopt($ch,CURLOPT_FOLLOWLOCATION,1);          //跟踪301
+    curl_setopt($ch, CURLOPT_REFERER, $_SERVER['HTTP_HOST']);        //设置 referer
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);          //跟踪301
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);        //返回结果
-    $r=curl_exec($ch);
+    $r = curl_exec($ch);
     curl_close($ch);
     return $r;
 }
@@ -727,7 +758,8 @@ function curl_get_contents($url){
  * @param  string $file_path 路径
  * @return string            转换后的路径
  */
-function path_encode($file_path){
+function path_encode($file_path)
+{
     return rawurlencode(base64_encode($file_path));
 }
 
@@ -736,7 +768,8 @@ function path_encode($file_path){
  * @param  string $file_path 加密后的字符串
  * @return string            解密后的路径
  */
-function path_decode($file_path){
+function path_decode($file_path)
+{
     return base64_decode(rawurldecode($file_path));
 }
 
@@ -745,17 +778,18 @@ function path_decode($file_path){
  * @param  string $str 需要判断的文件名或者文件的id
  * @return integer     1:图片  2：视频  3：压缩文件  4：文档  5：其他
  */
-function file_category($str){
+function file_category($str)
+{
     // 取文件后缀名
-    $str=strtolower(pathinfo($str, PATHINFO_EXTENSION));
+    $str = strtolower(pathinfo($str, PATHINFO_EXTENSION));
     // 图片格式
-    $images=array('webp','jpg','png','ico','bmp','gif','tif','pcx','tga','bmp','pxc','tiff','jpeg','exif','fpx','svg','psd','cdr','pcd','dxf','ufo','eps','ai','hdri');
+    $images = array('webp', 'jpg', 'png', 'ico', 'bmp', 'gif', 'tif', 'pcx', 'tga', 'bmp', 'pxc', 'tiff', 'jpeg', 'exif', 'fpx', 'svg', 'psd', 'cdr', 'pcd', 'dxf', 'ufo', 'eps', 'ai', 'hdri');
     // 视频格式
-    $video=array('mp4','avi','3gp','rmvb','gif','wmv','mkv','mpg','vob','mov','flv','swf','mp3','ape','wma','aac','mmf','amr','m4a','m4r','ogg','wav','wavpack');
+    $video = array('mp4', 'avi', '3gp', 'rmvb', 'gif', 'wmv', 'mkv', 'mpg', 'vob', 'mov', 'flv', 'swf', 'mp3', 'ape', 'wma', 'aac', 'mmf', 'amr', 'm4a', 'm4r', 'ogg', 'wav', 'wavpack');
     // 压缩格式
-    $zip=array('rar','zip','tar','cab','uue','jar','iso','z','7-zip','ace','lzh','arj','gzip','bz2','tz');
+    $zip = array('rar', 'zip', 'tar', 'cab', 'uue', 'jar', 'iso', 'z', '7-zip', 'ace', 'lzh', 'arj', 'gzip', 'bz2', 'tz');
     // 文档格式
-    $document=array('exe','doc','ppt','xls','wps','txt','lrc','wfs','torrent','html','htm','java','js','css','less','php','pdf','pps','host','box','docx','word','perfect','dot','dsf','efe','ini','json','lnk','log','msi','ost','pcs','tmp','xlsb');
+    $document = array('exe', 'doc', 'ppt', 'xls', 'wps', 'txt', 'lrc', 'wfs', 'torrent', 'html', 'htm', 'java', 'js', 'css', 'less', 'php', 'pdf', 'pps', 'host', 'box', 'docx', 'word', 'perfect', 'dot', 'dsf', 'efe', 'ini', 'json', 'lnk', 'log', 'msi', 'ost', 'pcs', 'tmp', 'xlsb');
     // 匹配不同的结果
     switch ($str) {
         case in_array($str, $images):
@@ -782,20 +816,22 @@ function file_category($str){
  * @param  integer $size       比例
  * @return string              缩略图
  */
-function get_min_image_path($file_path,$width=170,$height=170){
-    $min_path=str_replace('.', '_'.$width.'_'.$height.'.', trim($file_path,'.'));
-    $min_path=OSS_URL.$min_path;
+function get_min_image_path($file_path, $width = 170, $height = 170)
+{
+    $min_path = str_replace('.', '_' . $width . '_' . $height . '.', trim($file_path, '.'));
+    $min_path = OSS_URL . $min_path;
     return $min_path;
-} 
+}
 /**
  * 不区分大小写的in_array()
  * @param  string $str   检测的字符
  * @param  array  $array 数组
  * @return boolear       是否in_array
  */
-function in_iarray($str,$array){
-    $str=strtolower($str);
-    $array=array_map('strtolower', $array);
+function in_iarray($str, $array)
+{
+    $str = strtolower($str);
+    $array = array_map('strtolower', $array);
     if (in_array($str, $array)) {
         return true;
     }
@@ -807,21 +843,22 @@ function in_iarray($str,$array){
  * @param  number $time 时间戳
  * @return string     返回多少以前
  */
-function word_time($time) {
+function word_time($time)
+{
     $time = (int) substr($time, 0, 10);
     $int = time() - $time;
     $str = '';
-    if ($int <= 2){
+    if ($int <= 2) {
         $str = sprintf('刚刚', $int);
-    }elseif ($int < 60){
+    } elseif ($int < 60) {
         $str = sprintf('%d秒前', $int);
-    }elseif ($int < 3600){
+    } elseif ($int < 3600) {
         $str = sprintf('%d分钟前', floor($int / 60));
-    }elseif ($int < 86400){
+    } elseif ($int < 86400) {
         $str = sprintf('%d小时前', floor($int / 3600));
-    }elseif ($int < 1728000){
+    } elseif ($int < 1728000) {
         $str = sprintf('%d天前', floor($int / 86400));
-    }else{
+    } else {
         $str = date('Y-m-d H:i:s', $time);
     }
     return $str;
@@ -834,13 +871,14 @@ function word_time($time) {
  * @param  integer $height     缩略图的高
  * @return string             缩略图path
  */
-function crop_image($image_path,$width=170,$height=170){
-    $image_path=trim($image_path,'.');
-    $min_path='.'.str_replace('.', '_'.$width.'_'.$height.'.', $image_path);
+function crop_image($image_path, $width = 170, $height = 170)
+{
+    $image_path = trim($image_path, '.');
+    $min_path = '.' . str_replace('.', '_' . $width . '_' . $height . '.', $image_path);
     $image = new \Think\Image();
     $image->open($image_path);
     // 生成一个居中裁剪为$width*$height的缩略图并保存
-    $image->thumb($width, $height,\Think\Image::IMAGE_THUMB_CENTER)->save($min_path);
+    $image->thumb($width, $height, \Think\Image::IMAGE_THUMB_CENTER)->save($min_path);
     oss_upload($min_path);
     return $min_path;
 }
@@ -852,49 +890,50 @@ function crop_image($image_path,$width=170,$height=170){
  * @param  integer  $maxSize 允许的上传文件最大值 52428800
  * @return booler   返回ajax的json格式数据
  */
-function ajax_upload($path='file',$format='empty',$maxSize='52428800'){
+function ajax_upload($path = 'file', $format = 'empty', $maxSize = '52428800')
+{
     ini_set('max_execution_time', '0');
     // 去除两边的/
-    $path=trim($path,'/');
+    $path = trim($path, '/');
     // 添加Upload根目录
-    $path=strtolower(substr($path, 0,6))==='upload' ? ucfirst($path) : 'Upload/'.$path;
+    $path = strtolower(substr($path, 0, 6)) === 'upload' ? ucfirst($path) : 'Upload/' . $path;
     // 上传文件类型控制
-    $ext_arr= array(
-            'image' => array('gif', 'jpg', 'jpeg', 'png', 'bmp'),
-            'photo' => array('jpg', 'jpeg', 'png'),
-            'flash' => array('swf', 'flv'),
-            'media' => array('swf', 'flv', 'mp3', 'wav', 'wma', 'wmv', 'mid', 'avi', 'mpg', 'asf', 'rm', 'rmvb'),
-            'file' => array('doc', 'docx', 'xls', 'xlsx', 'ppt', 'htm', 'html', 'txt', 'zip', 'rar', 'gz', 'bz2','pdf')
-        );
-    if(!empty($_FILES)){
+    $ext_arr = array(
+        'image' => array('gif', 'jpg', 'jpeg', 'png', 'bmp'),
+        'photo' => array('jpg', 'jpeg', 'png'),
+        'flash' => array('swf', 'flv'),
+        'media' => array('swf', 'flv', 'mp3', 'wav', 'wma', 'wmv', 'mid', 'avi', 'mpg', 'asf', 'rm', 'rmvb'),
+        'file' => array('doc', 'docx', 'xls', 'xlsx', 'ppt', 'htm', 'html', 'txt', 'zip', 'rar', 'gz', 'bz2', 'pdf')
+    );
+    if (!empty($_FILES)) {
         // 上传文件配置
-        $config=array(
-                'maxSize'   =>  $maxSize,               // 上传文件最大为50M
-                'rootPath'  =>  './',                   // 文件上传保存的根路径
-                'savePath'  =>  './'.$path.'/',         // 文件上传的保存路径（相对于根路径）
-                'saveName'  =>  array('uniqid',''),     // 上传文件的保存规则，支持数组和字符串方式定义
-                'autoSub'   =>  true,                   // 自动使用子目录保存上传文件 默认为true
-                'exts'      =>    isset($ext_arr[$format])?$ext_arr[$format]:'',
-            );
+        $config = array(
+            'maxSize' => $maxSize,               // 上传文件最大为50M
+            'rootPath' => './',                   // 文件上传保存的根路径
+            'savePath' => './' . $path . '/',         // 文件上传的保存路径（相对于根路径）
+            'saveName' => array('uniqid', ''),     // 上传文件的保存规则，支持数组和字符串方式定义
+            'autoSub' => true,                   // 自动使用子目录保存上传文件 默认为true
+            'exts' => isset($ext_arr[$format]) ? $ext_arr[$format] : '',
+        );
         // p($_FILES);
         // 实例化上传
-        $upload=new \Think\Upload($config);
+        $upload = new \Think\Upload($config);
         // 调用上传方法
-        $info=$upload->upload();
+        $info = $upload->upload();
         // p($info);
-        $data=array();
-        if(!$info){
+        $data = array();
+        if (!$info) {
             // 返回错误信息
-            $error=$upload->getError();
-            $data['error_info']=$error;
+            $error = $upload->getError();
+            $data['error_info'] = $error;
             echo json_encode($data);
-        }else{
+        } else {
             // 返回成功信息
-            foreach($info as $file){
-                $data['name']=trim($file['savepath'].$file['savename'],'.');
+            foreach ($info as $file) {
+                $data['name'] = trim($file['savepath'] . $file['savename'], '.');
                 // p($data);
                 echo json_encode($data);
-            }               
+            }
         }
     }
 }
@@ -904,9 +943,10 @@ function ajax_upload($path='file',$format='empty',$maxSize='52428800'){
  * @param  string $file_path post中的字段
  * @return boolear           是否成功
  */
-function upload_success($file_path){
+function upload_success($file_path)
+{
     // 为兼容传进来的有数组；先转成json
-    $file_path=json_encode($file_path);
+    $file_path = json_encode($file_path);
     // 如果有undefined说明上传失败
     if (strpos($file_path, 'undefined') !== false) {
         return false;
@@ -922,36 +962,41 @@ function upload_success($file_path){
 /**
  * 把用户输入的文本转义（主要针对特殊符号和emoji表情）
  */
-function emoji_encode($str){
-    if(!is_string($str))return $str;
-    if(!$str || $str=='undefined')return '';
+function emoji_encode($str)
+{
+    if (!is_string($str))
+        return $str;
+    if (!$str || $str == 'undefined')
+        return '';
     $text = json_encode($str); //暴露出unicode
-    $text = preg_replace_callback("/(\\\u[ed][0-9a-f]{3})/i",function($str){
+    $text = preg_replace_callback("/(\\\u[ed][0-9a-f]{3})/i", function ($str) {
         return addslashes($str[0]);
-    },$text); //将emoji的unicode留下，其他不动，这里的正则比原答案增加了d，因为我发现我很多emoji实际上是\ud开头的，反而暂时没发现有\ue开头。
+    }, $text); //将emoji的unicode留下，其他不动，这里的正则比原答案增加了d，因为我发现我很多emoji实际上是\ud开头的，反而暂时没发现有\ue开头。
     return json_decode($text);
 }
 
 /**
  * 检测是否是手机访问
  */
-function is_mobile(){
-    $useragent=isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
-    $useragent_commentsblock=preg_match('|\(.*?\)|',$useragent,$matches)>0?$matches[0]:'';
-    function _is_mobile($substrs,$text){
-        foreach($substrs as $substr)
-            if(false!==strpos($text,$substr)){
+function is_mobile()
+{
+    $useragent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+    $useragent_commentsblock = preg_match('|\(.*?\)|', $useragent, $matches) > 0 ? $matches[0] : '';
+    function _is_mobile($substrs, $text)
+    {
+        foreach ($substrs as $substr)
+            if (false !== strpos($text, $substr)) {
                 return true;
             }
-            return false;
+        return false;
     }
-    $mobile_os_list=array('Google Wireless Transcoder','Windows CE','WindowsCE','Symbian','Android','armv6l','armv5','Mobile','CentOS','mowser','AvantGo','Opera Mobi','J2ME/MIDP','Smartphone','Go.Web','Palm','iPAQ');
-    $mobile_token_list=array('Profile/MIDP','Configuration/CLDC-','160×160','176×220','240×240','240×320','320×240','UP.Browser','UP.Link','SymbianOS','PalmOS','PocketPC','SonyEricsson','Nokia','BlackBerry','Vodafone','BenQ','Novarra-Vision','Iris','NetFront','HTC_','Xda_','SAMSUNG-SGH','Wapaka','DoCoMo','iPhone','iPod');
-    $found_mobile=_is_mobile($mobile_os_list,$useragent_commentsblock) ||
-              _is_mobile($mobile_token_list,$useragent);
-    if ($found_mobile){
+    $mobile_os_list = array('Google Wireless Transcoder', 'Windows CE', 'WindowsCE', 'Symbian', 'Android', 'armv6l', 'armv5', 'Mobile', 'CentOS', 'mowser', 'AvantGo', 'Opera Mobi', 'J2ME/MIDP', 'Smartphone', 'Go.Web', 'Palm', 'iPAQ');
+    $mobile_token_list = array('Profile/MIDP', 'Configuration/CLDC-', '160×160', '176×220', '240×240', '240×320', '320×240', 'UP.Browser', 'UP.Link', 'SymbianOS', 'PalmOS', 'PocketPC', 'SonyEricsson', 'Nokia', 'BlackBerry', 'Vodafone', 'BenQ', 'Novarra-Vision', 'Iris', 'NetFront', 'HTC_', 'Xda_', 'SAMSUNG-SGH', 'Wapaka', 'DoCoMo', 'iPhone', 'iPod');
+    $found_mobile = _is_mobile($mobile_os_list, $useragent_commentsblock) ||
+        _is_mobile($mobile_token_list, $useragent);
+    if ($found_mobile) {
         return true;
-    }else{
+    } else {
         return false;
     }
 }
@@ -961,9 +1006,10 @@ function is_mobile(){
  * @param  string $str 需要转的字符串
  * @return string      转完成后的字符串
  */
-function escape_sequence_decode($str) {
+function escape_sequence_decode($str)
+{
     $regex = '/\\\u([dD][89abAB][\da-fA-F]{2})\\\u([dD][c-fC-F][\da-fA-F]{2})|\\\u([\da-fA-F]{4})/sx';
-    return preg_replace_callback($regex, function($matches) {
+    return preg_replace_callback($regex, function ($matches) {
         if (isset($matches[3])) {
             $cp = hexdec($matches[3]);
         } else {
@@ -977,9 +1023,9 @@ function escape_sequence_decode($str) {
         if ($cp < 0x80) {
             return chr($cp);
         } else if ($cp < 0xA0) {
-            return chr(0xC0 | $cp >> 6).chr(0x80 | $cp & 0x3F);
+            return chr(0xC0 | $cp >> 6) . chr(0x80 | $cp & 0x3F);
         }
-        $result =  html_entity_decode('&#'.$cp.';');
+        $result = html_entity_decode('&#' . $cp . ';');
         return $result;
     }, $str);
 }
@@ -988,15 +1034,16 @@ function escape_sequence_decode($str) {
  * 获取当前访问的设备类型
  * @return integer 1：其他  2：iOS  3：Android
  */
-function get_device_type(){
+function get_device_type()
+{
     //全部变成小写字母
     $agent = strtolower($_SERVER['HTTP_USER_AGENT']);
     $type = 1;
     //分别进行判断
-    if(strpos($agent, 'iphone')!==false || strpos($agent, 'ipad')!==false){
+    if (strpos($agent, 'iphone') !== false || strpos($agent, 'ipad') !== false) {
         $type = 2;
-    } 
-    if(strpos($agent, 'android')!==false){
+    }
+    if (strpos($agent, 'android') !== false) {
         $type = 3;
     }
     return $type;
@@ -1006,7 +1053,8 @@ function get_device_type(){
  * 生成pdf
  * @param  string $html      需要生成的内容
  */
-function pdf($html='<h1 style="color:red">hello word</h1>'){
+function pdf($html = '<h1 style="color:red">hello word</h1>')
+{
     vendor('Tcpdf.tcpdf');
     $pdf = new \Tcpdf(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
     // 设置打印模式
@@ -1018,17 +1066,17 @@ function pdf($html='<h1 style="color:red">hello word</h1>'){
     // 是否显示页眉
     $pdf->setPrintHeader(false);
     // 设置页眉显示的内容
-    $pdf->SetHeaderData('logo.png', 60, 'baijunyao.com', '白俊遥博客', array(0,64,255), array(0,64,128));
+    $pdf->SetHeaderData('logo.png', 60, 'baijunyao.com', '白俊遥博客', array(0, 64, 255), array(0, 64, 128));
     // 设置页眉字体
-    $pdf->setHeaderFont(Array('dejavusans', '', '12'));
+    $pdf->setHeaderFont(array('dejavusans', '', '12'));
     // 页眉距离顶部的距离
     $pdf->SetHeaderMargin('5');
     // 是否显示页脚
     $pdf->setPrintFooter(true);
     // 设置页脚显示的内容
-    $pdf->setFooterData(array(0,64,0), array(0,64,128));
+    $pdf->setFooterData(array(0, 64, 0), array(0, 64, 128));
     // 设置页脚的字体
-    $pdf->setFooterFont(Array('dejavusans', '', '10'));
+    $pdf->setFooterFont(array('dejavusans', '', '10'));
     // 设置页脚距离底部的距离
     $pdf->SetFooterMargin('10');
     // 设置默认等宽字体
@@ -1041,8 +1089,8 @@ function pdf($html='<h1 style="color:red">hello word</h1>'){
     $pdf->SetAutoPageBreak(TRUE, '15');
     // 设置图像比例因子
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-    if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-        require_once(dirname(__FILE__).'/lang/eng.php');
+    if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+        require_once(dirname(__FILE__) . '/lang/eng.php');
         $pdf->setLanguageArray($l);
     }
     $pdf->setFontSubsetting(true);
@@ -1058,9 +1106,10 @@ function pdf($html='<h1 style="color:red">hello word</h1>'){
  * @param  string  $url  url连接
  * @param  integer $size 尺寸 纯数字
  */
-function qrcode($url,$size=4){
+function qrcode($url, $size = 4)
+{
     Vendor('Phpqrcode.phpqrcode');
-    QRcode::png($url,false,QR_ECLEVEL_L,$size,2,false,0xFFFFFF,0x000000);
+    QRcode::png($url, false, QR_ECLEVEL_L, $size, 2, false, 0xFFFFFF, 0x000000);
 }
 
 /**
@@ -1080,20 +1129,21 @@ function qrcode($url,$size=4){
  * 跳向支付宝付款
  * @param  array $order 订单数据 必须包含 out_trade_no(订单号)、price(订单金额)、subject(商品名称标题)
  */
-function alipay($order){
-    vendor('Alipay.AlipaySubmit','','.class.php');
+function alipay($order)
+{
+    vendor('Alipay.AlipaySubmit', '', '.class.php');
     // 从数据库获取支付宝配置
     $alipayConfig = D('paysite')->where([
         'pay_type' => 'zfb',
         'status' => 1
     ])->find();
-    
+
     if (!$alipayConfig) {
         return false;
     }
-    
+
     // 构建配置数组 - 适配老版本支付宝SDK
-    $config=array(
+    $config = array(
         'partner' => $alipayConfig['app_id'], // 使用app_id作为partner
         'key' => $alipayConfig['merchant_private_key'], // 商户私钥
         'sign_type' => 'RSA', // 签名类型
@@ -1103,7 +1153,7 @@ function alipay($order){
         'seller_email' => 'admin@example.com', // 默认邮箱
         'show_url' => 'https://' . $_SERVER['HTTP_HOST'] // 商品展示网址
     );
-    $data=array(
+    $data = array(
         "_input_charset" => $config['input_charset'], // 编码格式
         "logistics_fee" => "0.00", // 物流费用
         "logistics_payment" => "SELLER_PAY", // 物流支付方式SELLER_PAY（卖家承担运费）、BUYER_PAY（买家承担运费）
@@ -1125,31 +1175,32 @@ function alipay($order){
         "show_url" => $config['show_url'], // 商品展示网址,收银台页面上,商品展示的超链接。
         "subject" => $order['subject'] // 商品名称商品的标题/交易标题/订单标 题/订单关键字等
     );
-    $alipay=new \AlipaySubmit($config);
-    $new=$alipay->buildRequestPara($data);
-    $go_pay=$alipay->buildRequestForm($new, 'get','支付');
+    $alipay = new \AlipaySubmit($config);
+    $new = $alipay->buildRequestPara($data);
+    $go_pay = $alipay->buildRequestForm($new, 'get', '支付');
     echo $go_pay;
 }
 
 /**
  * geetest检测验证码
  */
-function geetest_chcek_verify($data){
-    $geetest_id=env('GEETEST_ID');
-    $geetest_key=env('GEETEST_KEY');
-    $geetest=new \Org\Xb\Geetest($geetest_id,$geetest_key);
-    $user_id=$_SESSION['geetest']['user_id'];
-    if ($_SESSION['geetest']['gtserver']==1) {
-        $result=$geetest->success_validate($data['geetest_challenge'], $data['geetest_validate'], $data['geetest_seccode'], $user_id);
+function geetest_chcek_verify($data)
+{
+    $geetest_id = env('GEETEST_ID');
+    $geetest_key = env('GEETEST_KEY');
+    $geetest = new \Org\Xb\Geetest($geetest_id, $geetest_key);
+    $user_id = $_SESSION['geetest']['user_id'];
+    if ($_SESSION['geetest']['gtserver'] == 1) {
+        $result = $geetest->success_validate($data['geetest_challenge'], $data['geetest_validate'], $data['geetest_seccode'], $user_id);
         if ($result) {
             return true;
-        } else{
+        } else {
             return false;
         }
-    }else{
-        if ($geetest->fail_validate($data['geetest_challenge'],$data['geetest_validate'],$data['geetest_seccode'])) {
+    } else {
+        if ($geetest->fail_validate($data['geetest_challenge'], $data['geetest_validate'], $data['geetest_seccode'])) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -1182,31 +1233,31 @@ function authcode($string, $operation = 'DECODE', $key = 'icondoit', $expiry = 0
     // 密匙c用于变化生成的密文
     $keyc = $ckey_length ? ($operation == 'DECODE' ? substr($string, 0, $ckey_length) : substr(md5(microtime()), -$ckey_length)) : '';
     // 参与运算的密匙
-    $cryptkey   = $keya . md5($keya . $keyc);
+    $cryptkey = $keya . md5($keya . $keyc);
     $key_length = strlen($cryptkey);
     // 明文，前10位用来保存时间戳，解密时验证数据有效性，10到26位用来保存$keyb(密匙b)，解密时会通过这个密匙验证数据完整性
     // 如果是解码的话，会从第$ckey_length位开始，因为密文前$ckey_length位保存 动态密匙，以保证解密正确
-    $string        = $operation == 'DECODE' ? base64_decode(substr($string, $ckey_length)) : sprintf('%010d', $expiry ? $expiry + time() : 0) . substr(md5($string . $keyb), 0, 16) . $string;
+    $string = $operation == 'DECODE' ? base64_decode(substr($string, $ckey_length)) : sprintf('%010d', $expiry ? $expiry + time() : 0) . substr(md5($string . $keyb), 0, 16) . $string;
     $string_length = strlen($string);
-    $result        = '';
-    $box           = range(0, 255);
-    $rndkey        = array();
+    $result = '';
+    $box = range(0, 255);
+    $rndkey = array();
     // 产生密匙簿
     for ($i = 0; $i <= 255; $i++) {
         $rndkey[$i] = ord($cryptkey[$i % $key_length]);
     }
     // 用固定的算法，打乱密匙簿，增加随机性，好像很复杂，实际上对并不会增加密文的强度
     for ($j = $i = 0; $i < 256; $i++) {
-        $j       = ($j + $box[$i] + $rndkey[$i]) % 256;
-        $tmp     = $box[$i];
+        $j = ($j + $box[$i] + $rndkey[$i]) % 256;
+        $tmp = $box[$i];
         $box[$i] = $box[$j];
         $box[$j] = $tmp;
     }
     // 核心加解密部分
     for ($a = $j = $i = 0; $i < $string_length; $i++) {
-        $a       = ($a + 1) % 256;
-        $j       = ($j + $box[$a]) % 256;
-        $tmp     = $box[$a];
+        $a = ($a + 1) % 256;
+        $j = ($j + $box[$a]) % 256;
+        $tmp = $box[$a];
         $box[$a] = $box[$j];
         $box[$j] = $tmp;
         // 从密匙簿得出密匙进行异或，再转成字符
@@ -1234,367 +1285,402 @@ function authcode($string, $operation = 'DECODE', $key = 'icondoit', $expiry = 0
     }
 }
 
-    function randomkeys($length){ 
-        $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLOMNOPQRSTUVWXYZ';
-        $key = '';
-        for($i=0;$i<$length;$i++){ 
-            $key .= $pattern[mt_rand(0,61)]; //生成php随机数
-        } 
-        return $key; 
+function randomkeys($length)
+{
+    $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLOMNOPQRSTUVWXYZ';
+    $key = '';
+    for ($i = 0; $i < $length; $i++) {
+        $key .= $pattern[mt_rand(0, 61)]; //生成php随机数
     }
-    // 生成更安全的随机字符串（仅包含数字和字母）
-    function generate_secure_random($length = 16) {
-        $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLOMNOPQRSTUVWXYZ';
-        $key = '';
-        $pattern_length = strlen($pattern) - 1;
-        // 使用更安全的随机数生成器
-        if (function_exists('random_bytes')) {
-            try {
-                $random_bytes = random_bytes($length);
-                for ($i = 0; $i < $length; $i++) {
-                    $key .= $pattern[ord($random_bytes[$i]) % $pattern_length];
-                }
-                return $key;
-            } catch (Exception $e) {
-                // 如果random_bytes失败，使用备用方法
+    return $key;
+}
+// 生成更安全的随机字符串（仅包含数字和字母）
+function generate_secure_random($length = 16)
+{
+    $pattern = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLOMNOPQRSTUVWXYZ';
+    $key = '';
+    $pattern_length = strlen($pattern) - 1;
+    // 使用更安全的随机数生成器
+    if (function_exists('random_bytes')) {
+        try {
+            $random_bytes = random_bytes($length);
+            for ($i = 0; $i < $length; $i++) {
+                $key .= $pattern[ord($random_bytes[$i]) % $pattern_length];
             }
+            return $key;
+        } catch (Exception $e) {
+            // 如果random_bytes失败，使用备用方法
         }
-        // 备用方法：使用mt_rand
-        for($i = 0; $i < $length; $i++){ 
-            $key .= $pattern[mt_rand(0, $pattern_length)];
-        } 
-        return $key; 
     }
-    // 安全的密码哈希函数
-    function secure_password_hash($password) {
-        // 使用PHP内置的password_hash函数，默认使用BCRYPT算法
-        return password_hash($password, PASSWORD_DEFAULT);
+    // 备用方法：使用mt_rand
+    for ($i = 0; $i < $length; $i++) {
+        $key .= $pattern[mt_rand(0, $pattern_length)];
     }
-    // 验证密码函数，支持旧的MD5和新的哈希
-    function verify_password($password, $hash) {
-        // 首先尝试新的password_verify
-        if (password_verify($password, $hash)) {
+    return $key;
+}
+// 安全的密码哈希函数
+function secure_password_hash($password)
+{
+    // 使用PHP内置的password_hash函数，默认使用BCRYPT算法
+    return password_hash($password, PASSWORD_DEFAULT);
+}
+// 验证密码函数，支持旧的MD5和新的哈希
+function verify_password($password, $hash)
+{
+    // 首先尝试新的password_verify
+    if (password_verify($password, $hash)) {
+        return true;
+    }
+    // 如果新验证失败，检查是否是旧的MD5哈希（32位长度）
+    if (strlen($hash) === 32 && $hash === md5($password)) {
+        return true;
+    }
+    return false;
+}
+// 检查密码是否需要重新哈希（用于升级旧密码）
+if (!function_exists('password_needs_rehash')) {
+    function password_needs_rehash($hash, $algo = PASSWORD_DEFAULT, $options = array())
+    {
+        // 如果是32位长度，说明是MD5，需要重新哈希
+        if (strlen($hash) === 32) {
             return true;
         }
-        // 如果新验证失败，检查是否是旧的MD5哈希（32位长度）
-        if (strlen($hash) === 32 && $hash === md5($password)) {
-            return true;
-        }
+        // 对于其他情况，假设不需要重新哈希（兼容旧版本PHP）
         return false;
     }
-    // 检查密码是否需要重新哈希（用于升级旧密码）
-    if (!function_exists('password_needs_rehash')) {
-        function password_needs_rehash($hash, $algo = PASSWORD_DEFAULT, $options = array()) {
-            // 如果是32位长度，说明是MD5，需要重新哈希
-            if (strlen($hash) === 32) {
-                return true;
-            }
-            // 对于其他情况，假设不需要重新哈希（兼容旧版本PHP）
-            return false;
-        }
+}
+// 自定义函数：检查密码是否需要重新哈希（用于升级旧密码）
+function check_password_needs_rehash($hash)
+{
+    return password_needs_rehash($hash, PASSWORD_DEFAULT, ['cost' => 12]);
+}
+/**
+ * 发送订阅地址邮件
+ * @param string $email 邮箱地址
+ * @param string $username 用户名
+ * @param string $mobileUrl 通用订阅地址
+ * @param string $clashUrl Clash专用地址
+ * @param int $expireTime 到期时间戳
+ * @param bool $useQueue 是否使用邮件队列，默认true
+ * @return bool 发送结果
+ */
+function send_subscription_email($email, $username, $mobileUrl, $clashUrl, $expireTime = null, $useQueue = true)
+{
+    try {
+        // 引入邮件模板类
+        require_once dirname(__FILE__) . '/EmailTemplate.class.php';
+        // 生成邮件内容
+        $emailContent = EmailTemplate::getSubscriptionTemplate($username, $mobileUrl, $clashUrl, $expireTime);
+        // 发送邮件
+        return send_mail($email, '订阅地址通知', $emailContent, $useQueue, 'subscription');
+    } catch (Exception $e) {
+        error_log('发送订阅邮件失败: ' . $e->getMessage());
+        return false;
     }
-    // 自定义函数：检查密码是否需要重新哈希（用于升级旧密码）
-    function check_password_needs_rehash($hash) {
-        return password_needs_rehash($hash, PASSWORD_DEFAULT, ['cost' => 12]);
+}
+/**
+ * 发送激活邮件
+ * @param string $email 邮箱地址
+ * @param string $username 用户名
+ * @param string $activationLink 激活链接
+ * @param bool $useQueue 是否使用邮件队列，默认true
+ * @return bool 发送结果
+ */
+function send_activation_email($email, $username, $activationLink, $useQueue = true)
+{
+    try {
+        // 引入邮件模板类
+        require_once dirname(__FILE__) . '/EmailTemplate.class.php';
+        // 生成邮件内容
+        $emailContent = EmailTemplate::getActivationTemplate($username, $activationLink);
+        // 发送邮件
+        return send_mail($email, '账户激活', $emailContent, $useQueue, 'activation');
+    } catch (Exception $e) {
+        error_log('发送激活邮件失败: ' . $e->getMessage());
+        return false;
     }
-    /**
-     * 发送订阅地址邮件
-     * @param string $email 邮箱地址
-     * @param string $username 用户名
-     * @param string $mobileUrl 通用订阅地址
-     * @param string $clashUrl Clash专用地址
-     * @param int $expireTime 到期时间戳
-     * @param bool $useQueue 是否使用邮件队列，默认true
-     * @return bool 发送结果
-     */
-    function send_subscription_email($email, $username, $mobileUrl, $clashUrl, $expireTime = null, $useQueue = true) {
-        try {
-            // 引入邮件模板类
-            require_once dirname(__FILE__) . '/EmailTemplate.class.php';
-            // 生成邮件内容
-            $emailContent = EmailTemplate::getSubscriptionTemplate($username, $mobileUrl, $clashUrl, $expireTime);
-            // 发送邮件
-            return send_mail($email, '订阅地址通知', $emailContent, $useQueue, 'subscription');
-        } catch (Exception $e) {
-            error_log('发送订阅邮件失败: ' . $e->getMessage());
-            return false;
-        }
+}
+/**
+ * 发送到期提醒邮件
+ * @param string $email 邮箱地址
+ * @param string $username 用户名
+ * @param int $expireTime 到期时间戳
+ * @param bool $isExpired 是否已到期
+ * @param bool $useQueue 是否使用邮件队列，默认true
+ * @return bool 发送结果
+ */
+function send_expiration_email($email, $username, $expireTime, $isExpired = false, $useQueue = true)
+{
+    try {
+        // 引入邮件模板类
+        require_once dirname(__FILE__) . '/EmailTemplate.class.php';
+        // 生成邮件内容
+        $emailContent = EmailTemplate::getExpirationTemplate($username, $expireTime, $isExpired);
+        // 发送邮件
+        $subject = $isExpired ? '订阅已到期' : '订阅即将到期';
+        $emailType = $isExpired ? 'expired' : 'expiring';
+        return send_mail($email, $subject, $emailContent, $useQueue, $emailType);
+    } catch (Exception $e) {
+        error_log('发送到期提醒邮件失败: ' . $e->getMessage());
+        return false;
     }
-    /**
-     * 发送激活邮件
-     * @param string $email 邮箱地址
-     * @param string $username 用户名
-     * @param string $activationLink 激活链接
-     * @param bool $useQueue 是否使用邮件队列，默认true
-     * @return bool 发送结果
-     */
-    function send_activation_email($email, $username, $activationLink, $useQueue = true) {
-        try {
-            // 引入邮件模板类
-            require_once dirname(__FILE__) . '/EmailTemplate.class.php';
-            // 生成邮件内容
-            $emailContent = EmailTemplate::getActivationTemplate($username, $activationLink);
-            // 发送邮件
-            return send_mail($email, '账户激活', $emailContent, $useQueue, 'activation');
-        } catch (Exception $e) {
-            error_log('发送激活邮件失败: ' . $e->getMessage());
-            return false;
-        }
-    }
-    /**
-     * 发送到期提醒邮件
-     * @param string $email 邮箱地址
-     * @param string $username 用户名
-     * @param int $expireTime 到期时间戳
-     * @param bool $isExpired 是否已到期
-     * @param bool $useQueue 是否使用邮件队列，默认true
-     * @return bool 发送结果
-     */
-    function send_expiration_email($email, $username, $expireTime, $isExpired = false, $useQueue = true) {
-        try {
-            // 引入邮件模板类
-            require_once dirname(__FILE__) . '/EmailTemplate.class.php';
-            // 生成邮件内容
-            $emailContent = EmailTemplate::getExpirationTemplate($username, $expireTime, $isExpired);
-            // 发送邮件
-            $subject = $isExpired ? '订阅已到期' : '订阅即将到期';
-            $emailType = $isExpired ? 'expired' : 'expiring';
-            return send_mail($email, $subject, $emailContent, $useQueue, $emailType);
-        } catch (Exception $e) {
-            error_log('发送到期提醒邮件失败: ' . $e->getMessage());
-            return false;
-        }
-    }
-    /**
-     * 发送订单通知邮件
-     * @param array $config 配置信息
-     * @param string $orderNo 订单号
-     * @param string $planName 套餐名称
-     * @param float $price 价格
-     * @param string $duration 时长
-     * @param string $status 状态
-     * @param bool $useQueue 是否使用邮件队列，默认true
-     * @param bool $isAdmin 是否为管理员邮件，默认false
-     * @return bool 发送结果
-     */
-    function send_order_email($config, $orderNo, $planName, $price, $duration, $status = '已支付', $useQueue = true, $isAdmin = false) {
-        try {
-            // 引入邮件模板类
-            require_once dirname(__FILE__) . '/EmailTemplate.class.php';
-            // 获取用户信息
-            $username = isset($config['username']) ? $config['username'] : '';
-            $mobileUrl = '';
-            $clashUrl = '';
-            $expireDate = '';
-            // 如果有用户名，获取订阅信息
-            if ($username && function_exists('M')) {
-                $subscription = M('ShortDingyue')->where(['qq' => $username])->find();
-                if ($subscription) {
-                    // 生成两个订阅地址
-                    $mobileUrl = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/' . $subscription['mobileshorturl'];
-                    $clashUrl = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/' . $subscription['clashshorturl'];
-                    // 获取到期时间
-                    if ($subscription['endtime'] > 0) {
-                        $expireDate = date('Y年m月d日 H:i:s', $subscription['endtime']);
-                    }
+}
+/**
+ * 发送订单通知邮件
+ * @param array $config 配置信息
+ * @param string $orderNo 订单号
+ * @param string $planName 套餐名称
+ * @param float $price 价格
+ * @param string $duration 时长
+ * @param string $status 状态
+ * @param bool $useQueue 是否使用邮件队列，默认true
+ * @param bool $isAdmin 是否为管理员邮件，默认false
+ * @return bool 发送结果
+ */
+function send_order_email($config, $orderNo, $planName, $price, $duration, $status = '已支付', $useQueue = true, $isAdmin = false)
+{
+    try {
+        // 引入邮件模板类
+        require_once dirname(__FILE__) . '/EmailTemplate.class.php';
+        // 获取用户信息
+        $username = isset($config['username']) ? $config['username'] : '';
+        $mobileUrl = '';
+        $clashUrl = '';
+        $expireDate = '';
+        // 如果有用户名，获取订阅信息
+        if ($username && function_exists('M')) {
+            $subscription = M('ShortDingyue')->where(['qq' => $username])->find();
+            if ($subscription) {
+                // 生成两个订阅地址
+                $mobileUrl = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/' . $subscription['mobileshorturl'];
+                $clashUrl = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . '/' . $subscription['clashshorturl'];
+                // 获取到期时间
+                if ($subscription['endtime'] > 0) {
+                    $expireDate = date('Y年m月d日 H:i:s', $subscription['endtime']);
                 }
             }
-            // 生成邮件内容
-            $emailContent = EmailTemplate::getOrderTemplate($orderNo, $planName, $price, $duration, $status, $username, $mobileUrl, $clashUrl, $expireDate, $isAdmin);
-            // 获取用户邮箱（从配置或其他地方获取）
-            $email = isset($config['email']) ? $config['email'] : $config['qq'] . '@qq.com';
-            // 发送邮件
-            $subject = $isAdmin ? '新订单通知' : '订单支付成功通知';
-            return send_mail($email, $subject, $emailContent, $useQueue, 'order');
-        } catch (Exception $e) {
-            error_log('发送订单邮件失败: ' . $e->getMessage());
-            return false;
         }
+        // 生成邮件内容
+        $emailContent = EmailTemplate::getOrderTemplate($orderNo, $planName, $price, $duration, $status, $username, $mobileUrl, $clashUrl, $expireDate, $isAdmin);
+        // 获取用户邮箱（从配置或其他地方获取）
+        $email = isset($config['email']) ? $config['email'] : $config['qq'] . '@qq.com';
+        // 发送邮件
+        $subject = $isAdmin ? '新订单通知' : '订单支付成功通知';
+        return send_mail($email, $subject, $emailContent, $useQueue, 'order');
+    } catch (Exception $e) {
+        error_log('发送订单邮件失败: ' . $e->getMessage());
+        return false;
     }
-    /**
-     * 发送密码重置邮件
-     * @param string $email 邮箱地址
-     * @param string $username 用户名
-     * @param string $resetLink 重置链接
-     * @param bool $useQueue 是否使用邮件队列，默认true
-     * @return bool 发送结果
-     */
-    function send_password_reset_email($email, $username, $resetLink, $useQueue = true) {
-        try {
-            // 引入邮件模板类
-            require_once dirname(__FILE__) . '/EmailTemplate.class.php';
-            // 生成邮件内容
-            $emailContent = EmailTemplate::getPasswordResetTemplate($username, $resetLink);
-            // 发送邮件
-            return send_mail($email, '密码重置', $emailContent, $useQueue, 'password_reset');
-        } catch (Exception $e) {
-            error_log('发送密码重置邮件失败: ' . $e->getMessage());
-            return false;
-        }
+}
+/**
+ * 发送密码重置邮件
+ * @param string $email 邮箱地址
+ * @param string $username 用户名
+ * @param string $resetLink 重置链接
+ * @param bool $useQueue 是否使用邮件队列，默认true
+ * @return bool 发送结果
+ */
+/**
+ * 发送邮箱验证码
+ * @param string $email 邮箱地址
+ * @param string $username 用户名
+ * @param string $code 6位验证码
+ * @param string $purpose 用途描述（注册/找回密码）
+ * @return bool
+ */
+function send_verify_code_email($email, $username, $code, $purpose = '注册')
+{
+    try {
+        require_once dirname(__FILE__) . '/EmailTemplate.class.php';
+        $emailContent = EmailTemplate::getVerifyCodeTemplate($username, $code, $purpose);
+        return send_mail($email, '验证码 - ' . $purpose, $emailContent, false, 'verify_code');
+    } catch (Exception $e) {
+        error_log('发送验证码邮件失败: ' . $e->getMessage());
+        return false;
     }
-    /**
-     * 通用邮件发送函数
-     * @param string $to 收件人邮箱
-     * @param string $subject 邮件主题
-     * @param string $body 邮件内容（HTML格式）
-     * @param bool $useQueue 是否使用邮件队列，默认true
-     * @param string $emailType 邮件类型
-     * @param int $priority 优先级（1-5，1最高）
-     * @return bool 发送结果
-     */
-    function send_mail($to, $subject, $body, $useQueue = true, $emailType = 'general', $priority = 3) {
-        if ($useQueue) {
-            // Log::record("Queuing email to {$to}, Subject: {$subject}", Log::INFO);
-            // 引入邮件队列类
-            require_once dirname(__FILE__) . '/EmailQueue.class.php';
-            $emailQueue = new EmailQueue();
-            return $emailQueue->addToQueue($to, $subject, $body, $emailType, $priority);
-        }
-        // 直接发送模式（原有逻辑）
-        $result = send_mail_direct($to, $subject, $body);
-        // 记录发送结果
+}
+
+function send_password_reset_email($email, $username, $resetLink, $useQueue = true)
+{
+    try {
+        // 引入邮件模板类
+        require_once dirname(__FILE__) . '/EmailTemplate.class.php';
+        // 生成邮件内容
+        $emailContent = EmailTemplate::getPasswordResetTemplate($username, $resetLink);
+        // 发送邮件
+        return send_mail($email, '密码重置', $emailContent, $useQueue, 'password_reset');
+    } catch (Exception $e) {
+        error_log('发送密码重置邮件失败: ' . $e->getMessage());
+        return false;
+    }
+}
+/**
+ * 通用邮件发送函数
+ * @param string $to 收件人邮箱
+ * @param string $subject 邮件主题
+ * @param string $body 邮件内容（HTML格式）
+ * @param bool $useQueue 是否使用邮件队列，默认true
+ * @param string $emailType 邮件类型
+ * @param int $priority 优先级（1-5，1最高）
+ * @return bool 发送结果
+ */
+function send_mail($to, $subject, $body, $useQueue = true, $emailType = 'general', $priority = 3)
+{
+    if ($useQueue) {
+        // Log::record("Queuing email to {$to}, Subject: {$subject}", Log::INFO);
+        // 引入邮件队列类
+        require_once dirname(__FILE__) . '/EmailQueue.class.php';
+        $emailQueue = new EmailQueue();
+        return $emailQueue->addToQueue($to, $subject, $body, $emailType, $priority);
+    }
+    // 直接发送模式（原有逻辑）
+    $result = send_mail_direct($to, $subject, $body);
+    // 记录发送结果
+    $logFile = dirname(dirname(__DIR__)) . '/Runtime/Logs/email_queue.log';
+    file_put_contents($logFile, "[send_mail] 直接发送结果: " . ($result ? '成功' : '失败') . " - To: {$to}, Subject: {$subject}\n", FILE_APPEND);
+    return $result;
+}
+/**
+ * 直接发送邮件函数（不使用队列）
+ * @param string $to 收件人邮箱
+ * @param string $subject 邮件主题
+ * @param string $body 邮件内容（HTML格式）
+ * @return bool 发送结果
+ */
+function send_mail_direct($to, $subject, $body)
+{
+    try {
+        // 日志文件路径
         $logFile = dirname(dirname(__DIR__)) . '/Runtime/Logs/email_queue.log';
-        file_put_contents($logFile, "[send_mail] 直接发送结果: " . ($result ? '成功' : '失败') . " - To: {$to}, Subject: {$subject}\n", FILE_APPEND);
-        return $result;
-    }
-    /**
-     * 直接发送邮件函数（不使用队列）
-     * @param string $to 收件人邮箱
-     * @param string $subject 邮件主题
-     * @param string $body 邮件内容（HTML格式）
-     * @return bool 发送结果
-     */
-    function send_mail_direct($to, $subject, $body) {
+        // 优先从.env文件读取邮件配置，如果没有则从config.php读取
+        $smtpHost = env('EMAIL_SMTP') ?: env('MAIL_HOST');
+        $smtpPort = env('EMAIL_PORT') ?: env('MAIL_PORT');
+        $smtpUser = env('EMAIL_USERNAME') ?: env('MAIL_USER');
+        $smtpPass = env('EMAIL_PASSWORD') ?: env('MAIL_PASS');
+        $smtpSecure = env('EMAIL_SMTP_SECURE') ?: env('MAIL_SECURE');
+        $fromName = env('EMAIL_FROM_NAME') ?: '订阅服务';
+        // 记录SMTP配置信息
+        file_put_contents($logFile, "[send_mail_direct] start\n", FILE_APPEND);
+        file_put_contents($logFile, "[send_mail_direct] SMTP Host: " . var_export($smtpHost, true) . "\n", FILE_APPEND);
+        file_put_contents($logFile, "[send_mail_direct] SMTP User: " . var_export($smtpUser, true) . "\n", FILE_APPEND);
+        file_put_contents($logFile, "[send_mail_direct] SMTP Pass: " . var_export($smtpPass, true) . "\n", FILE_APPEND);
+        file_put_contents($logFile, "[send_mail_direct] SMTP Port: " . var_export($smtpPort, true) . "\n", FILE_APPEND);
+        file_put_contents($logFile, "[send_mail_direct] SMTP Secure: " . var_export($smtpSecure, true) . "\n", FILE_APPEND);
+        file_put_contents($logFile, "[send_mail_direct] From Name: " . var_export($fromName, true) . "\n", FILE_APPEND);
+        file_put_contents($logFile, "[send_mail_direct] To: " . var_export($to, true) . "\n", FILE_APPEND);
+        file_put_contents($logFile, "[send_mail_direct] Subject: " . var_export($subject, true) . "\n", FILE_APPEND);
+        // 检查必要配置
+        if (empty($smtpHost) || empty($smtpUser) || empty($smtpPass)) {
+            file_put_contents($logFile, "[send_mail_direct] 邮件配置不完整\n", FILE_APPEND);
+            error_log('邮件配置不完整，请检查SMTP配置');
+            return false;
+        }
+        // 使用PHPMailer发送邮件
+        file_put_contents($logFile, "[send_mail_direct] 尝试加载PHPMailer\n", FILE_APPEND);
+        // 使用最可靠的方式构建 Vendor 路径
+        $vendor_path_prefix = dirname(dirname(dirname(__DIR__))) . '/ThinkPHP/Library/Vendor/';
+        $exception_path = $vendor_path_prefix . 'PHPMailer/Exception.php';
+        file_put_contents($logFile, "[send_mail_direct] Checking for Exception.php at: " . $exception_path . "\n", FILE_APPEND);
+        file_put_contents($logFile, "[send_mail_direct] Exception.php exists: " . (file_exists($exception_path) ? 'Yes' : 'No') . "\n", FILE_APPEND);
+        require_once $exception_path;
+        file_put_contents($logFile, "[send_mail_direct] Loaded Exception.php\n", FILE_APPEND);
+        $phpmailer_path = $vendor_path_prefix . 'PHPMailer/PHPMailer.php';
+        file_put_contents($logFile, "[send_mail_direct] Checking for PHPMailer.php at: " . $phpmailer_path . "\n", FILE_APPEND);
+        file_put_contents($logFile, "[send_mail_direct] PHPMailer.php exists: " . (file_exists($phpmailer_path) ? 'Yes' : 'No') . "\n", FILE_APPEND);
+        require_once $phpmailer_path;
+        file_put_contents($logFile, "[send_mail_direct] Loaded PHPMailer.php\n", FILE_APPEND);
+        $smtp_path = $vendor_path_prefix . 'PHPMailer/SMTP.php';
+        file_put_contents($logFile, "[send_mail_direct] Checking for SMTP.php at: " . $smtp_path . "\n", FILE_APPEND);
+        file_put_contents($logFile, "[send_mail_direct] SMTP.php exists: " . (file_exists($smtp_path) ? 'Yes' : 'No') . "\n", FILE_APPEND);
+        require_once $smtp_path;
+        file_put_contents($logFile, "[send_mail_direct] Loaded SMTP.php\n", FILE_APPEND);
+        file_put_contents($logFile, "[send_mail_direct] All PHPMailer files loaded. Creating instance.\n", FILE_APPEND);
+        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+        file_put_contents($logFile, "[send_mail_direct] PHPMailer instance created.\n", FILE_APPEND);
+        // SMTP配置
+        $mail->isSMTP();
+        $mail->Host = $smtpHost;
+        $mail->Port = intval($smtpPort);
+        $mail->SMTPAuth = true;
+        $mail->Username = $smtpUser;
+        $mail->Password = $smtpPass;
+        $mail->SMTPSecure = $smtpSecure;
+        $mail->CharSet = 'UTF-8';
+        // 发件人和收件人
+        $mail->setFrom($smtpUser, $fromName);
+        $mail->addAddress($to);
+        // 邮件内容
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body = $body;
+        // 发送邮件
         try {
-            // 日志文件路径
-            $logFile = dirname(dirname(__DIR__)) . '/Runtime/Logs/email_queue.log';
-            // 优先从.env文件读取邮件配置，如果没有则从config.php读取
-                $smtpHost = env('EMAIL_SMTP') ?: env('MAIL_HOST');
-    $smtpPort = env('EMAIL_PORT') ?: env('MAIL_PORT');
-    $smtpUser = env('EMAIL_USERNAME') ?: env('MAIL_USER');
-    $smtpPass = env('EMAIL_PASSWORD') ?: env('MAIL_PASS');
-    $smtpSecure = env('EMAIL_SMTP_SECURE') ?: env('MAIL_SECURE');
-    $fromName = env('EMAIL_FROM_NAME') ?: '订阅服务';
-            // 记录SMTP配置信息
-            file_put_contents($logFile, "[send_mail_direct] start\n", FILE_APPEND);
-            file_put_contents($logFile, "[send_mail_direct] SMTP Host: " . var_export($smtpHost, true) . "\n", FILE_APPEND);
-            file_put_contents($logFile, "[send_mail_direct] SMTP User: " . var_export($smtpUser, true) . "\n", FILE_APPEND);
-            file_put_contents($logFile, "[send_mail_direct] SMTP Pass: " . var_export($smtpPass, true) . "\n", FILE_APPEND);
-            file_put_contents($logFile, "[send_mail_direct] SMTP Port: " . var_export($smtpPort, true) . "\n", FILE_APPEND);
-            file_put_contents($logFile, "[send_mail_direct] SMTP Secure: " . var_export($smtpSecure, true) . "\n", FILE_APPEND);
-            file_put_contents($logFile, "[send_mail_direct] From Name: " . var_export($fromName, true) . "\n", FILE_APPEND);
-            file_put_contents($logFile, "[send_mail_direct] To: " . var_export($to, true) . "\n", FILE_APPEND);
-            file_put_contents($logFile, "[send_mail_direct] Subject: " . var_export($subject, true) . "\n", FILE_APPEND);
-            // 检查必要配置
-            if (empty($smtpHost) || empty($smtpUser) || empty($smtpPass)) {
-                file_put_contents($logFile, "[send_mail_direct] 邮件配置不完整\n", FILE_APPEND);
-                error_log('邮件配置不完整，请检查SMTP配置');
-                return false;
+            $result = $mail->send();
+            file_put_contents($logFile, "[send_mail_direct] send result: " . var_export($result, true) . "\n", FILE_APPEND);
+            if ($result) {
+                file_put_contents($logFile, "[send_mail_direct] 邮件发送成功: $to\n", FILE_APPEND);
+            } else {
+                file_put_contents($logFile, "[send_mail_direct] 邮件发送失败: " . $mail->ErrorInfo . "\n", FILE_APPEND);
             }
-            // 使用PHPMailer发送邮件
-            file_put_contents($logFile, "[send_mail_direct] 尝试加载PHPMailer\n", FILE_APPEND);
-            // 使用最可靠的方式构建 Vendor 路径
-            $vendor_path_prefix = dirname(dirname(dirname(__DIR__))) . '/ThinkPHP/Library/Vendor/';
-            $exception_path = $vendor_path_prefix . 'PHPMailer/Exception.php';
-            file_put_contents($logFile, "[send_mail_direct] Checking for Exception.php at: " . $exception_path . "\n", FILE_APPEND);
-            file_put_contents($logFile, "[send_mail_direct] Exception.php exists: " . (file_exists($exception_path) ? 'Yes' : 'No') . "\n", FILE_APPEND);
-            require_once $exception_path;
-            file_put_contents($logFile, "[send_mail_direct] Loaded Exception.php\n", FILE_APPEND);
-            $phpmailer_path = $vendor_path_prefix . 'PHPMailer/PHPMailer.php';
-            file_put_contents($logFile, "[send_mail_direct] Checking for PHPMailer.php at: " . $phpmailer_path . "\n", FILE_APPEND);
-            file_put_contents($logFile, "[send_mail_direct] PHPMailer.php exists: " . (file_exists($phpmailer_path) ? 'Yes' : 'No') . "\n", FILE_APPEND);
-            require_once $phpmailer_path;
-            file_put_contents($logFile, "[send_mail_direct] Loaded PHPMailer.php\n", FILE_APPEND);
-            $smtp_path = $vendor_path_prefix . 'PHPMailer/SMTP.php';
-            file_put_contents($logFile, "[send_mail_direct] Checking for SMTP.php at: " . $smtp_path . "\n", FILE_APPEND);
-            file_put_contents($logFile, "[send_mail_direct] SMTP.php exists: " . (file_exists($smtp_path) ? 'Yes' : 'No') . "\n", FILE_APPEND);
-            require_once $smtp_path;
-            file_put_contents($logFile, "[send_mail_direct] Loaded SMTP.php\n", FILE_APPEND);
-            file_put_contents($logFile, "[send_mail_direct] All PHPMailer files loaded. Creating instance.\n", FILE_APPEND);
-            $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-            file_put_contents($logFile, "[send_mail_direct] PHPMailer instance created.\n", FILE_APPEND);
-            // SMTP配置
-            $mail->isSMTP();
-            $mail->Host = $smtpHost;
-            $mail->Port = intval($smtpPort);
-            $mail->SMTPAuth = true;
-            $mail->Username = $smtpUser;
-            $mail->Password = $smtpPass;
-            $mail->SMTPSecure = $smtpSecure;
-            $mail->CharSet = 'UTF-8';
-            // 发件人和收件人
-            $mail->setFrom($smtpUser, $fromName);
-            $mail->addAddress($to);
-            // 邮件内容
-            $mail->isHTML(true);
-            $mail->Subject = $subject;
-            $mail->Body = $body;
-            // 发送邮件
-            try {
-                $result = $mail->send();
-                file_put_contents($logFile, "[send_mail_direct] send result: " . var_export($result, true) . "\n", FILE_APPEND);
-                if ($result) {
-                    file_put_contents($logFile, "[send_mail_direct] 邮件发送成功: $to\n", FILE_APPEND);
-                } else {
-                    file_put_contents($logFile, "[send_mail_direct] 邮件发送失败: " . $mail->ErrorInfo . "\n", FILE_APPEND);
-                }
-                return $result;
-            } catch (\Exception $e) {
-                file_put_contents($logFile, "[send_mail_direct] PHPMailer异常: " . $e->getMessage() . "\n", FILE_APPEND);
-                error_log('邮件发送异常: ' . $e->getMessage());
-                return false;
-            }
+            return $result;
         } catch (\Exception $e) {
-            $logFile = dirname(dirname(__DIR__)) . '/Runtime/Logs/email_queue.log';
-            file_put_contents($logFile, "[send_mail_direct] 全局异常: " . $e->getMessage() . "\n", FILE_APPEND);
+            file_put_contents($logFile, "[send_mail_direct] PHPMailer异常: " . $e->getMessage() . "\n", FILE_APPEND);
             error_log('邮件发送异常: ' . $e->getMessage());
             return false;
         }
+    } catch (\Exception $e) {
+        $logFile = dirname(dirname(__DIR__)) . '/Runtime/Logs/email_queue.log';
+        file_put_contents($logFile, "[send_mail_direct] 全局异常: " . $e->getMessage() . "\n", FILE_APPEND);
+        error_log('邮件发送异常: ' . $e->getMessage());
+        return false;
     }
-    /**
-     * 记录操作日志
-     * @param string $action 操作类型
-     * @param string $message 日志消息
-     * @param string $operator 操作者
-     * @return bool
-     */
-    function write_action_log($action, $message, $operator = '') {
-        try {
-            $logData = [
-                'action' => $action,
-                'message' => $message,
-                'operator' => $operator,
-                'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
-                'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
-                'create_time' => time()
-            ];
-                    // 如果存在action_log表，则记录到数据库
+}
+/**
+ * 记录操作日志
+ * @param string $action 操作类型
+ * @param string $message 日志消息
+ * @param string $operator 操作者
+ * @return bool
+ */
+function write_action_log($action, $message, $operator = '')
+{
+    try {
+        $logData = [
+            'action' => $action,
+            'message' => $message,
+            'operator' => $operator,
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+            'create_time' => time()
+        ];
+        // 如果存在action_log表，则记录到数据库
         if (function_exists('M') && M('action_log', '', true)) {
             M('action_log')->add($logData);
         }
-            // 同时记录到文件日志
-            $logMessage = sprintf(
-                "[%s] Action: %s, Message: %s, Operator: %s, IP: %s\n",
-                date('Y-m-d H:i:s'),
-                $action,
-                $message,
-                $operator,
-                $logData['ip']
-            );
-            $logFile = dirname(dirname(__DIR__)) . '/Runtime/Logs/action.log';
-            file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
-            return true;
-        } catch (Exception $e) {
-            error_log('write_action_log error: ' . $e->getMessage());
-            return false;
-        }
+        // 同时记录到文件日志
+        $logMessage = sprintf(
+            "[%s] Action: %s, Message: %s, Operator: %s, IP: %s\n",
+            date('Y-m-d H:i:s'),
+            $action,
+            $message,
+            $operator,
+            $logData['ip']
+        );
+        $logFile = dirname(dirname(__DIR__)) . '/Runtime/Logs/action.log';
+        file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
+        return true;
+    } catch (Exception $e) {
+        error_log('write_action_log error: ' . $e->getMessage());
+        return false;
     }
-    /**
+}
+/**
  * 获取iOS版本名称
  * @param float $darwinVersion Darwin版本号
  * @return string iOS版本名称
  */
-function get_ios_version_name($darwinVersion) {
+function get_ios_version_name($darwinVersion)
+{
     // Darwin版本到iOS版本的精确映射（修正版）
     $versionMap = [
         25.0 => 'iOS18.0',
@@ -1694,7 +1780,8 @@ function get_ios_version_name($darwinVersion) {
  * @param string $androidVersion Android版本号
  * @return string Android版本名称
  */
-function get_android_version_name($androidVersion) {
+function get_android_version_name($androidVersion)
+{
     $versionMap = [
         '14' => 'Android14',
         '13' => 'Android13',
@@ -1716,7 +1803,8 @@ function get_android_version_name($androidVersion) {
  * @param string $windowsVersion Windows版本号
  * @return string Windows版本名称
  */
-function get_windows_version_name($windowsVersion) {
+function get_windows_version_name($windowsVersion)
+{
     $versionMap = [
         '10.0' => 'Windows10',
         '6.3' => 'Windows8.1',
@@ -1735,7 +1823,8 @@ function get_windows_version_name($windowsVersion) {
  * @param string $macVersion macOS版本号
  * @return string macOS版本名称
  */
-function get_macos_version_name($macVersion) {
+function get_macos_version_name($macVersion)
+{
     $versionMap = [
         '14' => 'macOS14_Sonoma',
         '13' => 'macOS13_Ventura',
@@ -1756,7 +1845,8 @@ function get_macos_version_name($macVersion) {
  * @param string $deviceIdentifier 设备标识符 (如 "iPhone17,2")
  * @return string 设备名称
  */
-function get_ios_device_name($deviceIdentifier) {
+function get_ios_device_name($deviceIdentifier)
+{
     // iOS设备标识符到设备名称的映射
     $deviceMap = [
         // iPhone 17系列
@@ -1882,7 +1972,8 @@ function get_ios_device_name($deviceIdentifier) {
  * @param string $ua User-Agent字符串
  * @return string 设备名称
  */
-function get_android_device_name($ua) {
+function get_android_device_name($ua)
+{
     // 华为设备识别
     if (preg_match('/HUAWEI|HONOR/i', $ua)) {
         if (preg_match('/HUAWEI\s+([^;\s]+)/i', $ua, $matches)) {
@@ -1957,7 +2048,8 @@ function get_android_device_name($ua) {
  * @param string $ua User-Agent字符串
  * @return string 设备名称
  */
-function get_computer_device_name($ua) {
+function get_computer_device_name($ua)
+{
     // Windows设备识别
     if (preg_match('/Windows NT/i', $ua)) {
         if (preg_match('/Windows NT (\d+\.\d+)/i', $ua, $matches)) {
@@ -1996,7 +2088,8 @@ function get_computer_device_name($ua) {
  * @param string $ua 原始User-Agent字符串
  * @return string 标准化后的设备标识
  */
-function parse_and_normalize_ua($ua) {
+function parse_and_normalize_ua($ua)
+{
     if (empty($ua) || $ua === null) {
         return 'Unknown';
     }
@@ -2009,7 +2102,7 @@ function parse_and_normalize_ua($ua) {
     if (preg_match('/Shadowrocket|Clash|V2ray|Quantumult|Surge|Loon/i', $ua)) {
         $deviceModel = '';
         $systemVersion = '';
-        
+
         // 处理自定义格式：Shadowrocket_iPhone17,2_iOS17.0（需要转换设备标识符）
         if (preg_match('/^Shadowrocket_(iPhone\d+,\d+)_(iOS\d+\.\d+)$/i', $ua, $customMatches)) {
             $deviceIdentifier = $customMatches[1];
@@ -2019,12 +2112,12 @@ function parse_and_normalize_ua($ua) {
                 return $deviceModel . '_' . $systemVersion;
             }
         }
-        
+
         // 处理自定义格式：Shadowrocket_iPhone12ProMax_iOS17.0
         if (preg_match('/^Shadowrocket_(iPhone[^_]+)_(iOS\d+\.\d+)$/i', $ua, $customMatches)) {
             return $customMatches[1] . '_' . $customMatches[2];
         }
-        
+
         // iOS设备识别（iPhone/iPad/iPod）
         if (preg_match('/iPhone(\d+,\d+)/i', $ua, $deviceMatches)) {
             $deviceIdentifier = 'iPhone' . $deviceMatches[1];
@@ -2066,7 +2159,7 @@ function parse_and_normalize_ua($ua) {
     if (preg_match('/Shadowrocket/i', $ua)) {
         $deviceModel = '';
         $systemVersion = '';
-        
+
         // 处理自定义格式：Shadowrocket_iPhone17,2_iOS17.0（需要转换设备标识符）- 优先级更高
         if (preg_match('/^Shadowrocket_(iPhone\d+,\d+)_(iOS\d+\.\d+)$/i', $ua, $customMatches)) {
             $deviceIdentifier = $customMatches[1];
@@ -2076,12 +2169,12 @@ function parse_and_normalize_ua($ua) {
                 return $deviceModel . '_' . $systemVersion;
             }
         }
-        
+
         // 处理自定义格式：Shadowrocket_iPhone12ProMax_iOS17.0
         if (preg_match('/^Shadowrocket_(iPhone[^_]+)_(iOS\d+\.\d+)$/i', $ua, $customMatches)) {
             return $customMatches[1] . '_' . $customMatches[2];
         }
-        
+
         // 标准Shadowrocket格式识别
         if (preg_match('/Shadowrocket\/(\d+)/i', $ua, $matches)) {
             $version = $matches[1];
@@ -2126,19 +2219,19 @@ function parse_and_normalize_ua($ua) {
         $clashType = '';
         $deviceModel = '';
         $systemVersion = '';
-        
+
         if (preg_match('/ClashMetaForAndroid/i', $ua)) {
             $clashType = 'Android_Meta';
         } elseif (preg_match('/ClashforAndroid/i', $ua)) {
             $clashType = 'Android';
         }
-        
+
         $deviceModel = get_android_device_name($ua);
         // 提取Android版本
         if (preg_match('/Android (\d+)/i', $ua, $androidMatches)) {
             $systemVersion = get_android_version_name($androidMatches[1]);
         }
-        
+
         $normalizedUA = "Clash_{$clashType}";
         if (!empty($deviceModel)) {
             $normalizedUA .= "_{$deviceModel}";
@@ -2148,7 +2241,7 @@ function parse_and_normalize_ua($ua) {
         }
         return $normalizedUA;
     }
-    
+
     // 检查Windows Clash客户端
     if (preg_match('/ClashforWindows/i', $ua)) {
         // 提取版本号
@@ -2156,7 +2249,7 @@ function parse_and_normalize_ua($ua) {
         if (preg_match('/ClashforWindows\/([^\/\s]+)/i', $ua, $matches)) {
             $version = $matches[1];
         }
-        
+
         // 构建标准化UA
         $normalizedUA = "Clash_Windows_PC_电脑端";
         if (!empty($version)) {
@@ -2164,7 +2257,7 @@ function parse_and_normalize_ua($ua) {
         }
         return $normalizedUA;
     }
-    
+
     // 优先检查FlClash客户端
     if (preg_match('/FlClash/i', $ua)) {
         // 提取FlClash版本号
@@ -2172,13 +2265,13 @@ function parse_and_normalize_ua($ua) {
         if (preg_match('/FlClash\/v([^\/\s]+)/i', $ua, $matches)) {
             $version = $matches[1];
         }
-        
+
         // 提取平台信息
         $platform = '';
         if (preg_match('/Platform\/([^\/\s]+)/i', $ua, $matches)) {
             $platform = strtolower($matches[1]);
         }
-        
+
         // 构建FlClash标准化UA
         $normalizedUA = 'FlClash';
         if (!empty($version)) {
@@ -2189,13 +2282,13 @@ function parse_and_normalize_ua($ua) {
         }
         return $normalizedUA;
     }
-    
+
     // 检查其他Clash客户端（如Clash Meta等）
     if (preg_match('/Clash(?:Meta)?\/([^\/\s]+)/i', $ua, $matches)) {
         $clashType = '';
         $deviceModel = '';
         $systemVersion = '';
-        
+
         // 根据UA内容判断设备类型
         if (preg_match('/Android/i', $ua)) {
             $clashType = 'Android';
@@ -2213,7 +2306,7 @@ function parse_and_normalize_ua($ua) {
             // 默认情况下，如果无法确定设备类型，不进行标准化处理
             return $ua;
         }
-        
+
         $normalizedUA = "Clash_{$clashType}";
         if (!empty($deviceModel)) {
             $normalizedUA .= "_{$deviceModel}";
@@ -2287,7 +2380,7 @@ function parse_and_normalize_ua($ua) {
             }
             $v2rayType = 'Windows';
             $deviceModel = 'PC'; // 固定为PC，避免Unknown
-            
+
             // 构建标准化UA：v2rayN/版本号_Windows_PC
             if (!empty($version)) {
                 $normalizedUA = "v2rayN/{$version}_{$v2rayType}_{$deviceModel}";
@@ -2547,13 +2640,13 @@ function parse_and_normalize_ua($ua) {
             if (preg_match('/FlClash\/v([^\/\s]+)/i', $ua, $matches)) {
                 $version = $matches[1];
             }
-            
+
             // 提取平台信息
             $platform = '';
             if (preg_match('/Platform\/([^\/\s]+)/i', $ua, $matches)) {
                 $platform = strtolower($matches[1]);
             }
-            
+
             // 构建FlClash标准化UA
             $clientType = 'FlClash';
             if (!empty($version)) {
@@ -2575,12 +2668,12 @@ function parse_and_normalize_ua($ua) {
         } else {
             $clientType = 'HTTPClient';
         }
-        
+
         // 对于FlClash，直接返回已经构建好的标准化UA
         if (preg_match('/FlClash/i', $ua)) {
             return $clientType;
         }
-        
+
         $normalizedUA = $clientType;
         if (!empty($deviceModel)) {
             $normalizedUA .= "_{$deviceModel}";
@@ -2668,8 +2761,8 @@ function parse_and_normalize_ua($ua) {
         if (preg_match('/Go-http-client|curl|wget|HTTP-Client/i', $ua)) {
             $normalizedUA = "Sparkle_{$deviceModel}";
         } else {
-                            // 对于macOS系统，直接识别为macOS设备，不根据URL判断
-                $normalizedUA = $deviceModel;
+            // 对于macOS系统，直接识别为macOS设备，不根据URL判断
+            $normalizedUA = $deviceModel;
         }
         if (!empty($systemVersion)) {
             $normalizedUA .= "_{$systemVersion}";
@@ -2730,57 +2823,153 @@ function parse_and_normalize_ua($ua) {
     return 'Unknown';
 }
 
-    /**
-     * 生成设备指纹（用于设备识别）
-     * @param string $ua User-Agent字符串
-     * @param array $additionalHeaders 额外的HTTP头信息
-     * @return string 设备指纹
-     */
-    function generate_device_fingerprint($ua, $additionalHeaders = []) {
-        $normalizedUA = parse_and_normalize_ua($ua);
-        // 收集其他可用于设备识别的信息
+/**
+ * 生成设备指纹（用于设备识别）
+ * @param string $ua User-Agent字符串
+ * @param array $additionalHeaders 额外的HTTP头信息
+ * @return string 设备指纹
+ */
+function generate_device_fingerprint($ua, $additionalHeaders = [])
+{
+    $normalizedUA = parse_and_normalize_ua($ua);
+    // 收集其他可用于设备识别的信息
+    $fingerprintComponents = [
+        $normalizedUA,
+        $additionalHeaders['accept'] ?? '',
+        $additionalHeaders['accept_language'] ?? '',
+        $additionalHeaders['accept_encoding'] ?? '',
+        // 可以添加更多组件，如屏幕分辨率、时区等
+    ];
+    // 过滤空值并生成指纹
+    $fingerprintComponents = array_filter($fingerprintComponents);
+    return md5(implode('|', $fingerprintComponents));
+}
+/**
+ * 生成稳定的设备指纹（解决电脑设备重复UA问题）
+ * @param string $ua User-Agent字符串
+ * @param array $additionalHeaders 额外的HTTP头信息
+ * @param string $qq 用户QQ号（用于区分不同用户）
+ * @return string 稳定的设备指纹
+ */
+function generate_stable_device_fingerprint($ua, $additionalHeaders = [], $qq = '')
+{
+    $normalizedUA = parse_and_normalize_ua($ua);
+    // 对于电脑设备，添加更多稳定标识符
+    $isComputer = false;
+    if (preg_match('/Windows NT|Macintosh|Linux/i', $ua)) {
+        $isComputer = true;
+    }
+    // 特殊处理：某些客户端即使没有系统标识，也是电脑客户端
+    if (preg_match('/mihomo\.party|Sparkle|clash-verge|HiddifyNext|FlClash/i', $ua)) {
+        $isComputer = true;
+    }
+    if ($isComputer) {
+        // 电脑设备使用更稳定的指纹生成方式
         $fingerprintComponents = [
-            $normalizedUA,
-            $additionalHeaders['accept'] ?? '',
-            $additionalHeaders['accept_language'] ?? '',
-            $additionalHeaders['accept_encoding'] ?? '',
-            // 可以添加更多组件，如屏幕分辨率、时区等
+            'user' => $qq, // 添加用户标识
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? '', // 保留IP地址
+            // 移除HTTP头信息，因为它们可能因软件而异
+            // 只保留最稳定的标识符
         ];
-        // 过滤空值并生成指纹
-        $fingerprintComponents = array_filter($fingerprintComponents);
-        return md5(implode('|', $fingerprintComponents));
+        // 对于电脑设备，使用更长的哈希来减少冲突
+        $fingerprintString = implode('|', $fingerprintComponents);
+        return hash('sha256', $fingerprintString);
+    } else {
+        // 移动设备使用原有的指纹生成方式
+        return generate_device_fingerprint($ua, $additionalHeaders);
     }
-    /**
-     * 生成稳定的设备指纹（解决电脑设备重复UA问题）
-     * @param string $ua User-Agent字符串
-     * @param array $additionalHeaders 额外的HTTP头信息
-     * @param string $qq 用户QQ号（用于区分不同用户）
-     * @return string 稳定的设备指纹
-     */
-    function generate_stable_device_fingerprint($ua, $additionalHeaders = [], $qq = '') {
-        $normalizedUA = parse_and_normalize_ua($ua);
-        // 对于电脑设备，添加更多稳定标识符
-        $isComputer = false;
-        if (preg_match('/Windows NT|Macintosh|Linux/i', $ua)) {
-            $isComputer = true;
+}
+/**
+ * 更新 .env 文件内容
+ * @param array $data 需要更新的键值对数组
+ * @return bool
+ */
+function update_env_file($data = [])
+{
+    $envFile = dirname(dirname(dirname(__DIR__))) . '/.env';
+    if (!file_exists($envFile)) {
+        return false;
+    }
+
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES);
+    $newLines = [];
+    $keysFound = [];
+
+    foreach ($lines as $line) {
+        $trimmedLine = trim($line);
+        if (strpos($trimmedLine, '#') !== 0 && strpos($trimmedLine, '=') !== false) {
+            list($key, $value) = explode('=', $trimmedLine, 2);
+            $key = trim($key);
+            if (array_key_exists($key, $data)) {
+                $newLines[] = $key . '=' . $data[$key];
+                $keysFound[] = $key;
+                continue;
+            }
         }
-        // 特殊处理：某些客户端即使没有系统标识，也是电脑客户端
-        if (preg_match('/mihomo\.party|Sparkle|clash-verge|HiddifyNext|FlClash/i', $ua)) {
-            $isComputer = true;
+        $newLines[] = $line;
+    }
+
+    // 追加未找到的键
+    foreach ($data as $key => $value) {
+        if (!in_array($key, $keysFound)) {
+            $newLines[] = $key . '=' . $value;
         }
-        if ($isComputer) {
-            // 电脑设备使用更稳定的指纹生成方式
-            $fingerprintComponents = [
-                'user' => $qq, // 添加用户标识
-                'ip' => $_SERVER['REMOTE_ADDR'] ?? '', // 保留IP地址
-                // 移除HTTP头信息，因为它们可能因软件而异
-                // 只保留最稳定的标识符
-            ];
-            // 对于电脑设备，使用更长的哈希来减少冲突
-            $fingerprintString = implode('|', $fingerprintComponents);
-            return hash('sha256', $fingerprintString);
+    }
+
+    $content = implode("\n", $newLines) . "\n";
+    return file_put_contents($envFile, $content) !== false;
+}
+
+/**
+ * 同步支付宝配置
+ * 如果 .env 中有支付宝配置并且和数据库不同，则覆盖数据库
+ */
+function sync_alipay_config()
+{
+    $envAppId = env('ALIPAY_APP_ID', '');
+    $envPublicKey = env('ALIPAY_PUBLIC_KEY', '');
+    $envPrivateKey = env('ALIPAY_PRIVATE_KEY', '');
+    $envReturnUrl = env('ALIPAY_RETURN_URL', '');
+    $envNotifyUrl = env('ALIPAY_NOTIFY_URL', '');
+
+    if (!empty($envAppId) || !empty($envPublicKey) || !empty($envPrivateKey)) {
+        $dbConfig = M('paysite')->where(['pay_type' => 'zfb'])->find();
+
+        $needSync = false;
+        if (!$dbConfig) {
+            $needSync = true;
+            $dbConfig = ['pay_type' => 'zfb', 'status' => 1];
         } else {
-            // 移动设备使用原有的指纹生成方式
-            return generate_device_fingerprint($ua, $additionalHeaders);
+            if (
+                $dbConfig['app_id'] !== $envAppId ||
+                $dbConfig['alipay_public_key'] !== $envPublicKey ||
+                $dbConfig['merchant_private_key'] !== $envPrivateKey ||
+                (!empty($envReturnUrl) && $dbConfig['return_url'] !== $envReturnUrl) ||
+                (!empty($envNotifyUrl) && $dbConfig['notify_url'] !== $envNotifyUrl)
+            ) {
+                $needSync = true;
+            }
+        }
+
+        if ($needSync) {
+            $saveData = [
+                'app_id' => $envAppId,
+                'alipay_public_key' => $envPublicKey,
+                'merchant_private_key' => $envPrivateKey,
+            ];
+            if (!empty($envReturnUrl)) {
+                $saveData['return_url'] = $envReturnUrl;
+            }
+            if (!empty($envNotifyUrl)) {
+                $saveData['notify_url'] = $envNotifyUrl;
+            }
+            if (!isset($dbConfig['id'])) {
+                $saveData['pay_type'] = 'zfb';
+                $saveData['status'] = 1;
+                M('paysite')->add($saveData);
+            } else {
+                M('paysite')->where(['id' => $dbConfig['id']])->save($saveData);
+            }
         }
     }
+}

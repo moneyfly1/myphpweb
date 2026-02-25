@@ -640,7 +640,7 @@
                 </a>
             </li>
             <li class="breadcrumb-item">
-                <a href="{:U('Admin/Users/list')}">
+                <a href="{:U('Admin/Customer/list')}">
                     用户列表
                 </a>
             </li>
@@ -661,7 +661,7 @@
             后台管理
         </a>
         <div class="nav-separator">/</div>
-        <a href="{:U('Admin/Users/list')}" class="nav-item">
+        <a href="{:U('Admin/Customer/list')}" class="nav-item">
             用户列表
         </a>
         <div class="nav-separator">/</div>
@@ -676,10 +676,10 @@
                 <div class="d-flex justify-content-start">
                     <ul class="nav nav-tabs border-0">
                         <li class="nav-item">
-                            <a class="nav-link" href="{:U('Users/list')}">用户列表</a>
+                            <a class="nav-link" href="{:U('Customer/list')}">用户列表</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" href="{:U('Users/add')}">添加用户</a>
+                            <a class="nav-link active" href="{:U('Customer/add')}">添加用户</a>
                         </li>
                     </ul>
                 </div>
@@ -755,7 +755,7 @@
                                     添加用户
                                 </button>
                                 &nbsp; &nbsp; &nbsp;
-                                <a href="{:U('Users/list')}" class="btn">
+                                <a href="{:U('Customer/list')}" class="btn">
                                     <i class="icon-arrow-left bigger-110"></i>
                                     返回列表
                                 </a>
@@ -856,13 +856,13 @@
             submitBtn.prop('disabled', true).html('添加中...');
             
             $.ajax({
-                url: '{:U("Admin/Users/add")}',
+                url: '{:U("Admin/Customer/add")}',
                 type: 'POST',
                 data: formData,
                 success: function(response) {
                     if (response && (response.code === 0 || response.status === 'success' || response.success === true || response.status === 1)) {
                         showSuccessMessage('添加成功！');
-                        setTimeout(function() { window.location.href = '{:U("Admin/Users/list")}'; }, 1000);
+                        setTimeout(function() { window.location.href = '{:U("Admin/Customer/list")}'; }, 1000);
                     } else {
                         var msg = (response && (response.msg || response.message)) || '添加失败，请重试';
                         $('#error-message').find('span').text(msg).end().show();

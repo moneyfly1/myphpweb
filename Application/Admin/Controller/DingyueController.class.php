@@ -365,7 +365,7 @@ class DingyueController extends AdminBaseController{
 			}
 		}
 		if ($result) {
-			write_action_log('delete_user', "管理员删除了用户{$qq}", $_SESSION['user']['username'] ?? '');
+			write_action_log('delete_user', "管理员删除了用户{$qq}", $_SESSION['admin']['username'] ?? '');
 			$this->ajaxReturn(['status'=>1, 'info'=>'该账号下所有订阅、邮件、用户信息、日志、设备记录等信息已全部清除']);
 		}else{
 			$this->ajaxReturn(['status'=>0, 'info'=>'删除失败']);
@@ -421,7 +421,7 @@ class DingyueController extends AdminBaseController{
         }
         
 		if ($result) {
-			write_action_log('batch_delete', "管理员批量删除用户: ".implode(',', $qqList), $_SESSION['user']['username'] ?? '');
+			write_action_log('batch_delete', "管理员批量删除用户: ".implode(',', $qqList), $_SESSION['admin']['username'] ?? '');
 			$this->ajaxReturn(['status'=>1, 'info'=>'所选账号下所有订阅、邮件、用户信息、日志、设备记录等信息已全部清除']);
 		}else{
 			$this->ajaxReturn(['status'=>0, 'info'=>'批量删除失败']);
@@ -444,7 +444,7 @@ class DingyueController extends AdminBaseController{
 			    D('ShortDingyue')->editData(['id'=>$v['id']],$temp);
 			}
 		}
-		die('发送成功');
+		$this->ajaxReturn(['status'=>1,'info'=>'发送成功']);
 	}
 
 	public function allDisable(){
@@ -455,7 +455,7 @@ class DingyueController extends AdminBaseController{
 			$temp['status'] = 0;
 			D('ShortDingyue')->editData(['id'=>$v['id']],$temp);
 		}
-		die('禁用成功');
+		$this->ajaxReturn(['status'=>1,'info'=>'禁用成功']);
 	}
 
 
@@ -467,7 +467,7 @@ class DingyueController extends AdminBaseController{
 			$temp['status'] = 1;
 			D('ShortDingyue')->editData(['id'=>$v['id']],$temp);
 		}
-		die('启用成功');
+		$this->ajaxReturn(['status'=>1,'info'=>'启用成功']);
 	}
 
 	public function editTime(){

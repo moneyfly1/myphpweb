@@ -103,7 +103,7 @@ class CronController extends AdminBaseController {
             'duration' => $duration . 's',
             'status'   => $retval === 0 ? 'success' : 'failed',
             'output'   => mb_substr($outputStr, 0, 2000),
-            'operator' => $_SESSION['user']['username'],
+            'operator' => $_SESSION['admin']['username'],
         );
         file_put_contents($this->logFile(), json_encode($record, JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND);
 

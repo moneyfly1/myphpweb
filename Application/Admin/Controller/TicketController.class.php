@@ -71,7 +71,7 @@ class TicketController extends AdminBaseController {
             }
             $replyData = array(
                 'ticket_id'  => $id,
-                'user_id'    => $_SESSION['user']['id'],
+                'user_id'    => $_SESSION['admin']['id'],
                 'content'    => $content,
                 'is_admin'   => 1,
             );

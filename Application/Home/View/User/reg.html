@@ -361,6 +361,19 @@
         <p id="pwdError" class="reg-error-message"></p>
       </div>
       <div class="reg-form-group">
+        <label for="verify_code" class="reg-form-label">邮箱验证码</label>
+        <div class="reg-input-group" style="display:flex; gap:10px;">
+          <input id="verify_code" name="verify_code" type="text" maxlength="6" required
+                 placeholder="6位数字验证码" style="flex:1;">
+          <button type="button" id="sendCodeBtn" style="
+            flex-shrink:0; width:120px; border:none; border-radius:12px;
+            background: linear-gradient(135deg, var(--color-primary-hover) 0%, var(--color-primary-active) 100%);
+            color:#fff; font-size:14px; cursor:pointer; transition:all 0.3s ease;
+          ">发送验证码</button>
+        </div>
+        <p id="codeError" class="reg-error-message"></p>
+      </div>
+      <div class="reg-form-group">
         <button id="submitBtn" type="submit" class="reg-submit-button">
           注册
         </button>
@@ -374,7 +387,7 @@
   <!-- Loading Overlay -->
   <div id="loadingOverlay" class="reg-loading-overlay">
     <div class="reg-loader"></div>
-    <p class="reg-loading-text">正在注册，请检查您的 QQ 邮箱，点击激活链接进行激活</p>
+    <p class="reg-loading-text">正在注册，请稍候...</p>
   </div>
 </block>
 
@@ -383,11 +396,59 @@
     const form = document.getElementById('regForm');
     const overlay = document.getElementById('loadingOverlay');
     const submitBtn = document.getElementById('submitBtn');
+    const sendCodeBtn = document.getElementById('sendCodeBtn');
+
+    // 发送验证码 + 60秒倒计时
+    sendCodeBtn.addEventListener('click', function(){
+      var user = form.user.value.trim();
+      var userErrorEl = document.getElementById('userError');
+      if(!/^\d+$/.test(user)){
+        userErrorEl.textContent = '请先输入正确的QQ号码';
+        userErrorEl.classList.add('show');
+        return;
+      }
+      userErrorEl.classList.remove('show');
+      sendCodeBtn.disabled = true;
+      sendCodeBtn.textContent = '发送中...';
+      jQuery.ajax({
+        url: '/sendVerifyCode',
+        type: 'POST',
+        data: {user: user},
+        dataType: 'json',
+        success: function(res){
+          if(res.status == 1){
+            alert(res.msg || '验证码已发送');
+            var seconds = 60;
+            sendCodeBtn.textContent = seconds + '秒后重发';
+            var timer = setInterval(function(){
+              seconds--;
+              if(seconds <= 0){
+                clearInterval(timer);
+                sendCodeBtn.disabled = false;
+                sendCodeBtn.textContent = '发送验证码';
+              }else{
+                sendCodeBtn.textContent = seconds + '秒后重发';
+              }
+            }, 1000);
+          }else{
+            alert(res.msg || '发送失败');
+            sendCodeBtn.disabled = false;
+            sendCodeBtn.textContent = '发送验证码';
+          }
+        },
+        error: function(){
+          alert('发送失败，请重试');
+          sendCodeBtn.disabled = false;
+          sendCodeBtn.textContent = '发送验证码';
+        }
+      });
+    });
 
     function validate() {
       let valid = true;
       const user = form.user.value.trim();
       const pwd = form.pwd.value;
+      const code = form.verify_code.value.trim();
 
       const userErrorEl = document.getElementById('userError');
       if (!/^\d+$/.test(user)) {
@@ -405,6 +466,15 @@
         valid = false;
       } else {
         pwdErrorEl.classList.remove('show');
+      }
+
+      const codeErrorEl = document.getElementById('codeError');
+      if (!/^\d{6}$/.test(code)) {
+        codeErrorEl.textContent = '请输入6位数字验证码';
+        codeErrorEl.classList.add('show');
+        valid = false;
+      } else {
+        codeErrorEl.classList.remove('show');
       }
 
       return valid;

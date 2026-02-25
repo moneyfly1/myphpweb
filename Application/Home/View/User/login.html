@@ -19,6 +19,7 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
             box-shadow: none !important;
         }
+
         .site-header .header-inner a,
         .site-header .header-inner .logo,
         .site-header .header-inner span,
@@ -29,11 +30,13 @@
         .site-header .nav-toggle i {
             color: #ffffff !important;
         }
+
         .site-header .nav-mobile {
             background: rgba(22, 119, 255, 0.95) !important;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
+
         .site-header .nav-mobile a {
             color: #ffffff !important;
         }
@@ -44,6 +47,7 @@
             border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
             color: rgba(255, 255, 255, 0.8) !important;
         }
+
         .site-footer p {
             color: rgba(255, 255, 255, 0.8) !important;
         }
@@ -82,51 +86,43 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: repeating-linear-gradient(
-                90deg,
-                transparent,
-                transparent 98px,
-                rgba(255, 255, 255, 0.03) 100px
-            );
+            background: repeating-linear-gradient(90deg,
+                    transparent,
+                    transparent 98px,
+                    rgba(255, 255, 255, 0.03) 100px);
             z-index: 1;
         }
 
         .login-container {
             position: relative;
             z-index: 10;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 24px;
+            background: var(--color-bg-glass);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: var(--radius-2xl);
             padding: 3rem 2.5rem;
             width: 100%;
             max-width: 420px;
-            box-shadow:
-                0 8px 32px rgba(22, 119, 255, 0.37),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-glass);
             transform: translateY(0);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: slideUp 0.6s ease-out;
+            transition: var(--transition-normal);
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .login-container:hover {
             transform: translateY(-8px);
-            box-shadow:
-                0 20px 40px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(22, 119, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5);
         }
 
         .avatar {
             width: 100px;
             height: 100px;
             margin: -80px auto 2rem;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+            border-radius: var(--radius-full);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.2));
             padding: 6px;
-            box-shadow:
-                0 8px 32px rgba(0, 0, 0, 0.15),
-                inset 0 2px 4px rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-md), inset 0 2px 4px rgba(255, 255, 255, 0.5);
             position: relative;
             overflow: hidden;
         }
@@ -138,8 +134,8 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: rotate 3s linear infinite;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            animation: rotate 4s linear infinite;
             z-index: 0;
         }
 
@@ -181,16 +177,17 @@
 
         .input-group input {
             flex: 1;
-            padding: 1rem 1.25rem;
-            font-size: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 16px 0 0 16px;
+            padding: 1.15rem 1.25rem;
+            font-size: var(--font-size);
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl) 0 0 var(--radius-xl);
             color: #ffffff;
             outline: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            transition: var(--transition-normal);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
         }
 
         .input-group input::placeholder {
@@ -199,48 +196,48 @@
         }
 
         .input-group input:focus {
-            border-color: rgba(255, 255, 255, 0.4);
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.05);
             transform: translateY(-1px);
         }
 
         .input-suffix {
             display: flex;
             align-items: center;
-            padding: 1rem 1.25rem;
-            font-size: 0.9rem;
-            background: rgba(255, 255, 255, 0.12);
-            color: rgba(255, 255, 255, 0.8);
-            border-radius: 0 16px 16px 0;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1.15rem 1.25rem;
+            font-size: var(--font-size-sm);
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
+            border: 2px solid rgba(255, 255, 255, 0.1);
             border-left: none;
-            font-weight: 500;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            font-weight: 600;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
         }
 
         .input-group.no-suffix input {
-            border-radius: 16px;
+            border-radius: var(--radius-xl);
         }
 
         .login-button {
             width: 100%;
-            padding: 1rem 1.5rem;
-            font-size: 1.1rem;
-            font-weight: 600;
+            padding: 1.15rem 1.5rem;
+            font-size: var(--font-size-lg);
+            font-weight: 700;
             color: #ffffff;
-            background: linear-gradient(135deg, var(--color-primary-hover) 0%, var(--color-primary) 100%);
+            background: var(--color-primary-gradient);
             border: none;
-            border-radius: 16px;
+            border-radius: var(--radius-xl);
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            margin-top: 0.5rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 15px rgba(22, 119, 255, 0.3);
+            margin-top: 1rem;
+            transition: var(--transition-normal);
+            box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.5);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
 
         .login-button::before {
@@ -250,7 +247,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), transparent);
             opacity: 0;
             transition: opacity 0.3s;
         }
@@ -262,15 +259,16 @@
             left: 50%;
             width: 0;
             height: 0;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.4);
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
+            transition: width 0.6s ease-out, height 0.6s ease-out, opacity 0.6s ease-out;
+            opacity: 1;
         }
 
         .login-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(22, 119, 255, 0.4);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.6);
         }
 
         .login-button:hover::before {
@@ -278,8 +276,9 @@
         }
 
         .login-button:active::after {
-            width: 300px;
-            height: 300px;
+            width: 400px;
+            height: 400px;
+            opacity: 0;
         }
 
         .login-links {
@@ -324,13 +323,25 @@
 
         /* 动画效果 */
         @keyframes rotate {
-            100% { transform: rotate(360deg); }
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-10px) rotate(1deg); }
-            66% { transform: translateY(5px) rotate(-1deg); }
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            33% {
+                transform: translateY(-10px) rotate(1deg);
+            }
+
+            66% {
+                transform: translateY(5px) rotate(-1deg);
+            }
         }
 
         @keyframes slideUp {
@@ -338,6 +349,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -397,28 +409,17 @@
             <img src="/Public/statics/user/login/img/user_icon_copy.png" alt="用户头像">
         </div>
         <h1 class="login-title">欢迎回来</h1>
-        <div id="message-toast" style="display:none;margin-bottom:15px;padding:12px;border-radius:8px;text-align:center;font-size:14px;"></div>
+        <div id="message-toast"
+            style="display:none;margin-bottom:15px;padding:12px;border-radius:8px;text-align:center;font-size:14px;">
+        </div>
         <form class="login-form" method="post" action="#" id="loginForm">
             <div class="input-group">
-                <input
-                    type="text"
-                    name="user"
-                    placeholder="请输入QQ号码"
-                    maxlength="16"
-                    autocomplete="off"
-                    required
-                >
+                <input type="text" name="user" placeholder="请输入QQ号码" maxlength="16" autocomplete="off" required>
                 <span class="input-suffix">@qq.com</span>
             </div>
             <div class="input-group no-suffix">
-                <input
-                    type="password"
-                    name="pwd"
-                    placeholder="密码-请输入您设置的网站密码"
-                    maxlength="16"
-                    autocomplete="off"
-                    required
-                >
+                <input type="password" name="pwd" placeholder="密码-请输入您设置的网站密码" maxlength="16" autocomplete="off"
+                    required>
             </div>
             <button type="submit" class="btn btn-primary login-button">立即登录</button>
         </form>
@@ -431,8 +432,8 @@
 <block name="footer">
     <script>
         // AJAX login form submission
-        jQuery(document).ready(function($) {
-            $('#loginForm').on('submit', function(e) {
+        jQuery(document).ready(function ($) {
+            $('#loginForm').on('submit', function (e) {
                 e.preventDefault();
 
                 var $form = $(this);
@@ -449,8 +450,8 @@
                     type: 'POST',
                     data: $form.serialize(),
                     dataType: 'json',
-                    success: function(response) {
-                        if(response.status == 1) {
+                    success: function (response) {
+                        if (response.status == 1) {
                             // Success
                             $toast.css({
                                 'display': 'block',
@@ -459,7 +460,7 @@
                             }).text(response.msg);
 
                             // Redirect after short delay
-                            setTimeout(function() {
+                            setTimeout(function () {
                                 window.location.href = response.url || '/';
                             }, 500);
                         } else {
@@ -474,12 +475,12 @@
                             $btn.prop('disabled', false).text(originalBtnText);
                         }
                     },
-                    error: function(xhr) {
+                    error: function (xhr) {
                         var errorMsg = '登录失败，请重试';
                         try {
                             var response = JSON.parse(xhr.responseText);
-                            if(response.msg) errorMsg = response.msg;
-                        } catch(e) {}
+                            if (response.msg) errorMsg = response.msg;
+                        } catch (e) { }
 
                         $toast.css({
                             'display': 'block',

@@ -2,12 +2,14 @@
 namespace Home\Controller;
 use Think\Controller;
 
-class BalanceController extends Controller {
+class BalanceController extends Controller
+{
 
-    public function index() {
+    public function index()
+    {
         if (!check_user_login()) {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'请先登录','url'=>'/login'));
+            if (IS_AJAX) {
+                $this->ajaxReturn(array('status' => 0, 'msg' => '请先登录', 'url' => '/login'));
             }
             $this->error('请先登录', '/login');
         }
@@ -28,10 +30,11 @@ class BalanceController extends Controller {
     /**
      * 充值页面
      */
-    public function recharge() {
+    public function recharge()
+    {
         if (!check_user_login()) {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'请先登录','url'=>'/login'));
+            if (IS_AJAX) {
+                $this->ajaxReturn(array('status' => 0, 'msg' => '请先登录', 'url' => '/login'));
             }
             $this->error('请先登录', '/login');
         }
@@ -44,18 +47,19 @@ class BalanceController extends Controller {
     /**
      * 发起充值支付
      */
-    public function pay() {
+    public function pay()
+    {
         if (!check_user_login()) {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'请先登录','url'=>'/login'));
+            if (IS_AJAX) {
+                $this->ajaxReturn(array('status' => 0, 'msg' => '请先登录', 'url' => '/login'));
             }
             $this->error('请先登录', '/login');
         }
 
         $amount = floatval(I('get.amount', 0));
         if ($amount < 1 || $amount > 10000) {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'充值金额需在1-10000元之间'));
+            if (IS_AJAX) {
+                $this->ajaxReturn(array('status' => 0, 'msg' => '充值金额需在1-10000元之间'));
             }
             $this->error('充值金额需在1-10000元之间');
         }
@@ -100,8 +104,8 @@ class BalanceController extends Controller {
         ))->find();
 
         if (!$alipayConfig) {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'支付配置错误，请联系管理员'));
+            if (IS_AJAX) {
+                $this->ajaxReturn(array('status' => 0, 'msg' => '支付配置错误，请联系管理员'));
             }
             $this->error('支付配置错误，请联系管理员');
         }
@@ -125,8 +129,8 @@ class BalanceController extends Controller {
             $this->display('rechargePay');
         } else {
             error_log('Balance recharge: QR generation failed ' . json_encode($alipayResult));
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'支付二维码生成失败，请稍后重试'));
+            if (IS_AJAX) {
+                $this->ajaxReturn(array('status' => 0, 'msg' => '支付二维码生成失败，请稍后重试'));
             }
             $this->error('支付二维码生成失败，请稍后重试');
         }
@@ -135,7 +139,8 @@ class BalanceController extends Controller {
     /**
      * 充值支付宝异步回调
      */
-    public function notify() {
+    public function notify()
+    {
         $input = file_get_contents("php://input");
         parse_str($input, $data);
 
@@ -185,7 +190,8 @@ class BalanceController extends Controller {
     /**
      * 查询充值订单支付状态 (前端轮询)
      */
-    public function checkStatus() {
+    public function checkStatus()
+    {
         $orderNo = I('get.order_no', '', 'trim');
         if (empty($orderNo) || !preg_match('/^[a-zA-Z0-9_-]+$/', $orderNo)) {
             echo json_encode(array('paid' => false));
@@ -203,7 +209,8 @@ class BalanceController extends Controller {
     /**
      * 调用支付宝当面付生成二维码 (复用OrderController的逻辑)
      */
-    private function alipayPay($orderNo, $planInfo, $alipayConfig) {
+    private function alipayPay($orderNo, $planInfo, $alipayConfig)
+    {
         require_once './Vendor/Alipay/f2fpay/model/builder/AlipayTradePrecreateContentBuilder.php';
         require_once './Vendor/Alipay/f2fpay/service/AlipayTradeService.php';
 
@@ -223,14 +230,15 @@ class BalanceController extends Controller {
         $qrPayRequestBuilder->setUndiscountableAmount("0.01");
         $qrPayRequestBuilder->setExtendParams($extendParamsArr);
 
-        // 使用充值专用的notify_url
-        $notifyUrl = 'https://' . $_SERVER['HTTP_HOST'] . '/Balance/notify';
+        // 使用充值专用的动态 notify_url
+        $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https://' : 'http://';
+        $notifyUrl = $scheme . $_SERVER['HTTP_HOST'] . '/Balance/notify';
 
         $parameter = array(
             'app_id' => $alipayConfig['app_id'],
             'alipay_public_key' => $alipayConfig['alipay_public_key'],
             'merchant_private_key' => $alipayConfig['merchant_private_key'],
-            'gatewayUrl' => 'https://openapi.alipay.com/gateway.do',
+            'gatewayUrl' => env('ALIPAY_GATEWAY_URL', 'https://openapi.alipay.com/gateway.do'),
             'return_url' => $alipayConfig['return_url'],
             'charset' => 'UTF-8',
             'sign_type' => 'RSA2',

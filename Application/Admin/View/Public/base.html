@@ -985,7 +985,7 @@
                 </a>
                 
                 <!-- 退出按钮 -->
-                <a href="{:U('Admin/User/logout')}" class="nav-btn" title="退出登录">
+                <a href="{:U('Admin/Admin/logout')}" class="nav-btn" title="退出登录">
                     <i class="fa fa-sign-out"></i>
                     <span class="desktop-only">退出</span>
                 </a>
@@ -1016,9 +1016,16 @@
             </li>
             
             <li class="nav-item">
-                <a href="{:U('Admin/Users/list')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Users\"'}active{/if}">
+                <a href="{:U('Admin/Customer/list')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Customer\"'}active{/if}">
                     <i class="fa fa-users"></i>
                     <span class="menu-text">用户管理</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{:U('Admin/Admin/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Admin\" and $Think.ACTION_NAME eq \"index\"'}active{/if}">
+                    <i class="fa fa-user-secret"></i>
+                    <span class="menu-text">管理员</span>
                 </a>
             </li>
             

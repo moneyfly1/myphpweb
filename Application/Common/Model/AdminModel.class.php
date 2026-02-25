@@ -2,48 +2,42 @@
 namespace Common\Model;
 use Common\Model\BaseModel;
 /**
- * ModelName
+ * 管理员模型 - 对应 yg_admin 表
  */
-class UsersModel extends BaseModel
+class AdminModel extends BaseModel
 {
     // 自动验证
     protected $_validate = array(
-        array('username', 'require', '用户名必须', 0, '', 3), // 验证字段必填
+        array('username', 'require', '用户名必须', 0, '', 3),
     );
 
     // 自动完成
     protected $_auto = array(
-        array('password', 'secure_password_hash', 1, 'function'), // 对password字段在新增的时候使安全哈希函数处理
-        array('register_time', 'time', 1, 'function'), // 对date字段在新增的时候写入当前时间戳
+        array('password', 'secure_password_hash', 1, 'function'),
+        array('register_time', 'time', 1, 'function'),
     );
 
     /**
-     * 添加用户
+     * 添加管理员
      */
     public function addData($data)
     {
-        // 对data数据进行验证
         if (!$data = $this->create($data)) {
-            // 验证不通过返回错误
             return false;
         } else {
-            // 验证通过
             $result = $this->add($data);
             return $result;
         }
     }
 
     /**
-     * 修改用户
+     * 修改管理员
      */
     public function editData($map, $data)
     {
-        // 对data数据进行验证
         if (!$data = $this->create($data)) {
-            // 验证不通过返回错误
             return false;
         } else {
-            // 验证通过
             $result = $this
                 ->where(array($map))
                 ->save($data);
@@ -52,17 +46,16 @@ class UsersModel extends BaseModel
     }
 
     /**
-     * 删除数据
-     * @param   array   $map    where语句数组形式
-     * @return  boolean         操作是否成功
+     * 删除管理员
      */
     public function deleteData($map)
     {
-        die('禁止删除用户');
+        $result = $this->where($map)->delete();
+        return $result;
     }
 
     /**
-     * 获取分页管理员列表（供后台列表页使用）
+     * 获取分页管理员列表
      */
     public function getAdminPage($map = array(), $order = 'register_time desc', $limit = 15)
     {
@@ -76,5 +69,4 @@ class UsersModel extends BaseModel
             'page' => $page->show()
         );
     }
-
 }

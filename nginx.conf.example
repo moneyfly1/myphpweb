@@ -1,0 +1,72 @@
+# ============================================================
+# Nginx 配置文件 - 使用前请修改以下 3 处：
+#   1. server_name  改成你的域名
+#   2. ssl_certificate / ssl_certificate_key  改成你的证书路径
+#   3. root  改成你的网站根目录
+#   4. fastcgi_pass  改成你的 PHP-FPM 地址
+# ============================================================
+
+server {
+    listen 80;
+    server_name your-domain.com;  # ← 改成你的域名
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name your-domain.com;  # ← 改成你的域名
+
+    # SSL 证书
+    ssl_certificate     /etc/nginx/ssl/your-domain.com.pem;   # ← 改成你的证书路径
+    ssl_certificate_key /etc/nginx/ssl/your-domain.com.key;   # ← 改成你的密钥路径
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    root /www/wwwroot/your-site;  # ← 改成你的网站根目录
+    index index.php;
+    charset utf-8;
+
+    # ============ 安全：最先匹配，禁止访问敏感目录和文件 ============
+    location ~ /\. { deny all; }
+    location ~ \.(env|sql|log|bak|sh|yaml|yml|key|pem|crt)$ { deny all; }
+    location ^~ /Application/ { deny all; }
+    location ^~ /ThinkPHP/ { deny all; }
+    location ^~ /shell/ { deny all; }
+
+    # ============ 静态资源：直接返回文件 ============
+    location ^~ /Public/ {
+        try_files $uri =404;
+        expires 7d;
+    }
+    location ^~ /Upload/ {
+        try_files $uri =404;
+        expires 7d;
+    }
+
+    # ============ 后台入口 admin.php ============
+    # 后台使用 URL_MODEL=0，URL 格式: /admin.php?s=/Controller/action
+    # 不需要任何 rewrite，直接交给 PHP 处理
+    location = /admin.php {
+        fastcgi_pass   127.0.0.1:9000;  # ← 改成你的 PHP-FPM 地址
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME $document_root/admin.php;
+        include        fastcgi_params;
+    }
+
+    # ============ 前台入口 index.php ============
+    # 前台使用 URL_MODEL=2 (rewrite 模式)
+    # 所有非静态文件请求都转发到 index.php
+    location / {
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+
+    # ============ PHP 文件处理 ============
+    location ~ \.php$ {
+        # 只允许 index.php 和 admin.php
+        fastcgi_pass   127.0.0.1:9000;  # ← 改成你的 PHP-FPM 地址
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include        fastcgi_params;
+        try_files $uri =404;
+    }
+}
