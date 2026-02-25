@@ -79,7 +79,7 @@ class BaseModel extends Model{
         // 获取树形或者结构数据
         if($type=='tree'){
             $data=\Org\Nx\Data::tree($data,$name,$child,$parent);
-        }elseif($type="level"){
+        }elseif($type=="level"){
             $data=\Org\Nx\Data::channelLevel($data,0,'&nbsp;',$child);
         }
         return $data;

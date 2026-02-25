@@ -23,25 +23,26 @@ define('APP_PATH','./Application/');
 
 // 自动清理过期的 Runtime 缓存（当配置文件内容变化后自动重建）
 $_runtimeFile = APP_PATH . 'Runtime/common~runtime.php';
+$_hashFile = APP_PATH . 'Runtime/.config_hash_home';
 $_configFiles = array(
     APP_PATH . 'Home/Conf/config.php',
     APP_PATH . 'Common/Conf/config.php',
     APP_PATH . 'Common/Conf/db.php',
 );
-if (is_file($_runtimeFile)) {
-    $_hashFile = APP_PATH . 'Runtime/.config_hash_home';
-    $_currentHash = '';
-    foreach ($_configFiles as $_cf) {
-        if (is_file($_cf)) $_currentHash .= md5_file($_cf);
-    }
-    $_currentHash = md5($_currentHash);
-    $_oldHash = is_file($_hashFile) ? trim(file_get_contents($_hashFile)) : '';
-    if ($_currentHash !== $_oldHash) {
-        @unlink(APP_PATH . 'Runtime/common~runtime.php');
-        @unlink(APP_PATH . 'Runtime/Home~runtime.php');
-        array_map('unlink', glob(APP_PATH . 'Runtime/Cache/Home/*.php') ?: array());
-        @file_put_contents($_hashFile, $_currentHash);
-    }
+$_currentHash = '';
+foreach ($_configFiles as $_cf) {
+    if (is_file($_cf)) $_currentHash .= md5_file($_cf);
+}
+$_currentHash = md5($_currentHash);
+$_oldHash = is_file($_hashFile) ? trim(file_get_contents($_hashFile)) : '';
+if ($_currentHash !== $_oldHash) {
+    @unlink(APP_PATH . 'Runtime/common~runtime.php');
+    @unlink(APP_PATH . 'Runtime/Home~runtime.php');
+    foreach (glob(APP_PATH . 'Runtime/Cache/Home/*.php') ?: array() as $_f) @unlink($_f);
+    foreach (glob(APP_PATH . 'Runtime/Cache/*.php') ?: array() as $_f) @unlink($_f);
+    foreach (glob(APP_PATH . 'Runtime/Data/*.php') ?: array() as $_f) @unlink($_f);
+    @mkdir(APP_PATH . 'Runtime', 0777, true);
+    @file_put_contents($_hashFile, $_currentHash);
 }
 
 // 引入ThinkPHP入口文件

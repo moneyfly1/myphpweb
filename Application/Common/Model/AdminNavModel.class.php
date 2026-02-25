@@ -37,7 +37,7 @@ class AdminNavModel extends BaseModel{
 		// 获取树形或者结构数据
 		if($type=='tree'){
 			$data=\Org\Nx\Data::tree($data,'name','id','pid');
-		}elseif($type="level"){
+		}elseif($type=="level"){
 			$data=\Org\Nx\Data::channelLevel($data,0,'&nbsp;','id');
 			// 显示有权限的菜单
 			$auth=new \Think\Auth();
