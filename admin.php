@@ -22,6 +22,22 @@ define('BIND_MODULE','Admin');
 // 定义应用目录
 define('APP_PATH','./Application/');
 
+// 自动清理过期的 Runtime 缓存（当配置文件更新后自动重建）
+$_runtimeFile = APP_PATH . 'Runtime/common~runtime.php';
+$_configFile  = APP_PATH . 'Admin/Conf/config.php';
+$_commonConf  = APP_PATH . 'Common/Conf/config.php';
+if (is_file($_runtimeFile)) {
+    $rtime = filemtime($_runtimeFile);
+    if ((is_file($_configFile) && filemtime($_configFile) > $rtime)
+        || (is_file($_commonConf) && filemtime($_commonConf) > $rtime)) {
+        // 配置文件比缓存新，清除 Runtime 让框架重建
+        array_map('unlink', glob(APP_PATH . 'Runtime/common~runtime.php'));
+        array_map('unlink', glob(APP_PATH . 'Runtime/Admin~runtime.php'));
+        // 清除模板缓存
+        array_map('unlink', glob(APP_PATH . 'Runtime/Cache/Admin/*.php'));
+    }
+}
+
 // 引入ThinkPHP入口文件
 require './ThinkPHP/ThinkPHP.php';
 
