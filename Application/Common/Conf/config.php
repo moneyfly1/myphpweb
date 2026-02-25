@@ -37,7 +37,7 @@ return array(
         'use_only_cookies' => 1,//只通过cookie传递session（更安全、兼容性更好）
     ),
     //***********************************页面设置**************************************
-    'TMPL_EXCEPTION_FILE' => APP_DEBUG ? THINK_PATH . 'Tpl/think_exception.tpl' : './Template/default/Home/Public/404.html',
+    'TMPL_EXCEPTION_FILE' => THINK_PATH . 'Tpl/think_exception.tpl',
     // 'TMPL_ACTION_ERROR'      => 'Public/dispatch_jump.tpl', // 默认错误跳转对应的模板文件
     // 'TMPL_ACTION_SUCCESS'    => 'Public/dispatch_jump.tpl', // 默认成功跳转对应的模板文件
 //***********************************auth设置**********************************

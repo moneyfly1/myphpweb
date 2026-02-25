@@ -4,5 +4,6 @@ return array(
     'TMPL_ACTION_ERROR'      => THINK_PATH . 'Tpl/dispatch_jump.tpl', // 默认错误跳转对应的模板文件
     'TMPL_ACTION_SUCCESS'    => THINK_PATH . 'Tpl/dispatch_jump.tpl', // 默认成功跳转对应的模板文件
     'URL_MODEL'              => 3, // 兼容模式，URL使用 ?s=/Controller/action 格式
-
+    'URL_CASE_INSENSITIVE'   => true, // URL不区分大小写
+    'SHOW_ERROR_MSG'         => true, // 显示错误信息（方便排查问题）
 );
