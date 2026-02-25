@@ -2,16 +2,19 @@
 // 用于 shell 脚本调用，生成到期提醒邮件 HTML 内容
 // 用法: php generate_expire_mail.php 用户名 到期时间戳 [已到期:0/1]
 
+// 加载引导文件
+require_once __DIR__ . '/bootstrap.php';
+
 if (!function_exists('C')) {
     function C($name) {
         if ($name === 'SITE_NAME') {
-            return '订阅服务'; // 或自定义站点名
+            return '订阅服务';
         }
         return null;
     }
 }
 
-require_once dirname(__DIR__) . '/Application/Common/Common/EmailTemplate.class.php';
+require_once COMMON_PATH . 'Common/EmailTemplate.class.php';
 
 if ($argc < 3) {
     fwrite(STDERR, "Usage: php generate_expire_mail.php <username> <expire_timestamp> [is_expired]\n");

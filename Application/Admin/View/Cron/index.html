@@ -61,6 +61,26 @@
         <span class="breadcrumb-item active">定时任务管理</span>
     </nav>
 
+    <!-- 邮件守护进程控制 -->
+    <div class="crontab-section" style="margin-bottom:20px;">
+        <div class="crontab-header" style="margin-bottom:0;">
+            <h4><i class="fa fa-envelope"></i> 邮件守护进程（每10秒自动检查并发送）</h4>
+            <div style="display:flex;gap:10px;align-items:center;">
+                <span id="daemonStatus" style="font-size:13px;">
+                    <?php if($daemonRunning): ?>
+                        <span class="dot dot-success" style="display:inline-block;width:8px;height:8px;border-radius:50%;"></span> 运行中
+                    <?php else: ?>
+                        <span class="dot dot-idle" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d9d9d9;"></span> 未运行
+                    <?php endif; ?>
+                </span>
+                <button class="btn btn-run" id="btnDaemon" onclick="toggleDaemon()" style="padding:6px 16px;">
+                    <?php echo $daemonRunning ? '<i class="fa fa-stop"></i> 停止' : '<i class="fa fa-play"></i> 启动'; ?>
+                </button>
+            </div>
+        </div>
+        <p style="color:#8c8c8c;font-size:13px;margin-top:8px;">启动后，守护进程会在后台每10秒检查一次邮件队列并自动发送。无需配置 crontab。</p>
+    </div>
+
     <!-- 任务卡片 -->
     <div class="task-grid">
         <volist name="tasks" id="task" key="tid">
@@ -87,6 +107,29 @@
                 </div>
             </div>
         </volist>
+    </div>
+
+    <!-- 调度设置 -->
+    <div class="crontab-section" style="margin-bottom:20px;">
+        <div class="crontab-header">
+            <h4><i class="fa fa-calendar"></i> 调度设置</h4>
+            <button class="btn-copy" onclick="saveSchedule()" id="btnSaveSchedule"><i class="fa fa-save"></i> 保存设置</button>
+        </div>
+        <p style="color:#8c8c8c;font-size:13px;margin-bottom:12px;">修改各任务的 cron 表达式和说明，保存后 crontab 配置会自动更新。</p>
+        <table style="width:100%;font-size:13px;border-collapse:collapse;">
+            <tr style="background:#fafafa;">
+                <th style="padding:10px 12px;text-align:left;border-bottom:1px solid #f0f0f0;">任务</th>
+                <th style="padding:10px 12px;text-align:left;border-bottom:1px solid #f0f0f0;width:200px;">Cron 表达式</th>
+                <th style="padding:10px 12px;text-align:left;border-bottom:1px solid #f0f0f0;width:160px;">说明</th>
+            </tr>
+            <volist name="tasks" id="task" key="tid">
+            <tr>
+                <td style="padding:8px 12px;border-bottom:1px solid #f5f5f5;">{$task.name}</td>
+                <td style="padding:8px 12px;border-bottom:1px solid #f5f5f5;"><input type="text" name="{$tid}_cron" value="{$task.cron}" style="width:100%;padding:6px 10px;border:1px solid #d9d9d9;border-radius:4px;font-family:monospace;font-size:13px;"></td>
+                <td style="padding:8px 12px;border-bottom:1px solid #f5f5f5;"><input type="text" name="{$tid}_label" value="{$task.schedule}" style="width:100%;padding:6px 10px;border:1px solid #d9d9d9;border-radius:4px;font-size:13px;"></td>
+            </tr>
+            </volist>
+        </table>
     </div>
 
     <!-- Crontab 配置 -->
@@ -173,6 +216,62 @@
             ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy');
             document.body.removeChild(ta); App.toast('已复制到剪贴板', 'success');
         }
+    }
+
+    function toggleDaemon() {
+        var btn = document.getElementById('btnDaemon');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa fa-spinner spinning"></i> 处理中...';
+        $.ajax({
+            url: '{:U("Admin/Cron/toggleDaemon")}',
+            type: 'POST',
+            dataType: 'json',
+            success: function(res) {
+                if (res.code === 0) {
+                    var running = res.data && res.data.running;
+                    document.getElementById('daemonStatus').innerHTML = running
+                        ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#52c41a;"></span> 运行中'
+                        : '<span style="display:inline-block;width:8px;height:8px;border-radius:50;background:#d9d9d9;"></span> 未运行';
+                    btn.innerHTML = running ? '<i class="fa fa-stop"></i> 停止' : '<i class="fa fa-play"></i> 启动';
+                    App.toast(res.msg, 'success');
+                } else {
+                    App.toast(res.msg || '操作失败', 'error');
+                }
+            },
+            error: function() { App.toast('网络错误', 'error'); },
+            complete: function() { btn.disabled = false; }
+        });
+    }
+
+    function saveSchedule() {
+        var btn = document.getElementById('btnSaveSchedule');
+        btn.disabled = true;
+        var data = {};
+        var tasks = ['email_queue','clean_email','log_rotate','log_clean','expire_remind','sync_user'];
+        for (var i = 0; i < tasks.length; i++) {
+            var tid = tasks[i];
+            data[tid + '_cron'] = $('input[name="' + tid + '_cron"]').val();
+            data[tid + '_label'] = $('input[name="' + tid + '_label"]').val();
+        }
+        $.ajax({
+            url: '{:U("Admin/Cron/saveSchedule")}',
+            type: 'POST',
+            data: data,
+            dataType: 'json',
+            success: function(res) {
+                if (res.code === 0) {
+                    App.toast('保存成功，crontab 配置已更新', 'success');
+                    // 刷新 crontab 显示
+                    $.getJSON('{:U("Admin/Cron/crontab")}', function(r) {
+                        if (r.code === 0) document.getElementById('crontab-content').textContent = r.data;
+                    });
+                } else {
+                    App.toast(res.msg || '保存失败', 'error');
+                }
+            },
+            error: function() { App.toast('网络错误', 'error'); },
+            complete: function() { btn.disabled = false; }
+        });
     }
 
     // 加载 crontab 配置

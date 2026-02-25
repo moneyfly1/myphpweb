@@ -18,8 +18,8 @@ ini_set('memory_limit', '256M');
 // 获取脚本所在目录（脚本位于 shell/ 子目录，项目根目录在上一级）
 $scriptDir = dirname(dirname(__FILE__));
 
-// 加载环境配置
-require_once $scriptDir . '/Application/Common/Common/function.php';
+// 加载引导文件（定义常量、加载.env、加载function.php）
+require_once __DIR__ . '/bootstrap.php';
 
 // 邮件队列处理类
 class EmailQueueProcessor {
@@ -55,12 +55,12 @@ class EmailQueueProcessor {
                 throw new Exception('mysqli扩展未安装，请安装php_mysqli扩展');
             }
             
-            $host = getenv('DB_HOST') ?: 'localhost';
-            $dbname = getenv('DB_NAME') ?: 'tempadmin';
-            $username = getenv('DB_USER') ?: 'tempadmin';
-            $password = getenv('DB_PASSWORD') ?: '';
-            $port = getenv('DB_PORT') ?: '3306';
-            $prefix = getenv('DB_PREFIX') ?: 'yg_';
+            $host = env('DB_HOST', 'localhost');
+            $dbname = env('DB_NAME', 'tempadmin');
+            $username = env('DB_USER', 'tempadmin');
+            $password = env('DB_PASSWORD', '');
+            $port = env('DB_PORT', '3306');
+            $prefix = env('DB_PREFIX', 'yg_');
             
             $this->prefix = $prefix;
 
@@ -117,8 +117,8 @@ class EmailQueueProcessor {
                     pcntl_signal_dispatch();
                 }
                 
-                // 休眠30秒
-                sleep(30);
+                // 休眠10秒
+                sleep(10);
                 
             } catch (Exception $e) {
                 $this->log("处理队列时发生错误: " . $e->getMessage());
