@@ -1,10 +1,9 @@
 <?php
-header("Content-type:text/html;charset=utf-8");
 function loadEnv($envFile = null)
 {
     if ($envFile === null) {
         // 使用更可靠的方法计算项目根目录
-        $envFile = dirname(dirname(dirname(__DIR__))) . '/.env';
+        $envFile = dirname(APP_PATH) . '/.env';
     }
     if (!file_exists($envFile)) {
         return false;
@@ -1095,8 +1094,8 @@ function pdf($html = '<h1 style="color:red">hello word</h1>')
     $pdf->SetAutoPageBreak(TRUE, '15');
     // 设置图像比例因子
     $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-    if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
-        require_once(dirname(__FILE__) . '/lang/eng.php');
+    if (@file_exists(COMMON_PATH . 'Common/lang/eng.php')) {
+        require_once(COMMON_PATH . 'Common/lang/eng.php');
         $pdf->setLanguageArray($l);
     }
     $pdf->setFontSubsetting(true);
@@ -1374,7 +1373,7 @@ function send_subscription_email($email, $username, $mobileUrl, $clashUrl, $expi
 {
     try {
         // 引入邮件模板类
-        require_once dirname(__FILE__) . '/EmailTemplate.class.php';
+        require_once COMMON_PATH . 'Common/EmailTemplate.class.php';
         // 生成邮件内容
         $emailContent = EmailTemplate::getSubscriptionTemplate($username, $mobileUrl, $clashUrl, $expireTime);
         // 发送邮件
@@ -1396,7 +1395,7 @@ function send_activation_email($email, $username, $activationLink, $useQueue = t
 {
     try {
         // 引入邮件模板类
-        require_once dirname(__FILE__) . '/EmailTemplate.class.php';
+        require_once COMMON_PATH . 'Common/EmailTemplate.class.php';
         // 生成邮件内容
         $emailContent = EmailTemplate::getActivationTemplate($username, $activationLink);
         // 发送邮件
@@ -1419,7 +1418,7 @@ function send_expiration_email($email, $username, $expireTime, $isExpired = fals
 {
     try {
         // 引入邮件模板类
-        require_once dirname(__FILE__) . '/EmailTemplate.class.php';
+        require_once COMMON_PATH . 'Common/EmailTemplate.class.php';
         // 生成邮件内容
         $emailContent = EmailTemplate::getExpirationTemplate($username, $expireTime, $isExpired);
         // 发送邮件
@@ -1447,7 +1446,7 @@ function send_order_email($config, $orderNo, $planName, $price, $duration, $stat
 {
     try {
         // 引入邮件模板类
-        require_once dirname(__FILE__) . '/EmailTemplate.class.php';
+        require_once COMMON_PATH . 'Common/EmailTemplate.class.php';
         // 获取用户信息
         $username = isset($config['username']) ? $config['username'] : '';
         $mobileUrl = '';
@@ -1497,7 +1496,7 @@ function send_order_email($config, $orderNo, $planName, $price, $duration, $stat
 function send_verify_code_email($email, $username, $code, $purpose = '注册')
 {
     try {
-        require_once dirname(__FILE__) . '/EmailTemplate.class.php';
+        require_once COMMON_PATH . 'Common/EmailTemplate.class.php';
         $emailContent = EmailTemplate::getVerifyCodeTemplate($username, $code, $purpose);
         return send_mail($email, '验证码 - ' . $purpose, $emailContent, false, 'verify_code');
     } catch (Exception $e) {
@@ -1510,7 +1509,7 @@ function send_password_reset_email($email, $username, $resetLink, $useQueue = tr
 {
     try {
         // 引入邮件模板类
-        require_once dirname(__FILE__) . '/EmailTemplate.class.php';
+        require_once COMMON_PATH . 'Common/EmailTemplate.class.php';
         // 生成邮件内容
         $emailContent = EmailTemplate::getPasswordResetTemplate($username, $resetLink);
         // 发送邮件
@@ -1535,14 +1534,14 @@ function send_mail($to, $subject, $body, $useQueue = true, $emailType = 'general
     if ($useQueue) {
         // Log::record("Queuing email to {$to}, Subject: {$subject}", Log::INFO);
         // 引入邮件队列类
-        require_once dirname(__FILE__) . '/EmailQueue.class.php';
+        require_once COMMON_PATH . 'Common/EmailQueue.class.php';
         $emailQueue = new EmailQueue();
         return $emailQueue->addToQueue($to, $subject, $body, $emailType, $priority);
     }
     // 直接发送模式（原有逻辑）
     $result = send_mail_direct($to, $subject, $body);
     // 记录发送结果
-    $logFile = dirname(dirname(__DIR__)) . '/Runtime/Logs/email_queue.log';
+    $logFile = RUNTIME_PATH . 'Logs/email_queue.log';
     file_put_contents($logFile, "[send_mail] 直接发送结果: " . ($result ? '成功' : '失败') . " - To: {$to}, Subject: {$subject}\n", FILE_APPEND);
     return $result;
 }
@@ -1557,7 +1556,7 @@ function send_mail_direct($to, $subject, $body)
 {
     try {
         // 日志文件路径
-        $logFile = dirname(dirname(__DIR__)) . '/Runtime/Logs/email_queue.log';
+        $logFile = RUNTIME_PATH . 'Logs/email_queue.log';
         // 优先从.env文件读取邮件配置，如果没有则从config.php读取
         $smtpHost = env('EMAIL_SMTP') ?: env('MAIL_HOST');
         $smtpPort = env('EMAIL_PORT') ?: env('MAIL_PORT');
@@ -1584,7 +1583,7 @@ function send_mail_direct($to, $subject, $body)
         // 使用PHPMailer发送邮件
         file_put_contents($logFile, "[send_mail_direct] 尝试加载PHPMailer\n", FILE_APPEND);
         // 使用最可靠的方式构建 Vendor 路径
-        $vendor_path_prefix = dirname(dirname(dirname(__DIR__))) . '/ThinkPHP/Library/Vendor/';
+        $vendor_path_prefix = VENDOR_PATH;
         $exception_path = $vendor_path_prefix . 'PHPMailer/Exception.php';
         file_put_contents($logFile, "[send_mail_direct] Checking for Exception.php at: " . $exception_path . "\n", FILE_APPEND);
         file_put_contents($logFile, "[send_mail_direct] Exception.php exists: " . (file_exists($exception_path) ? 'Yes' : 'No') . "\n", FILE_APPEND);
@@ -1635,7 +1634,7 @@ function send_mail_direct($to, $subject, $body)
             return false;
         }
     } catch (\Exception $e) {
-        $logFile = dirname(dirname(__DIR__)) . '/Runtime/Logs/email_queue.log';
+        $logFile = RUNTIME_PATH . 'Logs/email_queue.log';
         file_put_contents($logFile, "[send_mail_direct] 全局异常: " . $e->getMessage() . "\n", FILE_APPEND);
         error_log('邮件发送异常: ' . $e->getMessage());
         return false;
@@ -1672,7 +1671,7 @@ function write_action_log($action, $message, $operator = '')
             $operator,
             $logData['ip']
         );
-        $logFile = dirname(dirname(__DIR__)) . '/Runtime/Logs/action.log';
+        $logFile = RUNTIME_PATH . 'Logs/action.log';
         file_put_contents($logFile, $logMessage, FILE_APPEND | LOCK_EX);
         return true;
     } catch (Exception $e) {
@@ -2892,7 +2891,7 @@ function generate_stable_device_fingerprint($ua, $additionalHeaders = [], $qq = 
  */
 function update_env_file($data = [])
 {
-    $envFile = dirname(dirname(dirname(__DIR__))) . '/.env';
+    $envFile = dirname(APP_PATH) . '/.env';
     if (!file_exists($envFile)) {
         return false;
     }
