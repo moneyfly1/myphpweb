@@ -12,43 +12,49 @@ class AdminBaseController extends BaseController
 	public function _initialize()
 	{
 		parent::_initialize();
-		$auth = new \Think\Auth();
 		$rule_name = MODULE_NAME . '/' . CONTROLLER_NAME . '/' . ACTION_NAME;
 
-		if ($rule_name != 'Admin/Admin/login') {
-			// 检查超级管理员是否登录
-			if (!isset($_SESSION['admin']['id']) || empty($_SESSION['admin']['id'])) {
+		// 登录页不需要任何权限检查和数据加载
+		if ($rule_name == 'Admin/Admin/login') {
+			return;
+		}
+
+		// 检查是否登录
+		if (!isset($_SESSION['admin']['id']) || empty($_SESSION['admin']['id'])) {
+			if (IS_AJAX) {
+				$this->ajaxReturn(array('status' => 0, 'msg' => '请先登录'));
+			} else {
 				$this->display('Admin:login');
 				exit;
 			}
+			return;
+		}
 
-			$superAdminIds = C('SUPER_ADMIN_IDS');
-			if (!is_array($superAdminIds))
-				$superAdminIds = array(88);
-			if (!in_array($_SESSION['admin']['id'], $superAdminIds)) {
-				// 如果是customerDetail方法，使用detail方法的权限规则
-				if ($rule_name == 'Admin/Dingyue/customerDetail') {
-					$rule_name = 'Admin/Dingyue/detail';
+		// 非超级管理员需要权限校验
+		$superAdminIds = C('SUPER_ADMIN_IDS');
+		if (!is_array($superAdminIds))
+			$superAdminIds = array(88);
+		if (!in_array($_SESSION['admin']['id'], $superAdminIds)) {
+			$auth = new \Think\Auth();
+			// 如果是customerDetail方法，使用detail方法的权限规则
+			if ($rule_name == 'Admin/Dingyue/customerDetail') {
+				$rule_name = 'Admin/Dingyue/detail';
+			}
+			$result = $auth->check($rule_name, $_SESSION['admin']['id']);
+			if (!$result) {
+				if (IS_AJAX) {
+					$this->ajaxReturn(array('status' => 0, 'msg' => '您没有权限访问'));
+				} else {
+					$this->display('Admin:login');
+					exit;
 				}
-				$result = $auth->check($rule_name, $_SESSION['admin']['id']);
-				if (!$result) {
-					if (IS_AJAX) {
-						$this->ajaxReturn(array('status' => 0, 'msg' => '您没有权限访问'));
-					} else {
-						$this->display('Admin:login');
-						exit;
-					}
-				}
+				return;
 			}
 		}
 
-
 		// 分配菜单数据
 		$nav_data = D('AdminNav')->getTreeData('level', 'order_number,id');
-		$assign = array(
-			'nav_data' => $nav_data
-		);
-		$this->assign($assign);
+		$this->assign(array('nav_data' => $nav_data));
 	}
 
 

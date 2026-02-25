@@ -52,11 +52,18 @@ else
     echo "检测到本地环境，使用项目日志目录: $LOG_DIR"
 fi
 
-# 配置部分 - 请根据实际情况修改
-DB_HOST="localhost"      # 数据库地址
-DB_USER="tempadmin"  # 数据库用户名
-DB_PASS="XGzH6mCPHkiXswzf"  # 数据库密码
-DB_NAME="tempadmin"  # 数据库名称
+# 配置部分 - 从 .env 文件读取，如果没有则使用默认值
+ENV_FILE="$WEBSITE_ROOT/.env"
+if [ -f "$ENV_FILE" ]; then
+    DB_HOST=$(grep '^DB_HOST=' "$ENV_FILE" | cut -d'=' -f2)
+    DB_USER=$(grep '^DB_USER=' "$ENV_FILE" | cut -d'=' -f2)
+    DB_PASS=$(grep '^DB_PASSWORD=' "$ENV_FILE" | cut -d'=' -f2)
+    DB_NAME=$(grep '^DB_NAME=' "$ENV_FILE" | cut -d'=' -f2)
+fi
+DB_HOST="${DB_HOST:-localhost}"
+DB_USER="${DB_USER:-root}"
+DB_PASS="${DB_PASS:-}"
+DB_NAME="${DB_NAME:-myphpweb}"
 TABLE_NAME="yg_short_dingyue" # 表名
 
 # 日志文件配置
