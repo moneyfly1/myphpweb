@@ -11,13 +11,8 @@
     <link rel="stylesheet" href="__PUBLIC__/design-tokens.css">
     <link rel="stylesheet" href="__PUBLIC__/css/admin-components.css">
     <link rel="stylesheet" href="__PUBLIC__/css/admin-forms.css">
-    <!-- 恢复外部基础样式，修复布局折叠和图标丢失问题 -->
-    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.8.2/css/all.min.css">
     <link href="__ADMIN_ACEADMIN__/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="__PUBLIC__/statics/font-awesome-4.4.0/css/font-awesome.min.css" />
-    <!-- 旧版 ace.min.css 和 base.css 保持注释，避免冲突 -->
-    <!-- <link rel="stylesheet" href="__ADMIN_ACEADMIN__/css/ace.min.css" /> -->
-    <!-- <link rel="stylesheet" href="__ADMIN_CSS__/base.css" /> -->
 
     <style>
         /* 设计令牌已移至 __PUBLIC__/design-tokens.css，此处仅保留后台布局用变量别名 */
@@ -1458,6 +1453,25 @@
                 });
             });
         });
+    </script>
+    <script>
+        // 自动邮件队列发信心跳（在管理员开着后台时自动发信，实现免配置进程守护）
+        (function () {
+            function mailQueueHeartbeat() {
+                $.ajax({
+                    url: "{:U('Admin/Cron/heartbeat')}",
+                    type: "POST",
+                    global: false, // 不触发全局ajax事件表现
+                    success: function () { /* 静默成功 */ },
+                    error: function () { /* 静默失败 */ }
+                });
+            }
+            // 首次延迟 5 秒触发，之后每 15 秒触发一次
+            setTimeout(function () {
+                mailQueueHeartbeat();
+                setInterval(mailQueueHeartbeat, 15000);
+            }, 5000);
+        })();
     </script>
 </body>
 

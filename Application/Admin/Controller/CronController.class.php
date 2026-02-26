@@ -441,4 +441,28 @@ class CronController extends AdminBaseController
         $lines[] = "*/5 * * * * curl -s \"https://{$domain}/?s=/Home/Cron/runAll&secret={$secret}\" > /dev/null 2>&1";
         $this->ajaxReturn(array('code' => 0, 'data' => implode("\n", $lines)));
     }
+
+    /** 隐形执行接口（适用于 WebCron 触发或者前台 Ajax 轮询触发），免鉴权且只在发送失败或大批量时输出日志 */
+    public function heartbeat()
+    {
+        // 允许较长执行时间，免权
+        set_time_limit(120);
+        $result = $this->executeTask('email_queue');
+
+        // 仅在真的有邮件需要发送或者发送产生错误时写入日志
+        if (strpos($result['msg'], '成功0, 失败0') === false) {
+            $record = array(
+                'task' => 'email_queue',
+                'name' => '处理邮件队列 (Heartbeat)',
+                'time' => date('Y-m-d H:i:s'),
+                'duration' => $result['duration'],
+                'status' => $result['code'] === 0 ? 'success' : 'failed',
+                'output' => $result['msg'],
+                'operator' => 'system_heartbeat',
+            );
+            file_put_contents($this->logFile(), json_encode($record, JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND);
+        }
+
+        $this->ajaxReturn(array('code' => 0, 'msg' => 'beat'));
+    }
 }
