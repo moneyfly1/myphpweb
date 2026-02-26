@@ -2,7 +2,8 @@
 <block name="title">定时任务管理</block>
 <block name="content">
     <style>
-        .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 20px; margin-bottom: 24px; }
+        /* 任务卡片网格 */
+        .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; margin-bottom: 24px; }
         .task-card { background: var(--color-bg, #fff); border-radius: var(--radius-xl, 12px); box-shadow: var(--shadow, 0 2px 8px rgba(0,0,0,.08)); overflow: hidden; transition: box-shadow .2s; }
         .task-card:hover { box-shadow: var(--shadow-md, 0 4px 12px rgba(0,0,0,.12)); }
         .task-card-header { padding: 16px 20px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; }
@@ -17,19 +18,14 @@
         .dot-failed { background: var(--color-danger, #ff4d4f); }
         .dot-idle { background: #d9d9d9; }
         .task-actions { display: flex; gap: 8px; }
-        .task-actions .btn { flex: 1; font-size: 13px; padding: 7px 0; }
-        .btn-run { background: var(--color-primary, #1677ff); color: #fff; border: none; border-radius: 6px; cursor: pointer; transition: background .2s; }
-        .btn-run:hover { background: var(--color-primary-hover, #4096ff); }
-        .btn-run:disabled { opacity: .6; cursor: not-allowed; }
-        .btn-log { background: #fff; color: var(--color-text, #262626); border: 1px solid var(--color-border, #d9d9d9); border-radius: 6px; cursor: pointer; transition: all .2s; }
-        .btn-log:hover { color: var(--color-primary, #1677ff); border-color: var(--color-primary, #1677ff); }
+        .task-actions .btn { flex: 1; font-size: 13px; padding: 7px 0; text-align: center; }
         .spinning { animation: spin .8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* 日志弹窗 */
         .log-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 2000; justify-content: center; align-items: center; }
         .log-overlay.show { display: flex; }
-        .log-modal { background: #fff; border-radius: 12px; width: 90%; max-width: 700px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 8px 30px rgba(0,0,0,.2); }
+        .log-modal { background: #fff; border-radius: 12px; width: 90%; max-width: 720px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 8px 30px rgba(0,0,0,.2); }
         .log-modal-header { padding: 16px 20px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
         .log-modal-header .close-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: #8c8c8c; padding: 4px 8px; }
         .log-modal-body { padding: 16px 20px; overflow-y: auto; flex: 1; }
@@ -46,12 +42,14 @@
         .crontab-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .crontab-header h4 { margin: 0; font-size: 15px; display: flex; align-items: center; gap: 8px; }
         .crontab-pre { background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px; font-family: monospace; font-size: 13px; line-height: 1.8; overflow-x: auto; white-space: pre; }
-        .btn-copy { background: var(--color-success, #52c41a); color: #fff; border: none; border-radius: 6px; padding: 6px 14px; font-size: 13px; cursor: pointer; }
-        .btn-copy:hover { opacity: .85; }
+        .schedule-input { width: 100%; padding: 6px 10px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 13px; box-sizing: border-box; }
+        .schedule-input-mono { font-family: monospace; }
 
         @media (max-width: 768px) {
             .task-grid { grid-template-columns: 1fr; }
-            .log-modal { width: 95%; }
+            .log-modal { width: 95%; max-width: none; }
+            .crontab-section { padding: 14px; }
+            .schedule-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         }
     </style>
 
@@ -61,32 +59,12 @@
         <span class="breadcrumb-item active">定时任务管理</span>
     </nav>
 
-    <!-- 邮件守护进程控制 -->
-    <div class="crontab-section" style="margin-bottom:20px;">
-        <div class="crontab-header" style="margin-bottom:0;">
-            <h4><i class="fa fa-envelope"></i> 邮件守护进程（每10秒自动检查并发送）</h4>
-            <div style="display:flex;gap:10px;align-items:center;">
-                <span id="daemonStatus" style="font-size:13px;">
-                    <?php if($daemonRunning): ?>
-                        <span class="dot dot-success" style="display:inline-block;width:8px;height:8px;border-radius:50%;"></span> 运行中
-                    <?php else: ?>
-                        <span class="dot dot-idle" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#d9d9d9;"></span> 未运行
-                    <?php endif; ?>
-                </span>
-                <button class="btn btn-run" id="btnDaemon" onclick="toggleDaemon()" style="padding:6px 16px;">
-                    <?php echo $daemonRunning ? '<i class="fa fa-stop"></i> 停止' : '<i class="fa fa-play"></i> 启动'; ?>
-                </button>
-            </div>
-        </div>
-        <p style="color:#8c8c8c;font-size:13px;margin-top:8px;">启动后，守护进程会在后台每10秒检查一次邮件队列并自动发送。无需配置 crontab。</p>
-    </div>
-
     <!-- 任务卡片 -->
     <div class="task-grid">
         <volist name="tasks" id="task" key="tid">
             <div class="task-card" id="task-{$tid}">
                 <div class="task-card-header">
-                    <div class="task-name"><i class="fa fa-clock-o"></i> {$task.name}</div>
+                    <div class="task-name"><i class="fa {$task.icon|default='fa-clock-o'}"></i> {$task.name}</div>
                     <span class="task-schedule">{$task.schedule}</span>
                 </div>
                 <div class="task-card-body">
@@ -101,8 +79,8 @@
                         </if>
                     </div>
                     <div class="task-actions">
-                        <button class="btn btn-run" onclick="runTask('{$tid}', this)"><i class="fa fa-play"></i> 立即执行</button>
-                        <button class="btn btn-log" onclick="showLogs('{$tid}')"><i class="fa fa-file-text-o"></i> 查看日志</button>
+                        <button class="btn btn-primary" onclick="runTask('{$tid}', this)"><i class="fa fa-play"></i> 立即执行</button>
+                        <button class="btn btn-default" onclick="showLogs('{$tid}')"><i class="fa fa-file-text-o"></i> 查看日志</button>
                     </div>
                 </div>
             </div>
@@ -110,33 +88,39 @@
     </div>
 
     <!-- 调度设置 -->
-    <div class="crontab-section" style="margin-bottom:20px;">
+    <div class="crontab-section">
         <div class="crontab-header">
             <h4><i class="fa fa-calendar"></i> 调度设置</h4>
-            <button class="btn-copy" onclick="saveSchedule()" id="btnSaveSchedule"><i class="fa fa-save"></i> 保存设置</button>
+            <button class="btn btn-success btn-sm" onclick="saveSchedule()" id="btnSaveSchedule"><i class="fa fa-save"></i> 保存设置</button>
         </div>
         <p style="color:#8c8c8c;font-size:13px;margin-bottom:12px;">修改各任务的 cron 表达式和说明，保存后 crontab 配置会自动更新。</p>
-        <table style="width:100%;font-size:13px;border-collapse:collapse;">
-            <tr style="background:#fafafa;">
-                <th style="padding:10px 12px;text-align:left;border-bottom:1px solid #f0f0f0;">任务</th>
-                <th style="padding:10px 12px;text-align:left;border-bottom:1px solid #f0f0f0;width:200px;">Cron 表达式</th>
-                <th style="padding:10px 12px;text-align:left;border-bottom:1px solid #f0f0f0;width:160px;">说明</th>
-            </tr>
-            <volist name="tasks" id="task" key="tid">
-            <tr>
-                <td style="padding:8px 12px;border-bottom:1px solid #f5f5f5;">{$task.name}</td>
-                <td style="padding:8px 12px;border-bottom:1px solid #f5f5f5;"><input type="text" name="{$tid}_cron" value="{$task.cron}" style="width:100%;padding:6px 10px;border:1px solid #d9d9d9;border-radius:4px;font-family:monospace;font-size:13px;"></td>
-                <td style="padding:8px 12px;border-bottom:1px solid #f5f5f5;"><input type="text" name="{$tid}_label" value="{$task.schedule}" style="width:100%;padding:6px 10px;border:1px solid #d9d9d9;border-radius:4px;font-size:13px;"></td>
-            </tr>
-            </volist>
-        </table>
+        <div class="schedule-table-wrap">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>任务</th>
+                        <th style="width:200px;">Cron 表达式</th>
+                        <th style="width:160px;">说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <volist name="tasks" id="task" key="tid">
+                    <tr>
+                        <td>{$task.name}</td>
+                        <td><input type="text" name="{$tid}_cron" value="{$task.cron}" class="schedule-input schedule-input-mono"></td>
+                        <td><input type="text" name="{$tid}_label" value="{$task.schedule}" class="schedule-input"></td>
+                    </tr>
+                    </volist>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Crontab 配置 -->
     <div class="crontab-section">
         <div class="crontab-header">
             <h4><i class="fa fa-terminal"></i> Crontab 配置（可选）</h4>
-            <button class="btn-copy" onclick="copyCrontab()"><i class="fa fa-copy"></i> 复制</button>
+            <button class="btn btn-success btn-sm" onclick="copyCrontab()"><i class="fa fa-copy"></i> 复制</button>
         </div>
         <p style="color:#8c8c8c;font-size:13px;margin-bottom:12px;">如需在宝塔面板或服务器上设置自动执行，可复制以下 crontab 配置：</p>
         <pre class="crontab-pre" id="crontab-content">加载中...</pre>
@@ -154,11 +138,10 @@
             </div>
         </div>
     </div>
-    <!-- JS -->
+
     <script>
     function runTask(taskId, btn) {
         if (btn.disabled) return;
-        var icon = btn.querySelector('i');
         var origHtml = btn.innerHTML;
         btn.disabled = true;
         btn.innerHTML = '<i class="fa fa-spinner spinning"></i> 执行中...';
@@ -185,8 +168,7 @@
     function showLogs(taskId) {
         document.getElementById('logOverlay').classList.add('show');
         document.getElementById('logModalBody').innerHTML = '<p style="text-align:center;color:#8c8c8c;">加载中...</p>';
-        var title = taskId ? ('日志 — ' + taskId) : '全部执行日志';
-        document.getElementById('logModalTitle').textContent = title;
+        document.getElementById('logModalTitle').textContent = taskId ? ('日志 — ' + taskId) : '全部执行日志';
         $.getJSON('{:U("Admin/Cron/logs")}', { task_id: taskId, days: 7 }, function(res) {
             if (!res.data || res.data.length === 0) {
                 document.getElementById('logModalBody').innerHTML = '<p style="text-align:center;color:#8c8c8c;">暂无日志记录</p>';
@@ -198,14 +180,16 @@
                 var cls = r.status === 'success' ? 'log-status-success' : 'log-status-failed';
                 var label = r.status === 'success' ? '成功' : '失败';
                 var output = (r.output || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                html += '<tr><td>' + r.time + '</td><td>' + r.name + '</td><td><span class="log-status ' + cls + '">' + label + '</span></td><td>' + r.duration + '</td><td>' + (r.operator||'-') + '</td><td><div class="log-output">' + (output || '-') + '</div></td></tr>';
+                html += '<tr><td>' + r.time + '</td><td>' + r.name + '</td><td><span class="log-status ' + cls + '">' + label + '</span></td><td>' + r.duration + '</td><td>' + (r.operator || '-') + '</td><td><div class="log-output">' + (output || '-') + '</div></td></tr>';
             }
             html += '</tbody></table>';
             document.getElementById('logModalBody').innerHTML = html;
         });
     }
 
-    function closeLogModal() { document.getElementById('logOverlay').classList.remove('show'); }
+    function closeLogModal() {
+        document.getElementById('logOverlay').classList.remove('show');
+    }
 
     function copyCrontab() {
         var text = document.getElementById('crontab-content').textContent;
@@ -218,41 +202,16 @@
         }
     }
 
-    function toggleDaemon() {
-        var btn = document.getElementById('btnDaemon');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa fa-spinner spinning"></i> 处理中...';
-        $.ajax({
-            url: '{:U("Admin/Cron/toggleDaemon")}',
-            type: 'POST',
-            dataType: 'json',
-            success: function(res) {
-                if (res.code === 0) {
-                    var running = res.data && res.data.running;
-                    document.getElementById('daemonStatus').innerHTML = running
-                        ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#52c41a;"></span> 运行中'
-                        : '<span style="display:inline-block;width:8px;height:8px;border-radius:50;background:#d9d9d9;"></span> 未运行';
-                    btn.innerHTML = running ? '<i class="fa fa-stop"></i> 停止' : '<i class="fa fa-play"></i> 启动';
-                    App.toast(res.msg, 'success');
-                } else {
-                    App.toast(res.msg || '操作失败', 'error');
-                }
-            },
-            error: function() { App.toast('网络错误', 'error'); },
-            complete: function() { btn.disabled = false; }
-        });
-    }
-
     function saveSchedule() {
         var btn = document.getElementById('btnSaveSchedule');
         btn.disabled = true;
         var data = {};
-        var tasks = ['email_queue','clean_email','log_rotate','log_clean','expire_remind','sync_user'];
-        for (var i = 0; i < tasks.length; i++) {
-            var tid = tasks[i];
-            data[tid + '_cron'] = $('input[name="' + tid + '_cron"]').val();
-            data[tid + '_label'] = $('input[name="' + tid + '_label"]').val();
-        }
+        document.querySelectorAll('input[name$="_cron"]').forEach(function(el) {
+            data[el.name] = el.value;
+        });
+        document.querySelectorAll('input[name$="_label"]').forEach(function(el) {
+            data[el.name] = el.value;
+        });
         $.ajax({
             url: '{:U("Admin/Cron/saveSchedule")}',
             type: 'POST',
@@ -261,10 +220,7 @@
             success: function(res) {
                 if (res.code === 0) {
                     App.toast('保存成功，crontab 配置已更新', 'success');
-                    // 刷新 crontab 显示
-                    $.getJSON('{:U("Admin/Cron/crontab")}', function(r) {
-                        if (r.code === 0) document.getElementById('crontab-content').textContent = r.data;
-                    });
+                    loadCrontab();
                 } else {
                     App.toast(res.msg || '保存失败', 'error');
                 }
@@ -274,11 +230,12 @@
         });
     }
 
-    // 加载 crontab 配置
-    $(function() {
+    function loadCrontab() {
         $.getJSON('{:U("Admin/Cron/crontab")}', function(res) {
             if (res.code === 0) document.getElementById('crontab-content').textContent = res.data;
         });
-    });
+    }
+
+    $(function() { loadCrontab(); });
     </script>
 </block>

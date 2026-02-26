@@ -2,117 +2,32 @@
 <block name="title">邮件队列管理</block>
 <block name="content">
     <nav class="breadcrumb">
-        <a href="{:U('Admin/Index/index')}"><i class="fa fa-home"></i> 首页</a>
-        <span class="breadcrumb-separator">/</span>
-        <a href="{:U('Admin/Index/index')}">后台管理</a>
-        <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-current">邮件队列管理</span>
+        <span class="breadcrumb-item"><a href="{:U('Admin/Index/index')}"><i class="fa fa-home"></i> 首页</a></span>
+        <span class="breadcrumb-item active">邮件队列管理</span>
     </nav>
 
     <style>
-        /* 移除冲突的自定义卡片和标签背景，使用 admin-components.css 全局规范 */
-        .stat-card {
-            text-decoration: none !important;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            transition: all 0.3s ease;
-        }
-
-        .stat-icon {
-            font-size: 24px;
-            color: var(--color-primary, #1677ff);
-            margin-bottom: 10px;
-        }
-
-        /* checkbox styles */
-        .ace,
-        #selectAllCheckbox {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            margin: 0;
-            padding: 0;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            background: #fff;
-            cursor: pointer;
-            position: relative;
-            vertical-align: middle;
-        }
-
-        .ace:checked,
-        #selectAllCheckbox:checked {
-            background: #337ab7;
-            border-color: #337ab7;
-        }
-
-        .ace:checked::after,
-        #selectAllCheckbox:checked::after {
-            content: '\2713';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .lbl {
-            display: inline-block;
-            margin-left: 5px;
-            cursor: pointer;
-        }
-
-        .pos-rel {
-            position: relative;
-        }
-
-        /* filter form */
-        .filter-form {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .filter-form .form-group {
-            margin-bottom: 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .filter-form label {
-            margin-bottom: 0;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
-        .filter-form select {
-            width: 120px;
-        }
-
-        /* table selected row */
-        .table tbody tr.selected>td {
-            background-color: #f5f8fc !important;
-        }
-
+        .stat-card { text-decoration: none !important; cursor: pointer; }
+        .stat-card:hover { transform: translateY(-2px); transition: all 0.3s ease; }
+        .filter-form { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .filter-form .form-group { margin-bottom: 0; display: flex; align-items: center; gap: 8px; }
+        .filter-form label { margin-bottom: 0; font-weight: 500; white-space: nowrap; }
+        .filter-form select { width: 120px; }
+        .table tbody tr.selected > td { background-color: #f5f8fc !important; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center; }
+        .modal-overlay.show { display: flex; }
+        .modal-box { background: #fff; border-radius: 8px; width: 500px; max-width: 90vw; max-height: 80vh; overflow-y: auto; box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+        .modal-box .modal-hd { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #f0f0f0; }
+        .modal-box .modal-hd h4 { margin: 0; font-size: 16px; }
+        .modal-box .modal-hd .close-btn { background: none; border: none; font-size: 22px; cursor: pointer; color: #999; line-height: 1; }
+        .modal-box .modal-bd { padding: 20px; }
+        .modal-box .modal-bd .form-group { margin-bottom: 14px; }
+        .modal-box .modal-bd label { display: block; margin-bottom: 6px; font-weight: 500; }
+        .modal-box .modal-ft { padding: 12px 20px; border-top: 1px solid #f0f0f0; text-align: right; display: flex; justify-content: flex-end; gap: 10px; }
         @media (max-width: 768px) {
-            .filter-form {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .filter-form .form-group {
-                width: 100%;
-            }
-
-            .filter-form select {
-                width: 100%;
-            }
+            .filter-form { flex-direction: column; align-items: stretch; }
+            .filter-form .form-group { width: 100%; }
+            .filter-form select { width: 100%; }
         }
     </style>
 
@@ -128,52 +43,39 @@
             <div class="card-body">
                 <!-- 统计信息 -->
                 <div class="stats-row">
-                    <a href="{:U('EmailQueue/index', ['status' => 'pending'])}" class="stat-card pending">
-                        <div class="stat-icon"><i class="fa fa-clock-o"></i></div>
-                        <div class="stat-num">{$stats.pending|default='0'}</div>
+                    <a href="{:U('EmailQueue/index', ['status' => 'pending'])}" class="stat-card">
+                        <div class="stat-num" style="color: #1677ff;">{$stats.pending|default='0'}</div>
                         <div class="stat-label">待发送</div>
                     </a>
-                    <a href="{:U('EmailQueue/index', ['status' => 'processing'])}" class="stat-card processing">
-                        <div class="stat-icon"><i class="fa fa-spinner"></i></div>
-                        <div class="stat-num">{$stats.processing|default='0'}</div>
+                    <a href="{:U('EmailQueue/index', ['status' => 'processing'])}" class="stat-card">
+                        <div class="stat-num" style="color: #fa8c16;">{$stats.processing|default='0'}</div>
                         <div class="stat-label">处理中</div>
                     </a>
-                    <a href="{:U('EmailQueue/index', ['status' => 'sent'])}" class="stat-card sent">
-                        <div class="stat-icon"><i class="fa fa-check"></i></div>
-                        <div class="stat-num">{$stats.sent|default='0'}</div>
+                    <a href="{:U('EmailQueue/index', ['status' => 'sent'])}" class="stat-card">
+                        <div class="stat-num" style="color: #52c41a;">{$stats.sent|default='0'}</div>
                         <div class="stat-label">已成功</div>
                     </a>
-                    <a href="{:U('EmailQueue/index', ['status' => 'failed'])}" class="stat-card failed">
-                        <div class="stat-icon"><i class="fa fa-times"></i></div>
-                        <div class="stat-num">{$stats.failed|default='0'}</div>
+                    <a href="{:U('EmailQueue/index', ['status' => 'failed'])}" class="stat-card">
+                        <div class="stat-num" style="color: #ff4d4f;">{$stats.failed|default='0'}</div>
                         <div class="stat-label">已失败</div>
                     </a>
-                    <a href="{:U('EmailQueue/index')}" class="stat-card total">
-                        <div class="stat-icon"><i class="fa fa-list"></i></div>
-                        <div class="stat-num">{$stats.total|default='0'}</div>
+                    <a href="{:U('EmailQueue/index')}" class="stat-card">
+                        <div class="stat-num" style="color: #8c8c8c;">{$stats.total|default='0'}</div>
                         <div class="stat-label">总计</div>
-                    </a>
-                    <a href="javascript:refreshStats();" class="stat-card refresh">
-                        <div class="stat-icon"><i class="fa fa-refresh"></i></div>
-                        <div class="stat-num">刷新</div>
-                        <div class="stat-label">获取最新</div>
                     </a>
                 </div>
 
-                <!-- 操作与筛选 -->
+                <!-- 操作工具栏 -->
                 <div class="batch-toolbar">
                     <div class="batch-left">
-                        <button type="button" class="btn btn-sm btn-primary" onclick="processQueue()"><i
-                                class="fa fa-play"></i> 手动处理队列</button>
-                        <button type="button" class="btn btn-sm btn-info" onclick="testEmail()"><i
-                                class="fa fa-envelope"></i> 测试邮件发送</button>
-                        <button type="button" class="btn btn-sm btn-warning" onclick="cleanupEmails()"><i
-                                class="fa fa-eraser"></i> 清理旧邮件</button>
-                        <button type="button" class="btn btn-sm btn-success" onclick="checkConfig()"><i
-                                class="fa fa-cog"></i> 检查邮件配置</button>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="processQueue()"><i class="fa fa-play"></i> 手动处理队列</button>
+                        <button type="button" class="btn btn-sm btn-info" onclick="openTestModal()"><i class="fa fa-envelope"></i> 测试邮件发送</button>
+                        <button type="button" class="btn btn-sm btn-warning" onclick="cleanupEmails()"><i class="fa fa-eraser"></i> 清理旧邮件</button>
+                        <button type="button" class="btn btn-sm btn-success" onclick="checkConfig()"><i class="fa fa-cog"></i> 检查邮件配置</button>
                     </div>
                 </div>
 
+                <!-- 筛选 + 批量操作 -->
                 <div class="batch-toolbar">
                     <div class="batch-left">
                         <form method="get" action="{:U('EmailQueue/index')}" class="filter-form">
@@ -181,44 +83,31 @@
                                 <label>状态：</label>
                                 <select name="status" class="form-control input-sm">
                                     <option value="">全部</option>
-                                    <option value="pending" <if condition="$status eq 'pending'">selected</if>>待发送
-                                    </option>
-                                    <option value="processing" <if condition="$status eq 'processing'">selected</if>>处理中
-                                    </option>
+                                    <option value="pending" <if condition="$status eq 'pending'">selected</if>>待发送</option>
+                                    <option value="processing" <if condition="$status eq 'processing'">selected</if>>处理中</option>
                                     <option value="sent" <if condition="$status eq 'sent'">selected</if>>已成功</option>
-                                    <option value="failed" <if condition="$status eq 'failed'">selected</if>>已失败
-                                    </option>
+                                    <option value="failed" <if condition="$status eq 'failed'">selected</if>>已失败</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label>类型：</label>
                                 <select name="email_type" class="form-control input-sm">
                                     <option value="">全部</option>
-                                    <option value="activation" <if condition="$emailType eq 'activation'">selected</if>
-                                        >账户激活</option>
-                                    <option value="password_reset" <if condition="$emailType eq 'password_reset'">
-                                        selected</if>>密码重置</option>
-                                    <option value="subscription" <if condition="$emailType eq 'subscription'">selected
-                                        </if>>订阅地址</option>
-                                    <option value="expiring" <if condition="$emailType eq 'expiring'">selected</if>>即将到期
-                                    </option>
-                                    <option value="expired" <if condition="$emailType eq 'expired'">selected</if>>已到期
-                                    </option>
-                                    <option value="order" <if condition="$emailType eq 'order'">selected</if>>订单通知
-                                    </option>
+                                    <option value="activation" <if condition="$emailType eq 'activation'">selected</if>>账户激活</option>
+                                    <option value="password_reset" <if condition="$emailType eq 'password_reset'">selected</if>>密码重置</option>
+                                    <option value="subscription" <if condition="$emailType eq 'subscription'">selected</if>>订阅地址</option>
+                                    <option value="expiring" <if condition="$emailType eq 'expiring'">selected</if>>即将到期</option>
+                                    <option value="expired" <if condition="$emailType eq 'expired'">selected</if>>已到期</option>
+                                    <option value="order" <if condition="$emailType eq 'order'">selected</if>>订单通知</option>
                                 </select>
                             </div>
-                            <button type="submit" class="btn btn-sm btn-default"><i class="fa fa-search"></i>
-                                筛选</button>
+                            <button type="submit" class="btn btn-sm btn-default"><i class="fa fa-search"></i> 筛选</button>
                         </form>
                     </div>
                     <div>
-                        <button type="button" class="btn btn-sm btn-success" onclick="selectAll()"><i
-                                class="fa fa-check-square"></i> 全选</button>
-                        <button type="button" class="btn btn-sm btn-warning" onclick="unselectAll()"><i
-                                class="fa fa-square-o"></i> 取消全选</button>
-                        <button type="button" class="btn btn-sm btn-danger" onclick="batchDelete()"><i
-                                class="fa fa-trash"></i> 批量删除</button>
+                        <button type="button" class="btn btn-sm btn-success" onclick="selectAll()"><i class="fa fa-check-square"></i> 全选</button>
+                        <button type="button" class="btn btn-sm btn-warning" onclick="unselectAll()"><i class="fa fa-square-o"></i> 取消全选</button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="batchDelete()"><i class="fa fa-trash"></i> 批量删除</button>
                     </div>
                 </div>
 
@@ -228,11 +117,8 @@
                         <table class="table table-striped table-hover">
                             <thead>
                                 <tr>
-                                    <th width="40" class="center">
-                                        <label class="pos-rel">
-                                            <input type="checkbox" class="ace" id="checkAll" title="全选" />
-                                            <span class="lbl"></span>
-                                        </label>
+                                    <th width="40" style="text-align:center;">
+                                        <input type="checkbox" id="checkAll" title="全选" />
                                     </th>
                                     <th>ID</th>
                                     <th>收件人</th>
@@ -247,46 +133,29 @@
                             <tbody>
                                 <volist name="emails" id="email">
                                     <tr>
-                                        <td class="center">
-                                            <label class="pos-rel">
-                                                <input type="checkbox" class="ace email-checkbox" name="ids[]"
-                                                    value="{$email.id}" />
-                                                <span class="lbl"></span>
-                                            </label>
+                                        <td style="text-align:center;">
+                                            <input type="checkbox" class="email-checkbox" name="ids[]" value="{$email.id}" />
                                         </td>
                                         <td>{$email.id}</td>
                                         <td>{$email.to_email}</td>
-                                        <td><a href="{:U('EmailQueue/detail', array('id' => $email['id']))}">{$email.subject|mb_substr=0,30,'utf-8'}
-                                                <if condition="mb_strlen($email['subject'], 'utf-8') gt 30">...</if>
-                                            </a>
-                                        </td>
+                                        <td><a href="{:U('EmailQueue/detail', array('id' => $email['id']))}">{$email.subject|mb_substr=0,30,'utf-8'}<if condition="mb_strlen($email['subject'], 'utf-8') gt 30">...</if></a></td>
                                         <td>
                                             <switch name="email.type">
-                                                <case value="activation"><span
-                                                        class="status-badge status-info">账户激活</span></case>
-                                                <case value="password_reset"><span
-                                                        class="status-badge status-pending">密码重置</span></case>
-                                                <case value="subscription"><span
-                                                        class="status-badge status-purple">订阅地址</span></case>
-                                                <case value="expiring"><span
-                                                        class="status-badge status-pending">即将到期</span></case>
-                                                <case value="expired"><span
-                                                        class="status-badge status-disabled">已到期</span></case>
-                                                <case value="order"><span class="status-badge status-active">订单通知</span>
-                                                </case>
+                                                <case value="activation"><span class="status-badge status-info">账户激活</span></case>
+                                                <case value="password_reset"><span class="status-badge status-warning">密码重置</span></case>
+                                                <case value="subscription"><span class="status-badge status-active">订阅地址</span></case>
+                                                <case value="expiring"><span class="status-badge status-warning">即将到期</span></case>
+                                                <case value="expired"><span class="status-badge status-danger">已到期</span></case>
+                                                <case value="order"><span class="status-badge status-info">订单通知</span></case>
                                                 <default /><span class="status-badge status-gray">{$email.type}</span>
                                             </switch>
                                         </td>
                                         <td>
                                             <switch name="email.status">
-                                                <case value="pending"><span class="status-badge status-info">待发送</span>
-                                                </case>
-                                                <case value="processing"><span
-                                                        class="status-badge status-pending">处理中</span></case>
-                                                <case value="sent"><span class="status-badge status-active">已成功</span>
-                                                </case>
-                                                <case value="failed"><span
-                                                        class="status-badge status-disabled">已失败</span></case>
+                                                <case value="pending"><span class="status-badge status-info">待发送</span></case>
+                                                <case value="processing"><span class="status-badge status-warning">处理中</span></case>
+                                                <case value="sent"><span class="status-badge status-active">已成功</span></case>
+                                                <case value="failed"><span class="status-badge status-danger">已失败</span></case>
                                                 <default /><span class="status-badge status-gray">{$email.status}</span>
                                             </switch>
                                         </td>
@@ -294,24 +163,18 @@
                                         <td>{$email.created_at|date='Y-m-d H:i:s',###}</td>
                                         <td>
                                             <div class="action-group">
-                                                <a href="{:U('EmailQueue/detail', array('id' => $email['id']))}"
-                                                    class="btn btn-xs btn-info"><i class="fa fa-eye"></i> 详情</a>
-                                                <if
-                                                    condition="$email['status'] eq 'failed' or $email['status'] eq 'pending'">
-                                                    <button type="button" class="btn btn-xs btn-warning"
-                                                        onclick="resendEmail('{$email.id}')"><i
-                                                            class="fa fa-repeat"></i> 重发</button>
+                                                <a href="{:U('EmailQueue/detail', array('id' => $email['id']))}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> 详情</a>
+                                                <if condition="$email['status'] eq 'failed' or $email['status'] eq 'pending'">
+                                                    <button type="button" class="btn btn-xs btn-warning" onclick="resendEmail('{$email.id}')"><i class="fa fa-repeat"></i> 重发</button>
                                                 </if>
-                                                <button type="button" class="btn btn-xs btn-danger"
-                                                    onclick="deleteEmail('{$email.id}')"><i class="fa fa-trash"></i>
-                                                    删除</button>
+                                                <button type="button" class="btn btn-xs btn-danger" onclick="deleteEmail('{$email.id}')"><i class="fa fa-trash"></i> 删除</button>
                                             </div>
                                         </td>
                                     </tr>
                                 </volist>
                                 <if condition="empty($emails)">
                                     <tr>
-                                        <td colspan="9" class="text-center" style="padding: 20px;">
+                                        <td colspan="9" style="text-align:center; padding:20px;">
                                             <i class="fa fa-info-circle"></i> 暂无匹配的邮件记录
                                         </td>
                                     </tr>
@@ -326,49 +189,36 @@
                     <volist name="emails" id="email">
                         <div class="mobile-card">
                             <div class="card-header-row">
-                                <span class="card-title"><a
-                                        href="{:U('EmailQueue/detail', array('id' => $email['id']))}">{$email.subject|mb_substr=0,20,'utf-8'}
-                                        <if condition="mb_strlen($email['subject'], 'utf-8') gt 20">...</if>
-                                    </a></span>
+                                <span class="card-title"><a href="{:U('EmailQueue/detail', array('id' => $email['id']))}">{$email.subject|mb_substr=0,20,'utf-8'}<if condition="mb_strlen($email['subject'], 'utf-8') gt 20">...</if></a></span>
                                 <switch name="email.status">
                                     <case value="pending"><span class="status-badge status-info">待发送</span></case>
-                                    <case value="processing"><span class="status-badge status-pending">处理中</span></case>
+                                    <case value="processing"><span class="status-badge status-warning">处理中</span></case>
                                     <case value="sent"><span class="status-badge status-active">已成功</span></case>
-                                    <case value="failed"><span class="status-badge status-disabled">已失败</span></case>
+                                    <case value="failed"><span class="status-badge status-danger">已失败</span></case>
                                     <default /><span class="status-badge status-gray">{$email.status}</span>
                                 </switch>
                             </div>
-                            <div class="card-row"><span class="card-label">收件人</span><span
-                                    class="card-value">{$email.to_email}</span></div>
+                            <div class="card-row"><span class="card-label">ID</span><span class="card-value">{$email.id}</span></div>
+                            <div class="card-row"><span class="card-label">收件人</span><span class="card-value">{$email.to_email}</span></div>
                             <div class="card-row"><span class="card-label">类型</span><span class="card-value">
-                                    <switch name="email.type">
-                                        <case value="activation"><span class="status-badge status-info">账户激活</span>
-                                        </case>
-                                        <case value="password_reset"><span
-                                                class="status-badge status-pending">密码重置</span></case>
-                                        <case value="subscription"><span class="status-badge status-purple">订阅地址</span>
-                                        </case>
-                                        <case value="expiring"><span class="status-badge status-pending">即将到期</span>
-                                        </case>
-                                        <case value="expired"><span class="status-badge status-disabled">已到期</span>
-                                        </case>
-                                        <case value="order"><span class="status-badge status-active">订单通知</span></case>
-                                        <default /><span class="status-badge status-gray">{$email.type}</span>
-                                    </switch>
-                                </span></div>
-                            <div class="card-row"><span class="card-label">重试次数</span><span
-                                    class="card-value">{$email.retry_count}</span></div>
-                            <div class="card-row"><span class="card-label">创建时间</span><span
-                                    class="card-value">{$email.created_at|date='Y-m-d H:i:s',###}</span></div>
+                                <switch name="email.type">
+                                    <case value="activation"><span class="status-badge status-info">账户激活</span></case>
+                                    <case value="password_reset"><span class="status-badge status-warning">密码重置</span></case>
+                                    <case value="subscription"><span class="status-badge status-active">订阅地址</span></case>
+                                    <case value="expiring"><span class="status-badge status-warning">即将到期</span></case>
+                                    <case value="expired"><span class="status-badge status-danger">已到期</span></case>
+                                    <case value="order"><span class="status-badge status-info">订单通知</span></case>
+                                    <default /><span class="status-badge status-gray">{$email.type}</span>
+                                </switch>
+                            </span></div>
+                            <div class="card-row"><span class="card-label">重试次数</span><span class="card-value">{$email.retry_count}</span></div>
+                            <div class="card-row"><span class="card-label">创建时间</span><span class="card-value">{$email.created_at|date='Y-m-d H:i:s',###}</span></div>
                             <div class="card-actions">
-                                <a href="{:U('EmailQueue/detail', array('id' => $email['id']))}"
-                                    class="btn btn-xs btn-info"><i class="fa fa-eye"></i> 详情</a>
+                                <a href="{:U('EmailQueue/detail', array('id' => $email['id']))}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> 详情</a>
                                 <if condition="$email['status'] eq 'failed' or $email['status'] eq 'pending'">
-                                    <button type="button" class="btn btn-xs btn-warning"
-                                        onclick="resendEmail('{$email.id}')"><i class="fa fa-repeat"></i> 重发</button>
+                                    <button type="button" class="btn btn-xs btn-warning" onclick="resendEmail('{$email.id}')"><i class="fa fa-repeat"></i> 重发</button>
                                 </if>
-                                <button type="button" class="btn btn-xs btn-danger"
-                                    onclick="deleteEmail('{$email.id}')"><i class="fa fa-trash"></i> 删除</button>
+                                <button type="button" class="btn btn-xs btn-danger" onclick="deleteEmail('{$email.id}')"><i class="fa fa-trash"></i> 删除</button>
                             </div>
                         </div>
                     </volist>
@@ -396,237 +246,188 @@
     </div>
 
     <!-- 测试邮件模态框 -->
-    <div class="modal fade" id="testEmailModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                    <h4 class="modal-title">测试邮件发送</h4>
-                </div>
-                <div class="modal-body">
-                    <form id="testEmailForm">
-                        <div class="form-group">
-                            <label>收件人邮箱：</label>
-                            <input type="email" class="form-control" name="email" required placeholder="请输入收件人邮箱地址">
-                        </div>
-                        <div class="form-group">
-                            <label>邮件主题：</label>
-                            <input type="text" class="form-control" name="subject" value="这是一封来自后台的测试邮件">
-                        </div>
-                        <div class="form-group">
-                            <label>邮件内容：</label>
-                            <textarea class="form-control" name="content" rows="5">如果您收到这封邮件，表示您的邮件发送配置工作正常。</textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" onclick="sendTestEmail()">立即发送</button>
-                </div>
+    <div class="modal-overlay" id="testEmailModal">
+        <div class="modal-box">
+            <div class="modal-hd">
+                <h4>测试邮件发送</h4>
+                <button type="button" class="close-btn" onclick="closeTestModal()">&times;</button>
+            </div>
+            <div class="modal-bd">
+                <form id="testEmailForm">
+                    <div class="form-group">
+                        <label>收件人邮箱：</label>
+                        <input type="email" class="form-control" name="email" required placeholder="请输入收件人邮箱地址">
+                    </div>
+                    <div class="form-group">
+                        <label>邮件主题：</label>
+                        <input type="text" class="form-control" name="subject" value="这是一封来自后台的测试邮件">
+                    </div>
+                    <div class="form-group">
+                        <label>邮件内容：</label>
+                        <textarea class="form-control" name="content" rows="5">如果您收到这封邮件，表示您的邮件发送配置工作正常。</textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-ft">
+                <button type="button" class="btn btn-default" onclick="closeTestModal()">取消</button>
+                <button type="button" class="btn btn-primary" onclick="sendTestEmail()">立即发送</button>
             </div>
         </div>
     </div>
 
     <script>
+        /* ---- App.toast 轻量提示 ---- */
+        var App = App || {};
+        App.toast = function(msg, type) {
+            type = type || 'info';
+            var colors = { success: '#52c41a', error: '#ff4d4f', warning: '#faad14', info: '#1677ff' };
+            var bg = colors[type] || colors.info;
+            var el = document.createElement('div');
+            el.textContent = msg;
+            el.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:99999;padding:10px 24px;border-radius:6px;color:#fff;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:opacity 0.3s;background:' + bg;
+            document.body.appendChild(el);
+            setTimeout(function(){ el.style.opacity = '0'; }, 2500);
+            setTimeout(function(){ el.remove(); }, 3000);
+        };
+
+        /* ---- 全选 / 取消全选 ---- */
         function initSelectAll() {
             var $checkAll = $('#checkAll');
             var $checkboxes = $('.email-checkbox');
             if ($checkboxes.length === 0) return;
-            $checkAll.off('change click');
-            $checkboxes.off('change click');
-            $checkAll.on('change', function () {
+            $checkAll.off('change').on('change', function() {
                 var isChecked = this.checked;
                 $checkboxes.prop('checked', isChecked);
                 $checkboxes.closest('tr').toggleClass('selected', isChecked);
             });
-            $checkboxes.on('change', function () {
-                var checkedCount = $checkboxes.filter(':checked').length;
-                var totalCount = $checkboxes.length;
-                $checkAll.prop('checked', checkedCount === totalCount);
+            $checkboxes.off('change').on('change', function() {
+                $checkAll.prop('checked', $checkboxes.length === $checkboxes.filter(':checked').length);
                 $(this).closest('tr').toggleClass('selected', this.checked);
             });
         }
 
-        jQuery(function ($) {
-            initSelectAll();
-            setTimeout(initSelectAll, 500);
-            setTimeout(initSelectAll, 1000);
+        function selectAll() {
+            $('.email-checkbox').prop('checked', true).closest('tr').addClass('selected');
+            $('#checkAll').prop('checked', true);
+        }
 
-            $('#jumpButton').click(function () {
-                var page = parseInt($('#jumpPage').val());
-                if (page > 0) {
-                    var url = new URL(window.location.href);
-                    url.searchParams.set('p', page);
-                    window.location.href = url.toString();
-                } else {
-                    layer.msg('请输入有效的页码', { icon: 2 });
-                }
-            });
+        function unselectAll() {
+            $('.email-checkbox').prop('checked', false).closest('tr').removeClass('selected');
+            $('#checkAll').prop('checked', false);
+        }
 
-            $('#jumpPage').keypress(function (e) {
-                if (e.which == 13) $('#jumpButton').click();
-            });
-
-            // 模态框兼容
-            $('#testEmailModal').on('hidden.bs.modal', function () {
-                $('body').removeClass('modal-open');
-            });
-            $('#testEmailModal').on('click', function (e) {
-                if (e.target === this) {
-                    if (typeof $(this).modal === 'function') { $(this).modal('hide'); }
-                    else { $(this).removeClass('show').css('display', 'none'); }
-                    $('body').removeClass('modal-open');
-                }
-            });
-            $('.modal .close, .modal .btn-default').click(function () {
-                if (typeof $('#testEmailModal').modal === 'function') { $('#testEmailModal').modal('hide'); }
-                else { $('#testEmailModal').removeClass('show').css('display', 'none'); }
-                $('body').removeClass('modal-open');
-            });
-        });
-
-        function showLoading(message) {
-            $('body').append('<div id="loading-mask" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);color:white;display:flex;align-items:center;justify-content:center;z-index:9999;"><h3><i class="fa fa-spinner fa-spin"></i> ' + (message || '正在处理中...') + '</h3></div>');
+        /* ---- Loading 遮罩 ---- */
+        function showLoading(msg) {
+            $('body').append('<div id="loading-mask" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);color:#fff;display:flex;align-items:center;justify-content:center;z-index:99998;"><h3><i class="fa fa-spinner fa-spin"></i> ' + (msg || '正在处理中...') + '</h3></div>');
         }
         function hideLoading() { $('#loading-mask').remove(); }
 
-        function filterByStatus(status) {
-            var url = new URL(window.location.href);
-            if (status) { url.searchParams.set('status', status); } else { url.searchParams.delete('status'); }
-            window.location.href = url.toString();
-        }
+        /* ---- 模态框 ---- */
+        function openTestModal() { $('#testEmailModal').addClass('show'); }
+        function closeTestModal() { $('#testEmailModal').removeClass('show'); }
 
-        function refreshStats() { showLoading('正在刷新...'); location.reload(); }
-
+        /* ---- AJAX 操作 ---- */
         function processQueue() {
-            if (confirm('确定要手动触发一次邮件队列处理吗？此操作可能需要一些时间。')) {
-                showLoading('正在处理邮件队列...');
-                $.post('{:U("EmailQueue/processQueue")}')
-                    .done(function (res) { alert(res.msg || '处理完成'); if (res.status == 1) location.reload(); })
-                    .fail(function () { alert('请求失败，请检查网络或后台日志'); })
-                    .always(hideLoading);
-            }
-        }
-
-        function testEmail() {
-            if (typeof $('#testEmailModal').modal === 'function') { $('#testEmailModal').modal('show'); }
-            else { $('#testEmailModal').addClass('show').css('display', 'block'); }
-            $('body').addClass('modal-open');
+            if (!confirm('确定要手动触发一次邮件队列处理吗？')) return;
+            showLoading('正在处理邮件队列...');
+            $.post('{:U("EmailQueue/processQueue")}')
+                .done(function(res) {
+                    App.toast(res.msg || '处理完成', res.status == 1 ? 'success' : 'error');
+                    if (res.status == 1) setTimeout(function(){ location.reload(); }, 800);
+                })
+                .fail(function() { App.toast('请求失败，请检查网络或后台日志', 'error'); })
+                .always(hideLoading);
         }
 
         function sendTestEmail() {
-            var formData = $('#testEmailForm').serialize();
-            if (!$('#testEmailForm')[0].checkValidity()) { alert('请填写完整的邮件信息'); return; }
+            var form = $('#testEmailForm')[0];
+            if (!form.checkValidity()) { App.toast('请填写完整的邮件信息', 'warning'); return; }
             showLoading('正在发送测试邮件...');
-            $.post('{:U("EmailQueue/testEmail")}', formData)
-                .done(function (res) {
-                    alert(res.msg || '测试邮件已加入发送队列');
-                    if (res.status == 1) {
-                        if (typeof $('#testEmailModal').modal === 'function') { $('#testEmailModal').modal('hide'); }
-                        else { $('#testEmailModal').removeClass('show').css('display', 'none'); }
-                        $('body').removeClass('modal-open');
-                        $('#testEmailForm')[0].reset();
-                    }
+            $.post('{:U("EmailQueue/testEmail")}', $('#testEmailForm').serialize())
+                .done(function(res) {
+                    App.toast(res.msg || '操作完成', res.status == 1 ? 'success' : 'error');
+                    if (res.status == 1) { closeTestModal(); form.reset(); }
                 })
-                .fail(function () { alert('请求失败，请检查网络或后台日志'); })
+                .fail(function() { App.toast('请求失败，请检查网络或后台日志', 'error'); })
                 .always(hideLoading);
         }
 
         function cleanupEmails() {
-            var days = prompt("此操作不可恢复！\n请输入要保留的最近多少天的邮件记录？\n（例如输入 7，将删除7天前的已发送和已失败邮件）", "7");
-            if (days !== null && !isNaN(parseInt(days))) {
-                var daysInt = parseInt(days);
-                if (daysInt <= 0) { alert('保留天数必须大于0！'); return; }
-                showLoading('正在清理旧邮件...');
-                $.post('{:U("EmailQueue/cleanup")}', { days: daysInt })
-                    .done(function (res) { alert(res.msg || '清理完成'); if (res.status == 1) location.reload(); })
-                    .fail(function () { alert('请求失败，请检查网络或后台日志'); })
-                    .always(hideLoading);
-            } else if (days !== null) { alert('请输入有效的数字！'); }
+            var days = prompt('请输入要保留的最近天数（例如 7 表示删除7天前的已发送和已失败邮件）：', '7');
+            if (days === null) return;
+            var daysInt = parseInt(days);
+            if (isNaN(daysInt) || daysInt <= 0) { App.toast('请输入有效的正整数', 'warning'); return; }
+            showLoading('正在清理旧邮件...');
+            $.post('{:U("EmailQueue/cleanup")}', { days: daysInt })
+                .done(function(res) {
+                    App.toast(res.msg || '清理完成', res.status == 1 ? 'success' : 'error');
+                    if (res.status == 1) setTimeout(function(){ location.reload(); }, 800);
+                })
+                .fail(function() { App.toast('请求失败，请检查网络或后台日志', 'error'); })
+                .always(hideLoading);
         }
 
         function checkConfig() {
             showLoading('正在检查配置...');
             $.get('{:U("EmailQueue/checkConfig")}')
-                .done(function (res) {
+                .done(function(res) {
                     if (res.status == 1) {
-                        var config = res.config;
-                        var message = '邮件配置信息：\n\n' +
-                            '配置来源: ' + (config.config_source || '未知') + '\n\n' +
-                            'SMTP服务器: ' + (config.EMAIL_SMTP || '未配置') + '\n' +
-                            'SMTP端口: ' + (config.EMAIL_PORT || '未配置') + '\n' +
-                            '用户名: ' + (config.EMAIL_USERNAME || '未配置') + '\n' +
-                            '密码: ' + (config.EMAIL_PASSWORD ? '******' : '未配置') + '\n' +
-                            '加密方式: ' + (config.EMAIL_SMTP_SECURE || '未配置') + '\n' +
-                            '发件人名称: ' + (config.EMAIL_FROM_NAME || '未配置') + '\n\n' +
+                        var c = res.config;
+                        var info = '配置来源: ' + (c.config_source || '未知') + '\n' +
+                            'SMTP服务器: ' + (c.EMAIL_SMTP || '未配置') + '\n' +
+                            'SMTP端口: ' + (c.EMAIL_PORT || '未配置') + '\n' +
+                            '用户名: ' + (c.EMAIL_USERNAME || '未配置') + '\n' +
+                            '密码: ' + (c.EMAIL_PASSWORD ? '******' : '未配置') + '\n' +
+                            '加密方式: ' + (c.EMAIL_SMTP_SECURE || '未配置') + '\n' +
+                            '发件人名称: ' + (c.EMAIL_FROM_NAME || '未配置') + '\n\n' +
                             '配置状态: ' + (res.isComplete ? '完整' : '不完整，请检查配置');
-                        alert(message);
-                    } else { alert(res.msg || '获取配置失败'); }
+                        App.toast(res.isComplete ? '邮件配置完整' : '邮件配置不完整', res.isComplete ? 'success' : 'warning');
+                        // 用 prompt 展示详细信息方便复制
+                        prompt('邮件配置详情（可复制）：', info);
+                    } else {
+                        App.toast(res.msg || '获取配置失败', 'error');
+                    }
                 })
-                .fail(function () { alert('请求失败，请检查网络或后台日志'); })
+                .fail(function() { App.toast('请求失败，请检查网络或后台日志', 'error'); })
                 .always(hideLoading);
         }
 
         function resendEmail(id) {
-            if (confirm('确定要重新发送邮件 ID: ' + id + ' 吗？')) {
-                showLoading('正在请求重发...');
-                $.post('{:U("EmailQueue/resend")}', { id: id })
-                    .done(function (res) { alert(res.msg || '操作完成'); if (res.status == 1) location.reload(); })
-                    .fail(function () { alert('请求失败，请检查网络或后台日志'); })
-                    .always(hideLoading);
-            }
+            if (!confirm('确定要重新发送邮件 ID: ' + id + ' 吗？')) return;
+            showLoading('正在请求重发...');
+            $.post('{:U("EmailQueue/resend")}', { id: id })
+                .done(function(res) {
+                    App.toast(res.msg || '操作完成', res.status == 1 ? 'success' : 'error');
+                    if (res.status == 1) setTimeout(function(){ location.reload(); }, 800);
+                })
+                .fail(function() { App.toast('请求失败，请检查网络或后台日志', 'error'); })
+                .always(hideLoading);
         }
 
         function deleteEmail(id) {
-            if (confirm('此操作不可恢复！确定要删除邮件 ID: ' + id + ' 吗？')) {
-                showLoading('正在删除...');
-                $.post('{:U("EmailQueue/delete")}', { id: id })
-                    .done(function (res) { alert(res.msg || '操作完成'); if (res.status == 1) location.reload(); })
-                    .fail(function () { alert('请求失败，请检查网络或后台日志'); })
-                    .always(hideLoading);
-            }
+            if (!confirm('此操作不可恢复！确定要删除邮件 ID: ' + id + ' 吗？')) return;
+            showLoading('正在删除...');
+            $.post('{:U("EmailQueue/delete")}', { id: id })
+                .done(function(res) {
+                    App.toast(res.msg || '操作完成', res.status == 1 ? 'success' : 'error');
+                    if (res.status == 1) setTimeout(function(){ location.reload(); }, 800);
+                })
+                .fail(function() { App.toast('请求失败，请检查网络或后台日志', 'error'); })
+                .always(hideLoading);
         }
 
         function batchDelete() {
-            var ids = $('.email-checkbox:checked').map(function () { return $(this).val(); }).get();
-            if (ids.length === 0) { alert('请至少选择一封邮件！'); return; }
-            if (confirm('此操作不可恢复！确定要批量删除选中的 ' + ids.length + ' 封邮件吗？')) {
-                showLoading('正在批量删除...');
-                $.post('{:U("EmailQueue/batchDelete")}', { ids: ids.join(',') })
-                    .done(function (res) { alert(res.msg || '操作完成'); if (res.status == 1) location.reload(); })
-                    .fail(function () { alert('请求失败，请检查网络或后台日志'); })
-                    .always(hideLoading);
-            }
-        }
-
-        function forceSelectAll() {
-            var $checkAll = $('#checkAll');
-            var $checkboxes = $('.email-checkbox');
-            if ($checkboxes.length > 0) {
-                $checkboxes.prop('checked', true);
-                $checkAll.prop('checked', true);
-                $checkboxes.closest('tr').addClass('selected');
-            }
-        }
-
-        function selectAll() {
-            var $checkAll = $('#checkAll');
-            var $checkboxes = $('.email-checkbox');
-            if ($checkboxes.length > 0) {
-                $checkboxes.prop('checked', true);
-                $checkAll.prop('checked', true);
-                $checkboxes.closest('tr').addClass('selected');
-            }
-        }
-
-        function unselectAll() {
-            var $checkAll = $('#checkAll');
-            var $checkboxes = $('.email-checkbox');
-            if ($checkboxes.length > 0) {
-                $checkboxes.prop('checked', false);
-                $checkAll.prop('checked', false);
-                $checkboxes.closest('tr').removeClass('selected');
-            }
+            var ids = $('.email-checkbox:checked').map(function() { return $(this).val(); }).get();
+            if (ids.length === 0) { App.toast('请至少选择一封邮件', 'warning'); return; }
+            if (!confirm('此操作不可恢复！确定要批量删除选中的 ' + ids.length + ' 封邮件吗？')) return;
+            showLoading('正在批量删除...');
+            $.post('{:U("EmailQueue/batchDelete")}', { ids: ids.join(',') })
+                .done(function(res) {
+                    App.toast(res.msg || '操作完成', res.status == 1 ? 'success' : 'error');
+                    if (res.status == 1) setTimeout(function(){ location.reload(); }, 800);
+                })
+                .fail(function() { App.toast('请求失败，请检查网络或后台日志', 'error'); })
+                .always(hideLoading);
         }
 
         function jumpPage(page) {
@@ -636,5 +437,22 @@
                 window.location.href = url.toString();
             }
         }
+
+        /* ---- 初始化 ---- */
+        jQuery(function($) {
+            initSelectAll();
+
+            $('#jumpButton').click(function() {
+                var page = parseInt($('#jumpPage').val());
+                if (page > 0) jumpPage(page);
+                else App.toast('请输入有效的页码', 'warning');
+            });
+            $('#jumpPage').keypress(function(e) { if (e.which == 13) $('#jumpButton').click(); });
+
+            // 点击遮罩关闭模态框
+            $('#testEmailModal').on('click', function(e) {
+                if (e.target === this) closeTestModal();
+            });
+        });
     </script>
 </block>
