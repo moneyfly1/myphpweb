@@ -44,7 +44,7 @@
             </div>
             <div class="card-body">
 <!-- PLACEHOLDER_EDIT_FORM -->
-                <form method="post" action="{:U('Admin/NodeMgr/edit')}">
+                <form method="post" action="{:U('Admin/NodeMgr/edit')}" data-ajax="true" data-redirect="reload">
                     <input type="hidden" name="id" value="{$data['id']}">
                     <table class="table">
                         <tr>

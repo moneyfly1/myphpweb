@@ -60,7 +60,7 @@
                     <else /><span class="status-tag status-3">已关闭</span>
                     </if>
                     <if condition="$ticket['status'] neq 3">
-                    <a href="{:U('Admin/Ticket/close', array('id'=>$ticket['id']))}" class="btn btn-warning" style="padding:6px 16px;font-size:13px;" onclick="return confirm('确定关闭该工单？')">关闭工单</a>
+                    <a href="{:U('Admin/Ticket/close', array('id'=>$ticket['id']))}" class="btn btn-warning" style="padding:6px 16px;font-size:13px;" data-ajax="true" data-confirm="确定关闭该工单？">关闭工单</a>
                     </if>
                 </div>
             </div>
@@ -141,7 +141,7 @@
         <div class="card">
             <div class="card-header">回复工单</div>
             <div class="card-body">
-                <form action="{:U('Admin/Ticket/detail', array('id'=>$ticket['id']))}" method="post" class="reply-form">
+                <form action="{:U('Admin/Ticket/detail', array('id'=>$ticket['id']))}" method="post" class="reply-form" data-ajax="true" data-redirect="reload">
                     <textarea name="content" placeholder="请输入回复内容..." required></textarea>
                     <div class="reply-form-actions">
                         <button type="submit" class="btn btn-primary">提交回复</button>

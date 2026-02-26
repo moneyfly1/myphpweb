@@ -7,6 +7,15 @@ use Common\Controller\AdminBaseController;
  */
 class NotificationController extends AdminBaseController{
 
+    private function _ok($msg, $url='') {
+        if (IS_AJAX) { $this->ajaxReturn(array('code'=>0,'msg'=>$msg)); }
+        else { $this->success($msg, $url); }
+    }
+    private function _fail($msg) {
+        if (IS_AJAX) { $this->ajaxReturn(array('code'=>1,'msg'=>$msg)); }
+        else { $this->error($msg); }
+    }
+
     /**
      * 通知设置页面
      */
@@ -26,7 +35,7 @@ class NotificationController extends AdminBaseController{
         
         // 验证数据
         if(empty($data['telegram_bot_token']) && empty($data['bark_key']) && empty($data['email_to'])){
-            $this->error('至少需要配置一种通知方式');
+            $this->_fail('至少需要配置一种通知方式');
         }
         
         // 保存配置到文件
@@ -50,9 +59,9 @@ class NotificationController extends AdminBaseController{
         $result = $this->saveNotificationConfig($config);
         
         if($result){
-            $this->success('通知设置保存成功', U('Admin/Notification/index'));
+            $this->_ok('通知设置保存成功', U('Admin/Notification/index'));
         } else {
-            $this->error('通知设置保存失败');
+            $this->_fail('通知设置保存失败');
         }
     }
     
@@ -68,33 +77,33 @@ class NotificationController extends AdminBaseController{
         switch($type){
             case 'telegram':
                 if(!$config['telegram']['enabled'] || empty($config['telegram']['bot_token'])){
-                    $this->error('Telegram通知未启用或配置不完整');
+                    $this->_fail('Telegram通知未启用或配置不完整');
                 }
                 $result = $this->sendTelegramNotification($testMessage, $config['telegram']);
                 break;
-                
+
             case 'bark':
                 if(!$config['bark']['enabled'] || empty($config['bark']['key'])){
-                    $this->error('Bark通知未启用或配置不完整');
+                    $this->_fail('Bark通知未启用或配置不完整');
                 }
                 $result = $this->sendBarkNotification($testMessage, $config['bark']);
                 break;
-                
+
             case 'email':
                 if(!$config['email']['enabled'] || empty($config['email']['to'])){
-                    $this->error('邮件通知未启用或配置不完整');
+                    $this->_fail('邮件通知未启用或配置不完整');
                 }
                 $result = $this->sendEmailNotification($testMessage, $config['email']);
                 break;
-                
+
             default:
-                $this->error('无效的通知类型');
+                $this->_fail('无效的通知类型');
         }
-        
+
         if($result){
-            $this->success('测试通知发送成功');
+            $this->_ok('测试通知发送成功');
         } else {
-            $this->error('测试通知发送失败，请检查配置');
+            $this->_fail('测试通知发送失败，请检查配置');
         }
     }
     

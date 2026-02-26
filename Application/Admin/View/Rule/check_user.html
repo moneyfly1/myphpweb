@@ -92,7 +92,7 @@
                                         <if condition="in_array($v['id'],$uids)">
                                             <span class="badge badge-success">已经是{$group_name}</span>
                                         <else/>
-                                            <a href="{:U('Admin/Rule/add_user_to_group',array('uid'=>$v['id'],'group_id'=>$_GET['group_id'],'username'=>$_GET['username']))}" class="btn btn-primary">
+                                            <a href="{:U('Admin/Rule/add_user_to_group',array('uid'=>$v['id'],'group_id'=>$_GET['group_id'],'username'=>$_GET['username']))}" data-ajax="true" class="btn btn-primary">
                                                 <i class="fa fa-user-plus"></i>
                                                 设为{$group_name}
                                             </a>

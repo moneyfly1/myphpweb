@@ -37,7 +37,7 @@
             </div>
             <div class="card-body">
             <div class="tab-content">
-                <form method="post" action="{:U('Admin/Announcement/edit')}">
+                <form method="post" action="{:U('Admin/Announcement/edit')}" data-ajax="true" data-redirect="reload">
                     <input type="hidden" name="id" value="{$data['id']}">
                     <table class="form-table">
                         <tr>

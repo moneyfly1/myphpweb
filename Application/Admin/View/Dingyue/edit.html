@@ -398,7 +398,7 @@
                 $('#success-message, #error-message').hide();
                 
                 $.post($(this).attr('action'), $(this).serialize(), function(data) {
-                    if (data.code == 1) {
+                    if (data.code == 0) {
                         // 显示成功消息
                         $('#success-message').html('订阅修改成功！正在跳转...').show();
                         

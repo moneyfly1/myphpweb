@@ -6,6 +6,14 @@ use Common\Controller\AdminBaseController;
  */
 class OrderController extends AdminBaseController
 {
+    private function _ok($msg, $url='') {
+        if (IS_AJAX) { $this->ajaxReturn(array('code'=>0,'msg'=>$msg)); }
+        else { $this->success($msg, $url); }
+    }
+    private function _fail($msg) {
+        if (IS_AJAX) { $this->ajaxReturn(array('code'=>1,'msg'=>$msg)); }
+        else { $this->error($msg); }
+    }
 
 
 
@@ -50,9 +58,9 @@ class OrderController extends AdminBaseController
                     }
                 }
 
-                $this->success('修改成功', U('Admin/Order/paysite'));
+                $this->_ok('修改成功', U('Admin/Order/paysite'));
             } else {
-                $this->error('修改失败');
+                $this->_fail('修改失败');
             }
         } else {
             $id = I('get.id', 'int');

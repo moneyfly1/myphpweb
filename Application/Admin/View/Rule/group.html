@@ -42,7 +42,7 @@
                                             <i class="fa fa-edit"></i>
                                             修改
                                         </a>
-                                        <a href="javascript:if(confirm('确定删除？'))location='{:U('Admin/Rule/delete_group',array('id'=>$v['id']))}'" class="btn btn-danger">
+                                        <a href="{:U('Admin/Rule/delete_group',array('id'=>$v['id']))}" data-ajax="true" data-confirm="确定删除？" class="btn btn-danger">
                                             <i class="fa fa-trash"></i>
                                             删除
                                         </a>
@@ -73,7 +73,7 @@
                     <h4 class="modal-title" id="myModalLabel">添加用户组</h4>
                 </div>
                 <div class="modal-body">
-                    <form id="bjy-form" class="form-horizontal" action="{:U('Admin/Rule/add_group')}" method="post">
+                    <form id="bjy-form" class="form-horizontal" action="{:U('Admin/Rule/add_group')}" method="post" data-ajax="true" data-redirect="reload">
                         <div class="form-group">
                             <label class="col-sm-3 control-label">用户组名：</label>
                             <div class="col-sm-9">
@@ -103,7 +103,7 @@
                     <h4 class="modal-title" id="myModalLabel">修改用户组</h4>
                 </div>
                 <div class="modal-body">
-                    <form id="bjy-form" class="form-horizontal" action="{:U('Admin/Rule/edit_group')}" method="post">
+                    <form id="bjy-form" class="form-horizontal" action="{:U('Admin/Rule/edit_group')}" method="post" data-ajax="true" data-redirect="reload">
                         <input type="hidden" name="id">
                         <div class="form-group">
                             <label class="col-sm-3 control-label">用户组名：</label>

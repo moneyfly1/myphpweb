@@ -5,8 +5,14 @@ use Common\Controller\AdminBaseController;
  * 后台首页控制器
  */
 class LevelController extends AdminBaseController{
-
-
+    private function _ok($msg, $url='') {
+        if (IS_AJAX) { $this->ajaxReturn(array('code'=>0,'msg'=>$msg)); }
+        else { $this->success($msg, $url); }
+    }
+    private function _fail($msg) {
+        if (IS_AJAX) { $this->ajaxReturn(array('code'=>1,'msg'=>$msg)); }
+        else { $this->error($msg); }
+    }
 
 public function index() {
        	
@@ -35,15 +41,9 @@ foreach ($list as $k => $v) {
 			$data=I('post.');
 			unset($data['file']);
 
-
-
     		$res = D('level')->add($data);
 
-			if(IS_AJAX) {
-				$this->ajaxReturn(array('status'=>1,'msg'=>'添加成功','url'=>U('Admin/Level/index')));
-			} else {
-				$this->success('添加成功', U('Admin/Level/index'));
-			}
+			$this->_ok('添加成功', U('Admin/Level/index'));
 		}
 		$this->display();
     }
@@ -54,17 +54,9 @@ public function del(){
 		$result = D('level')->where(['id' => $id])->delete();
 
 		if ($result) {
-			if(IS_AJAX) {
-				$this->ajaxReturn(array('status'=>1,'msg'=>'删除成功','url'=>U('Admin/Level/index')));
-			} else {
-				$this->success('删除成功', U('Admin/Level/index'));
-			}
+			$this->_ok('删除成功', U('Admin/Level/index'));
 		}else{
-			if(IS_AJAX) {
-				$this->ajaxReturn(array('status'=>0,'msg'=>'删除失败'));
-			} else {
-				$this->error('删除失败');
-			}
+			$this->_fail('删除失败');
 		}
 	}
     /**
@@ -78,17 +70,9 @@ public function del(){
 
         $result = D('level')->where(['id' => $temp['id']])->save($data);
         if ($result) {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>1,'msg'=>'修改成功','url'=>U('Admin/Level/index')));
-            } else {
-                $this->success('修改成功', U('Admin/Level/index'));
-            }
+            $this->_ok('修改成功', U('Admin/Level/index'));
         } else {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'修改失败'));
-            } else {
-                $this->error('修改失败');
-            }
+            $this->_fail('修改失败');
         }
     } else {
         $id = I('get.id', 'int');

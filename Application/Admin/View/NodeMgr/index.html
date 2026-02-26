@@ -67,7 +67,7 @@
                                 <td>
                                     <div class="action-group">
                                         <a class="btn btn-xs btn-warning" href="{:U('Admin/NodeMgr/edit',array('id'=>$v['id']))}">编辑</a>
-                                        <a class="btn btn-xs btn-danger" onclick="return confirm('确定删除该节点?');" href="{:U('Admin/NodeMgr/del',array('id'=>$v['id']))}">删除</a>
+                                        <button class="btn btn-xs btn-danger ajax-del" data-url="{:U('Admin/NodeMgr/del',array('id'=>$v['id']))}">删除</button>
                                         <button class="btn btn-xs btn-info" onclick="healthCheck({$v['id']},this)">检测</button>
                                         <if condition="$v['is_visible'] eq 1">
                                             <button class="btn btn-xs btn-default" onclick="toggleVisible({$v['id']},0,this)">隐藏</button>
@@ -136,6 +136,20 @@
 
     <script src="__PUBLIC__/statics/js/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
+    $(function(){
+        $('.ajax-del').click(function(){
+            if(!confirm('确定删除该节点?')) return;
+            var btn = $(this);
+            $.ajax({
+                url: btn.data('url'),
+                dataType: 'json',
+                success: function(res){
+                    if(res.code == 0){ location.reload(); }
+                    else { alert(res.msg); }
+                }
+            });
+        });
+    });
     function healthCheck(id, btn) {
         var row = document.getElementById('node-row-' + id);
         if (btn) btn.disabled = true;

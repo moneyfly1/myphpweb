@@ -55,7 +55,7 @@
                         <td>{$v['time']}</td>
                         <td>
                             <a class="btn btn-xs btn-success" href="{:U('Admin/Backup/download',array('name'=>$v['name']))}">下载</a>
-                            <a class="btn btn-xs btn-danger" onclick="return confirm('确定删除该备份文件?');" href="{:U('Admin/Backup/del',array('name'=>$v['name']))}">删除</a>
+                            <button class="btn btn-xs btn-danger ajax-del" data-url="{:U('Admin/Backup/del',array('name'=>$v['name']))}">删除</button>
                         </td>
                     </tr>
                     </foreach>
@@ -69,6 +69,18 @@
     <script src="__PUBLIC__/statics/js/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
     $(function(){
+        $('.ajax-del').click(function(){
+            if(!confirm('确定删除该备份文件?')) return;
+            var btn = $(this);
+            $.ajax({
+                url: btn.data('url'),
+                dataType: 'json',
+                success: function(res){
+                    if(res.code == 0){ location.reload(); }
+                    else { alert(res.msg); }
+                }
+            });
+        });
         $('#btnCreate').click(function(){
             var btn = $(this);
             btn.prop('disabled', true).html('<span class="spinner"></span>备份中...');

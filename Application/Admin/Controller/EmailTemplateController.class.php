@@ -4,6 +4,15 @@ use Common\Controller\AdminBaseController;
 
 class EmailTemplateController extends AdminBaseController {
 
+    private function _ok($msg, $url='') {
+        if (IS_AJAX) { $this->ajaxReturn(array('code'=>0,'msg'=>$msg)); }
+        else { $this->success($msg, $url); }
+    }
+    private function _fail($msg) {
+        if (IS_AJAX) { $this->ajaxReturn(array('code'=>1,'msg'=>$msg)); }
+        else { $this->error($msg); }
+    }
+
     public function index() {
         $list = D('EmailTemplateDb')->getAllTemplates();
         if ($list) {
@@ -27,17 +36,9 @@ class EmailTemplateController extends AdminBaseController {
             );
             $result = D('EmailTemplateDb')->where(array('id' => $temp['id']))->save($data);
             if ($result !== false) {
-                if(IS_AJAX) {
-                    $this->ajaxReturn(array('status'=>1,'msg'=>'修改成功','url'=>U('Admin/EmailTemplate/index')));
-                } else {
-                    $this->success('修改成功', U('Admin/EmailTemplate/index'));
-                }
+                $this->_ok('修改成功', U('Admin/EmailTemplate/index'));
             } else {
-                if(IS_AJAX) {
-                    $this->ajaxReturn(array('status'=>0,'msg'=>'修改失败'));
-                } else {
-                    $this->error('修改失败');
-                }
+                $this->_fail('修改失败');
             }
         } else {
             $id = I('get.id', 0, 'intval');

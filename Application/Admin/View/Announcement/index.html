@@ -66,7 +66,7 @@
                                 <td>{$v['status_text']}</td>
                                 <td>
                                     <a class="btn btn-xs btn-warning" href="{:U('Admin/Announcement/edit',array('id'=>$v['id']))}">编辑</a>
-                                    <a class="btn btn-xs btn-danger" onClick="return confirm('确定删除该公告?');" href="{:U('Admin/Announcement/del',array('id'=>$v['id']))}">删除</a>
+                                    <button class="btn btn-xs btn-danger ajax-del" data-url="{:U('Admin/Announcement/del',array('id'=>$v['id']))}">删除</button>
                                     <button class="btn btn-xs toggle-btn {$v['is_active']?'btn-success':'btn-default'}" data-id="{$v['id']}">{$v['is_active']?'已启用':'已禁用'}</button>
                                 </td>
                             </tr>
@@ -112,7 +112,7 @@
                         </div>
                         <div class="card-actions">
                             <a class="btn btn-xs btn-warning" href="{:U('Admin/Announcement/edit',array('id'=>$v['id']))}">编辑</a>
-                            <a class="btn btn-xs btn-danger" onClick="return confirm('确定删除该公告?');" href="{:U('Admin/Announcement/del',array('id'=>$v['id']))}">删除</a>
+                            <button class="btn btn-xs btn-danger ajax-del" data-url="{:U('Admin/Announcement/del',array('id'=>$v['id']))}">删除</button>
                             <button class="btn btn-xs toggle-btn {$v['is_active']?'btn-success':'btn-default'}" data-id="{$v['id']}">{$v['is_active']?'已启用':'已禁用'}</button>
                         </div>
                     </div>
@@ -131,6 +131,18 @@
 
     <script>
     $(function(){
+        $('.ajax-del').click(function(){
+            if(!confirm('确定删除该公告?')) return;
+            var btn = $(this);
+            $.ajax({
+                url: btn.data('url'),
+                dataType: 'json',
+                success: function(res){
+                    if(res.code == 0){ location.reload(); }
+                    else { alert(res.msg); }
+                }
+            });
+        });
         $('.toggle-btn').click(function(){
             var btn = $(this);
             var id = btn.data('id');

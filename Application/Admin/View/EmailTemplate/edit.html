@@ -36,7 +36,7 @@
             </div>
             <div class="card-body">
             <div class="tab-content">
-                <form action="{:U('Admin/EmailTemplate/edit')}" method="post">
+                <form action="{:U('Admin/EmailTemplate/edit')}" method="post" data-ajax="true" data-redirect="reload">
                     <input type="hidden" name="id" value="{$data['id']}">
                     <table class="form-table">
                         <tr>

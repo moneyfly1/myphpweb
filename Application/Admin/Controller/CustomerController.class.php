@@ -7,6 +7,15 @@ set_time_limit(0);
  * 管理用户的增删改查、批量操作、邮件发送等功能
  */
 class CustomerController extends AdminBaseController {
+	private function _ok($msg, $url='') {
+		if (IS_AJAX) { $this->ajaxReturn(array('code'=>0,'msg'=>$msg)); }
+		else { $this->success($msg, $url); }
+	}
+	private function _fail($msg) {
+		if (IS_AJAX) { $this->ajaxReturn(array('code'=>1,'msg'=>$msg)); }
+		else { $this->error($msg); }
+	}
+
 	/**
 	 * 用户列表（支持搜索和排序）
 	 */
@@ -57,11 +66,7 @@ class CustomerController extends AdminBaseController {
 			unset($data['file']); // 移除上传文件字段
 			$check = D('User')->getData(['username' => $data['username']]);
 			if ($check) {
-				if(IS_AJAX) {
-					$this->ajaxReturn(array('status'=>0,'msg'=>'账户已存在'));
-				} else {
-					$this->error('账户已存在');
-				}
+				$this->_fail('账户已存在');
 			} else {
 				$data['regtime'] = time();
 				$data['activation'] = '1';
@@ -84,17 +89,9 @@ class CustomerController extends AdminBaseController {
 					];
 					$shortres = M('ShortDingyue')->add($shortData);
 					if ($shortres) {
-						if(IS_AJAX) {
-							$this->ajaxReturn(array('status'=>1,'msg'=>'创建用户及短链成功','url'=>U('Admin/Customer/list')));
-						} else {
-							$this->success('创建用户及短链成功');
-						}
+						$this->_ok('创建用户及短链成功', U('Admin/Customer/list'));
 					} else {
-						if(IS_AJAX) {
-							$this->ajaxReturn(array('status'=>0,'msg'=>'添加失败'));
-						} else {
-							$this->error('添加失败');
-						}
+						$this->_fail('添加失败');
 					}
 				}
 			}
@@ -117,22 +114,14 @@ class CustomerController extends AdminBaseController {
 			}
 			$result = D('User')->editData(['id' => $temp['id']], $data);
 			if ($result) {
-				if(IS_AJAX) {
-					$this->ajaxReturn(array('status'=>1,'msg'=>'修改成功','url'=>U('Admin/Customer/list')));
-				} else {
-					$this->success('修改成功');
-				}
+				$this->_ok('修改成功', U('Admin/Customer/list'));
 			} else {
-				if(IS_AJAX) {
-					$this->ajaxReturn(array('status'=>0,'msg'=>'修改失败'));
-				} else {
-					$this->error('修改失败');
-				}
+				$this->_fail('修改失败');
 			}
 		} else {
 			$id = I('get.id', 'int');
 			$data = D('User')->getData(['id' => $id]);
-			if (!$data) $this->error('用户不存在');
+			if (!$data) $this->_fail('用户不存在');
 			if (!isset($data['status']) || $data['status'] === null) $data['status'] = 1;
 			if (!isset($data['activation']) || $data['activation'] === null) $data['activation'] = 0;
 			if ($data['lasttime'] > 0) $data['lasttime'] = date('Y-m-d H:i:s', $data['lasttime']);
@@ -185,17 +174,9 @@ class CustomerController extends AdminBaseController {
 		if ($result) {
 			$temp['ispush'] = 1;
 			D('ShortDingyue')->editData(['id' => $id], $temp);
-			if(IS_AJAX) {
-				$this->ajaxReturn(array('status'=>1,'msg'=>'发送成功'));
-			} else {
-				$this->success('发送成功');
-			}
+			$this->_ok('发送成功');
 		} else {
-			if(IS_AJAX) {
-				$this->ajaxReturn(array('status'=>0,'msg'=>'发送失败'));
-			} else {
-				$this->error('发送失败');
-			}
+			$this->_fail('发送失败');
 		}
 	}
 
@@ -381,13 +362,13 @@ class CustomerController extends AdminBaseController {
 	public function userLogs() {
 		$userId = I('get.id', 'int');
 		if (!$userId) {
-			$this->error('用户ID不能为空');
+			$this->_fail('用户ID不能为空');
 		}
 
 		// 获取用户信息
 		$user = M('User')->where(['id' => $userId])->find();
 		if (!$user) {
-			$this->error('用户不存在');
+			$this->_fail('用户不存在');
 		}
 
 		// 确保用户数据完整性 - 只对真正缺失的字段设置默认值

@@ -4,6 +4,15 @@ use Common\Controller\AdminBaseController;
 
 class TicketController extends AdminBaseController {
 
+    private function _ok($msg, $url='') {
+        if (IS_AJAX) { $this->ajaxReturn(array('code'=>0,'msg'=>$msg)); }
+        else { $this->success($msg, $url); }
+    }
+    private function _fail($msg) {
+        if (IS_AJAX) { $this->ajaxReturn(array('code'=>1,'msg'=>$msg)); }
+        else { $this->error($msg); }
+    }
+
     /**
      * 工单列表
      */
@@ -61,13 +70,13 @@ class TicketController extends AdminBaseController {
     public function detail() {
         $id = I('get.id', 0, 'intval');
         if (!$id) {
-            $this->error('参数错误');
+            $this->_fail('参数错误');
         }
 
         if (IS_POST) {
             $content = I('post.content', '', 'htmlspecialchars');
             if (empty($content)) {
-                $this->error('回复内容不能为空');
+                $this->_fail('回复内容不能为空');
             }
             $replyData = array(
                 'ticket_id'  => $id,
@@ -82,9 +91,9 @@ class TicketController extends AdminBaseController {
                     'status'     => 2,
                     'updated_at' => time(),
                 ));
-                $this->success('回复成功', U('Admin/Ticket/detail', array('id' => $id)));
+                $this->_ok('回复成功', U('Admin/Ticket/detail', array('id' => $id)));
             } else {
-                $this->error('回复失败');
+                $this->_fail('回复失败');
             }
             return;
         }
@@ -95,7 +104,7 @@ class TicketController extends AdminBaseController {
             ->where(array('t.id' => $id))
             ->find();
         if (!$ticket) {
-            $this->error('工单不存在');
+            $this->_fail('工单不存在');
         }
         $replies = M('ticket_reply')->alias('r')
             ->field('r.*, u.username')
@@ -115,7 +124,7 @@ class TicketController extends AdminBaseController {
     public function close() {
         $id = I('get.id', 0, 'intval');
         if (!$id) {
-            $this->error('参数错误');
+            $this->_fail('参数错误');
         }
         $res = M('ticket')->where(array('id' => $id))->save(array(
             'status'     => 3,
@@ -123,9 +132,9 @@ class TicketController extends AdminBaseController {
             'updated_at' => time(),
         ));
         if ($res !== false) {
-            $this->success('工单已关闭', U('Admin/Ticket/index'));
+            $this->_ok('工单已关闭', U('Admin/Ticket/index'));
         } else {
-            $this->error('操作失败');
+            $this->_fail('操作失败');
         }
     }
 
@@ -161,9 +170,9 @@ class TicketController extends AdminBaseController {
         M('ticket_reply')->where(array('ticket_id' => $id))->delete();
         $res = M('ticket')->where(array('id' => $id))->delete();
         if ($res !== false) {
-            $this->success('删除成功', U('Admin/Ticket/index'));
+            $this->_ok('删除成功', U('Admin/Ticket/index'));
         } else {
-            $this->error('删除失败');
+            $this->_fail('删除失败');
         }
     }
 }

@@ -7,6 +7,15 @@ set_time_limit(0);
  */
 class DingyueController extends AdminBaseController{
 
+	private function _ok($msg, $url='') {
+		if (IS_AJAX) { $this->ajaxReturn(array('code'=>0,'msg'=>$msg)); }
+		else { $this->success($msg, $url); }
+	}
+	private function _fail($msg) {
+		if (IS_AJAX) { $this->ajaxReturn(array('code'=>1,'msg'=>$msg)); }
+		else { $this->error($msg); }
+	}
+
 	/**
 	 * 列表
 	 */
@@ -16,19 +25,19 @@ class DingyueController extends AdminBaseController{
 	public function loginAsUser(){
 		$id = I('get.id');
 		if(!$id){
-			$this->error('参数错误');
+			$this->_fail('参数错误');
 		}
-		
+
 		// 获取订阅信息
 		$dingyue = D('ShortDingyue')->getData(['id'=>$id]);
 		if(!$dingyue){
-			$this->error('订阅不存在');
+			$this->_fail('订阅不存在');
 		}
-		
+
 		// 根据QQ号查找用户
 		$user = D('User')->getData(['username'=>$dingyue['qq']]);
 		if(!$user){
-			$this->error('用户不存在');
+			$this->_fail('用户不存在');
 		}
 		
 		// 生成一次性 token 并写入缓存（5 分钟有效），前台校验后即失效
@@ -47,20 +56,12 @@ class DingyueController extends AdminBaseController{
 	public function resetSubscription(){
 		$id = I('get.id');
 		if(!$id){
-			if(IS_AJAX) {
-				$this->ajaxReturn(array('status'=>0,'msg'=>'参数错误'));
-			} else {
-				$this->error('参数错误');
-			}
+			$this->_fail('参数错误');
 		}
 		// 获取订阅信息
 		$dingyue = D('ShortDingyue')->getData(['id'=>$id]);
 		if(!$dingyue){
-			if(IS_AJAX) {
-				$this->ajaxReturn(array('status'=>0,'msg'=>'订阅不存在'));
-			} else {
-				$this->error('订阅不存在');
-			}
+			$this->_fail('订阅不存在');
 		}
 
         // 获取用户信息
@@ -105,17 +106,9 @@ class DingyueController extends AdminBaseController{
 				$reset_data['allowed_devices'] = '[]';
 			}
 			D('ShortDingyue')->editData(['id' => $id], $reset_data);
-			if(IS_AJAX) {
-				$this->ajaxReturn(array('status'=>1,'msg'=>'订阅地址重置成功','url'=>U('Admin/Dingyue/list')));
-			} else {
-				$this->success('订阅地址重置成功');
-			}
+			$this->_ok('订阅地址重置成功', U('Admin/Dingyue/list'));
 		}else{
-			if(IS_AJAX) {
-				$this->ajaxReturn(array('status'=>0,'msg'=>'重置失败'));
-			} else {
-				$this->error('重置失败');
-			}
+			$this->_fail('重置失败');
 		}
 	}
 
@@ -267,17 +260,9 @@ class DingyueController extends AdminBaseController{
 				}
 				$res = D('ShortDingyue')->addData($data);
 				if ($res) {
-					if(IS_AJAX) {
-						$this->ajaxReturn(array('status'=>1,'msg'=>'添加成功','url'=>U('Admin/Dingyue/list')));
-					} else {
-						$this->success('添加成功');
-					}
+					$this->_ok('添加成功', U('Admin/Dingyue/list'));
 				}else{
-					if(IS_AJAX) {
-						$this->ajaxReturn(array('status'=>0,'msg'=>'添加失败'));
-					} else {
-						$this->error('添加失败');
-					}
+					$this->_fail('添加失败');
 				}
 			}else{
 				$list=import_excel('/www/wwwroot/proxy.icandoit.ml'.$data['upexcle'][0]);
@@ -321,17 +306,9 @@ class DingyueController extends AdminBaseController{
 			$data['endtime'] = strtotime($data['endtime']);
 			$result = D('ShortDingyue')->editData(['id'=>$temp['id']],$data);
 			if ($result) {
-				if(IS_AJAX) {
-					$this->ajaxReturn(array('status'=>1,'msg'=>'修改成功','url'=>U('Admin/Dingyue/list')));
-				} else {
-					$this->success('修改成功');
-				}
+				$this->_ok('修改成功', U('Admin/Dingyue/list'));
 			}else{
-				if(IS_AJAX) {
-					$this->ajaxReturn(array('status'=>0,'msg'=>'修改失败'));
-				} else {
-					$this->error('修改失败');
-				}
+				$this->_fail('修改失败');
 			}
 		}else{
 			$id = I('get.id','int');
@@ -382,17 +359,9 @@ class DingyueController extends AdminBaseController{
 		if ($result) {
 		    $temp['ispush'] = 1;
 		    D('ShortDingyue')->editData(['id'=>$id],$temp);
-			if(IS_AJAX) {
-				$this->ajaxReturn(array('status'=>1,'msg'=>'发送成功'));
-			} else {
-				$this->success('发送成功');
-			}
+			$this->_ok('发送成功');
 		}else{
-			if(IS_AJAX) {
-				$this->ajaxReturn(array('status'=>0,'msg'=>'发送失败'));
-			} else {
-				$this->error('发送失败');
-			}
+			$this->_fail('发送失败');
 		}
 	}
 
@@ -508,13 +477,13 @@ class DingyueController extends AdminBaseController{
     public function detail(){
         $id = I('get.id','int');
         if(!$id){
-            $this->error('参数错误');
+            $this->_fail('参数错误');
         }
-        
+
         // 获取订阅信息
         $data = D('ShortDingyue')->getData(['id'=>$id]);
         if(!$data){
-            $this->error('订阅信息不存在');
+            $this->_fail('订阅信息不存在');
         }
         
         // 处理数据格式
@@ -594,15 +563,15 @@ class DingyueController extends AdminBaseController{
     public function customerDetail(){
         $id = I('get.id','int');
         if(!$id){
-            $this->error('参数错误');
+            $this->_fail('参数错误');
         }
-        
+
         // 获取订阅信息
         $data = D('ShortDingyue')->getData(['id'=>$id]);
         if(!$data){
-            $this->error('订阅信息不存在');
+            $this->_fail('订阅信息不存在');
         }
-        
+
         // 查找关联的用户信息
         $user = null;
         

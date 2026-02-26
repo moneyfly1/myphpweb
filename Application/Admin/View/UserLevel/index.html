@@ -83,7 +83,7 @@
                             <td style="min-width:160px;">
                                 <div style="display:flex; gap:4px; flex-wrap:wrap;">
                                     <a class="btn btn-xs btn-warning" href="{:U('Admin/UserLevel/edit',array('id'=>$v['id']))}">编辑</a>
-                                    <a class="btn btn-xs btn-danger" onClick="return confirm('确定删除该等级?');" href="{:U('Admin/UserLevel/del',array('id'=>$v['id']))}">删除</a>
+                                    <a class="btn btn-xs btn-danger" href="{:U('Admin/UserLevel/del',array('id'=>$v['id']))}" data-ajax="true" data-confirm="确定删除该等级?">删除</a>
                                 </div>
                             </td>
                         </tr>

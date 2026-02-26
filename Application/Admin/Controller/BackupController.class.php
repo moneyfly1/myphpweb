@@ -89,18 +89,19 @@ class BackupController extends AdminBaseController {
         $filepath = $this->backupDir . $name;
         if (file_exists($filepath)) {
             unlink($filepath);
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>1,'msg'=>'删除成功','url'=>U('Admin/Backup/index')));
-            } else {
-                $this->success('删除成功', U('Admin/Backup/index'));
-            }
+            $this->_ok('删除成功', U('Admin/Backup/index'));
         } else {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'文件不存在'));
-            } else {
-                $this->error('文件不存在');
-            }
+            $this->_fail('文件不存在');
         }
+    }
+
+    private function _ok($msg, $url='') {
+        if (IS_AJAX) { $this->ajaxReturn(array('code'=>0,'msg'=>$msg)); }
+        else { $this->success($msg, $url); }
+    }
+    private function _fail($msg) {
+        if (IS_AJAX) { $this->ajaxReturn(array('code'=>1,'msg'=>$msg)); }
+        else { $this->error($msg); }
     }
 
     private function formatSize($bytes) {

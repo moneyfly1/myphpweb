@@ -79,7 +79,7 @@
                                             <i class="fa fa-edit"></i>
                                             修改
                                         </a>
-                                        <a href="javascript:if(confirm('确定删除？'))location='{:U('Admin/Rule/delete',array('id'=>$v['id']))}'" class="btn btn-danger">
+                                        <a href="{:U('Admin/Rule/delete',array('id'=>$v['id']))}" data-ajax="true" data-confirm="确定删除？" class="btn btn-danger">
                                             <i class="fa fa-trash"></i>
                                             删除
                                         </a>
@@ -102,7 +102,7 @@
                     <h4 class="modal-title" id="myModalLabel">添加权限</h4>
                 </div>
                 <div class="modal-body">
-                    <form id="bjy-form" class="form-horizontal" action="{:U('Admin/Rule/add')}" method="post">
+                    <form id="bjy-form" class="form-horizontal" action="{:U('Admin/Rule/add')}" method="post" data-ajax="true" data-redirect="reload">
                         <input type="hidden" name="pid" value="0">
                         <div class="form-group">
                             <label class="col-sm-3 control-label">权限名：</label>
@@ -140,7 +140,7 @@
                     <h4 class="modal-title" id="myModalLabel">修改权限</h4>
                 </div>
                 <div class="modal-body">
-                    <form id="bjy-form" class="form-horizontal" action="{:U('Admin/Rule/edit')}" method="post">
+                    <form id="bjy-form" class="form-horizontal" action="{:U('Admin/Rule/edit')}" method="post" data-ajax="true" data-redirect="reload">
                         <input type="hidden" name="id">
                         <div class="form-group">
                             <label class="col-sm-3 control-label">权限名：</label>

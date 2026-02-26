@@ -40,26 +40,14 @@ class CouponController extends AdminBaseController {
             // 检查优惠码是否重复
             $exists = D('Coupon')->where(array('code' => $data['code']))->find();
             if ($exists) {
-                if(IS_AJAX) {
-                    $this->ajaxReturn(array('status'=>0,'msg'=>'优惠码已存在，请更换'));
-                } else {
-                    $this->error('优惠码已存在，请更换');
-                }
+                $this->_fail('优惠码已存在，请更换');
                 return;
             }
             $res = D('Coupon')->addData($data);
             if ($res) {
-                if(IS_AJAX) {
-                    $this->ajaxReturn(array('status'=>1,'msg'=>'添加成功','url'=>U('Admin/Coupon/index')));
-                } else {
-                    $this->success('添加成功', U('Admin/Coupon/index'));
-                }
+                $this->_ok('添加成功', U('Admin/Coupon/index'));
             } else {
-                if(IS_AJAX) {
-                    $this->ajaxReturn(array('status'=>0,'msg'=>'添加失败'));
-                } else {
-                    $this->error('添加失败');
-                }
+                $this->_fail('添加失败');
             }
         }
         $this->display();
@@ -81,17 +69,9 @@ class CouponController extends AdminBaseController {
             $data['is_active'] = isset($data['is_active']) ? intval($data['is_active']) : 0;
             $result = D('Coupon')->where(array('id' => $temp['id']))->save($data);
             if ($result !== false) {
-                if(IS_AJAX) {
-                    $this->ajaxReturn(array('status'=>1,'msg'=>'修改成功','url'=>U('Admin/Coupon/index')));
-                } else {
-                    $this->success('修改成功', U('Admin/Coupon/index'));
-                }
+                $this->_ok('修改成功', U('Admin/Coupon/index'));
             } else {
-                if(IS_AJAX) {
-                    $this->ajaxReturn(array('status'=>0,'msg'=>'修改失败'));
-                } else {
-                    $this->error('修改失败');
-                }
+                $this->_fail('修改失败');
             }
         } else {
             $id = I('get.id', 0, 'intval');
@@ -109,18 +89,19 @@ class CouponController extends AdminBaseController {
         $id = I('get.id', 0, 'intval');
         $result = D('Coupon')->where(array('id' => $id))->delete();
         if ($result) {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>1,'msg'=>'删除成功','url'=>U('Admin/Coupon/index')));
-            } else {
-                $this->success('删除成功', U('Admin/Coupon/index'));
-            }
+            $this->_ok('删除成功', U('Admin/Coupon/index'));
         } else {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'删除失败'));
-            } else {
-                $this->error('删除失败');
-            }
+            $this->_fail('删除失败');
         }
+    }
+
+    private function _ok($msg, $url='') {
+        if (IS_AJAX) { $this->ajaxReturn(array('code'=>0,'msg'=>$msg)); }
+        else { $this->success($msg, $url); }
+    }
+    private function _fail($msg) {
+        if (IS_AJAX) { $this->ajaxReturn(array('code'=>1,'msg'=>$msg)); }
+        else { $this->error($msg); }
     }
 
     public function toggle() {

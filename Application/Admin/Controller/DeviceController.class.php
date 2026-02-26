@@ -57,6 +57,9 @@ class DeviceController extends AdminBaseController {
     public function del() {
         $id = I('get.id', 0, 'intval');
         $result = M('device_log')->where(array('id' => $id))->delete();
+        if (IS_AJAX) {
+            $this->ajaxReturn(array('code' => $result ? 0 : 1, 'msg' => $result ? '删除成功' : '删除失败'));
+        }
         if ($result) {
             $this->success('删除成功', U('Admin/Device/index'));
         } else {

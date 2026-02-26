@@ -36,39 +36,42 @@ class ConfigFileController extends AdminBaseController
 
     // 保存操作
     public function save() {
-        if (!IS_POST) $this->error('非法请求');
+        if (!IS_POST) {
+            if (IS_AJAX) { $this->ajaxReturn(array('status'=>0,'info'=>'非法请求')); return; }
+            $this->error('非法请求');
+        }
         $xr_content = I('post.xr_content', '', '');
         $clash_content = I('post.clash_content', '', '');
         $work_content = I('post.work_content', '', '');
 
         // 内容长度限制（放宽限制）
         if (strlen($xr_content) > 1024*1024) {
+            if (IS_AJAX) { $this->ajaxReturn(array('status'=>0,'info'=>'xr文件内容过大，最大允许1MB')); return; }
             $this->error('xr文件内容过大，最大允许1MB');
         }
         if (strlen($clash_content) > 4*1024*1024) {
+            if (IS_AJAX) { $this->ajaxReturn(array('status'=>0,'info'=>'clash.yaml内容过大，最大允许4MB')); return; }
             $this->error('clash.yaml内容过大，最大允许4MB');
         }
         if (strlen($work_content) > 1024*1024) {
+            if (IS_AJAX) { $this->ajaxReturn(array('status'=>0,'info'=>'work文件内容过大，最大允许1MB')); return; }
             $this->error('work文件内容过大，最大允许1MB');
         }
         // 禁止写入PHP标签
         if (stripos($xr_content, '<?php') !== false || stripos($clash_content, '<?php') !== false || stripos($work_content, '<?php') !== false) {
+            if (IS_AJAX) { $this->ajaxReturn(array('status'=>0,'info'=>'禁止写入PHP代码')); return; }
             $this->error('禁止写入PHP代码');
         }
-
-        // 可选：YAML格式校验
-        // if (!isValidYaml($clash_content)) { $this->error('clash.yaml格式不正确'); }
 
         $xr_result = file_put_contents($this->xr_path, $xr_content);
         $clash_result = file_put_contents($this->clash_path, $clash_content);
         $work_result = file_put_contents($this->work_path, $work_content);
 
-        // 可选：记录操作日志
-        // M('admin_log')->add(['uid'=>$uid, 'action'=>'修改配置文件', 'time'=>time()]);
-
         if ($xr_result !== false && $clash_result !== false && $work_result !== false) {
+            if (IS_AJAX) { $this->ajaxReturn(array('status'=>1,'info'=>'保存成功')); return; }
             $this->success('保存成功');
         } else {
+            if (IS_AJAX) { $this->ajaxReturn(array('status'=>0,'info'=>'保存失败，请检查文件权限')); return; }
             $this->error('保存失败，请检查文件权限');
         }
     }

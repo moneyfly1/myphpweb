@@ -86,9 +86,9 @@
                                     <div class="action-group">
                                         <a href="{:U('Admin/Ticket/detail', array('id'=>$v['id']))}" class="btn btn-info btn-sm">查看</a>
                                         <if condition="$v['status'] neq 3">
-                                        <a href="{:U('Admin/Ticket/close', array('id'=>$v['id']))}" class="btn btn-warning btn-sm" onclick="return confirm('确定关闭该工单？')">关闭</a>
+                                        <a href="{:U('Admin/Ticket/close', array('id'=>$v['id']))}" class="btn btn-warning btn-sm" data-ajax="true" data-confirm="确定关闭该工单？">关闭</a>
                                         </if>
-                                        <a href="{:U('Admin/Ticket/del', array('id'=>$v['id']))}" class="btn btn-danger btn-sm" onclick="return confirm('确定删除该工单及所有回复？')">删除</a>
+                                        <a href="{:U('Admin/Ticket/del', array('id'=>$v['id']))}" class="btn btn-danger btn-sm" data-ajax="true" data-confirm="确定删除该工单及所有回复？">删除</a>
                                     </div>
                                 </td>
                             </tr>
@@ -144,9 +144,9 @@
                         <div class="card-actions">
                             <a href="{:U('Admin/Ticket/detail', array('id'=>$v['id']))}" class="btn btn-info btn-sm">查看</a>
                             <if condition="$v['status'] neq 3">
-                            <a href="{:U('Admin/Ticket/close', array('id'=>$v['id']))}" class="btn btn-warning btn-sm" onclick="return confirm('确定关闭该工单？')">关闭</a>
+                            <a href="{:U('Admin/Ticket/close', array('id'=>$v['id']))}" class="btn btn-warning btn-sm" data-ajax="true" data-confirm="确定关闭该工单？">关闭</a>
                             </if>
-                            <a href="{:U('Admin/Ticket/del', array('id'=>$v['id']))}" class="btn btn-danger btn-sm" onclick="return confirm('确定删除该工单及所有回复？')">删除</a>
+                            <a href="{:U('Admin/Ticket/del', array('id'=>$v['id']))}" class="btn btn-danger btn-sm" data-ajax="true" data-confirm="确定删除该工单及所有回复？">删除</a>
                         </div>
                     </div>
                     </foreach>

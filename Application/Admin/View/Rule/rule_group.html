@@ -60,7 +60,7 @@
                     <h2 class="text-center">为 <span class="group-name">{$group_data['title']}</span> 分配权限</h2>
                 </div>
                 
-                <form action="" method="post" class="permission-form">
+                <form action="" method="post" class="permission-form" data-ajax="true" data-redirect="reload">
                     <input type="hidden" name="id" value="{$group_data['id']}">
                     
                     <div class="permission-content">

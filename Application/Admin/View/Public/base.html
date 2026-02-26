@@ -1230,14 +1230,80 @@
                 $('.alert').fadeOut();
             }, 5000);
 
-            // 表单提交时显示加载状态（同时支持 button 与 input type=submit）
-            $('form').on('submit', function() {
-                var submitBtn = $(this).find('button[type="submit"], input[type="submit"]').first();
-                if (submitBtn.length) {
-                    submitBtn.prop('disabled', true);
-                    if (submitBtn.is('input')) submitBtn.val('处理中...');
-                    else submitBtn.html('<span class="loading"></span> 处理中...');
-                }
+            // 全局 toast 提示函数
+            window.showToast = function(msg, type) {
+                type = type || 'success';
+                var bg = type === 'success' ? '#28a745' : type === 'warning' ? '#ffc107' : '#dc3545';
+                var color = type === 'warning' ? '#333' : '#fff';
+                var $t = $('<div>').css({
+                    position:'fixed',top:'-60px',left:'50%',transform:'translateX(-50%)',
+                    background:bg,color:color,padding:'12px 28px',borderRadius:'8px',
+                    fontSize:'14px',fontWeight:'500',zIndex:99999,
+                    boxShadow:'0 4px 16px rgba(0,0,0,0.15)',whiteSpace:'nowrap',
+                    transition:'top 0.3s ease'
+                }).text(msg).appendTo('body');
+                setTimeout(function(){ $t.css('top','24px'); },10);
+                setTimeout(function(){ $t.css('top','-60px'); setTimeout(function(){ $t.remove(); },400); },2500);
+            };
+
+            // 全局 AJAX 表单提交（给 form 加 data-ajax="true" 即可）
+            $(document).on('submit', 'form[data-ajax="true"]', function(e) {
+                e.preventDefault();
+                var $form = $(this);
+                var submitBtn = $form.find('button[type="submit"], input[type="submit"]').first();
+                var origHtml = submitBtn.is('input') ? submitBtn.val() : submitBtn.html();
+                submitBtn.prop('disabled', true);
+                if (submitBtn.is('input')) submitBtn.val('处理中...');
+                else submitBtn.html('处理中...');
+                $.ajax({
+                    url: $form.attr('action') || window.location.href,
+                    type: $form.attr('method') || 'POST',
+                    data: $form.serialize(),
+                    dataType: 'json',
+                    success: function(res) {
+                        if (res.code == 0 || res.status == 1 || res.success) {
+                            showToast(res.msg || res.info || '操作成功');
+                            var redirect = $form.data('redirect');
+                            if (redirect === 'reload') {
+                                setTimeout(function(){ location.reload(); }, 800);
+                            } else if (redirect) {
+                                setTimeout(function(){ location.href = redirect; }, 800);
+                            }
+                        } else {
+                            showToast(res.msg || res.info || '操作失败', 'error');
+                            submitBtn.prop('disabled', false);
+                            if (submitBtn.is('input')) submitBtn.val(origHtml);
+                            else submitBtn.html(origHtml);
+                        }
+                    },
+                    error: function() {
+                        showToast('网络错误，请重试', 'error');
+                        submitBtn.prop('disabled', false);
+                        if (submitBtn.is('input')) submitBtn.val(origHtml);
+                        else submitBtn.html(origHtml);
+                    }
+                });
+            });
+
+            // 全局 AJAX 链接点击（给 a 加 data-ajax="true" 即可）
+            $(document).on('click', 'a[data-ajax="true"]', function(e) {
+                e.preventDefault();
+                var $a = $(this);
+                var confirmMsg = $a.data('confirm');
+                if (confirmMsg && !confirm(confirmMsg)) return;
+                $.ajax({
+                    url: $a.attr('href'),
+                    dataType: 'json',
+                    success: function(res) {
+                        if (res.code == 0 || res.status == 1 || res.success) {
+                            showToast(res.msg || res.info || '操作成功');
+                            setTimeout(function(){ location.reload(); }, 800);
+                        } else {
+                            showToast(res.msg || res.info || '操作失败', 'error');
+                        }
+                    },
+                    error: function() { showToast('网络错误，请重试', 'error'); }
+                });
             });
 
             // AJAX 请求处理

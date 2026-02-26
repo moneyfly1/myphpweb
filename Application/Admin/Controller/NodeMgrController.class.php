@@ -43,17 +43,9 @@ class NodeMgrController extends AdminBaseController {
             $data['updated_at'] = time();
             $res = D('NodeMgr')->add($data);
             if ($res) {
-                if(IS_AJAX) {
-                    $this->ajaxReturn(array('status'=>1,'msg'=>'添加成功','url'=>U('Admin/NodeMgr/index')));
-                } else {
-                    $this->success('添加成功', U('Admin/NodeMgr/index'));
-                }
+                $this->_ok('添加成功', U('Admin/NodeMgr/index'));
             } else {
-                if(IS_AJAX) {
-                    $this->ajaxReturn(array('status'=>0,'msg'=>'添加失败'));
-                } else {
-                    $this->error('添加失败');
-                }
+                $this->_fail('添加失败');
             }
         }
         $this->display();
@@ -70,17 +62,9 @@ class NodeMgrController extends AdminBaseController {
             $data['updated_at'] = time();
             $result = D('NodeMgr')->where(array('id' => $temp['id']))->save($data);
             if ($result !== false) {
-                if(IS_AJAX) {
-                    $this->ajaxReturn(array('status'=>1,'msg'=>'修改成功','url'=>U('Admin/NodeMgr/index')));
-                } else {
-                    $this->success('修改成功', U('Admin/NodeMgr/index'));
-                }
+                $this->_ok('修改成功', U('Admin/NodeMgr/index'));
             } else {
-                if(IS_AJAX) {
-                    $this->ajaxReturn(array('status'=>0,'msg'=>'修改失败'));
-                } else {
-                    $this->error('修改失败');
-                }
+                $this->_fail('修改失败');
             }
         } else {
             $id = I('get.id', 0, 'intval');
@@ -94,21 +78,22 @@ class NodeMgrController extends AdminBaseController {
         $id = I('get.id', 0, 'intval');
         $result = D('NodeMgr')->where(array('id' => $id))->delete();
         if ($result) {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>1,'msg'=>'删除成功','url'=>U('Admin/NodeMgr/index')));
-            } else {
-                $this->success('删除成功', U('Admin/NodeMgr/index'));
-            }
+            $this->_ok('删除成功', U('Admin/NodeMgr/index'));
         } else {
-            if(IS_AJAX) {
-                $this->ajaxReturn(array('status'=>0,'msg'=>'删除失败'));
-            } else {
-                $this->error('删除失败');
-            }
+            $this->_fail('删除失败');
         }
     }
 
     // ==================== 节点采集 ====================
+
+    private function _ok($msg, $url='') {
+        if (IS_AJAX) { $this->ajaxReturn(array('code'=>0,'msg'=>$msg)); }
+        else { $this->success($msg, $url); }
+    }
+    private function _fail($msg) {
+        if (IS_AJAX) { $this->ajaxReturn(array('code'=>1,'msg'=>$msg)); }
+        else { $this->error($msg); }
+    }
 
     public function collect() {
         $this->display();

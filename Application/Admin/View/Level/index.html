@@ -54,7 +54,7 @@
                                 <td>
                                     <div class="action-group">
                                         <a class="btn btn-xs btn-warning" href="{:U('Admin/Level/edit',array('id'=>$v['id']))}">编辑</a>
-                                        <a class="btn btn-xs btn-danger" onClick="return confirm('确定删除?');" href="{:U('Admin/Level/del',array('id'=>$v['id']))}">删除</a>
+                                        <a class="btn btn-xs btn-danger" href="{:U('Admin/Level/del',array('id'=>$v['id']))}" data-ajax="true" data-confirm="确定删除?">删除</a>
                                         <if condition="$v['status'] eq 1">
                                             <a class="btn btn-xs btn-default" href="{:U('Admin/Level/disable',array('id'=>$v['id']))}">禁用</a>
                                         <else />
@@ -94,7 +94,7 @@
                         </div>
                         <div class="card-actions">
                             <a class="btn btn-xs btn-warning" href="{:U('Admin/Level/edit',array('id'=>$v['id']))}">编辑</a>
-                            <a class="btn btn-xs btn-danger" onClick="return confirm('确定删除?');" href="{:U('Admin/Level/del',array('id'=>$v['id']))}">删除</a>
+                            <a class="btn btn-xs btn-danger" href="{:U('Admin/Level/del',array('id'=>$v['id']))}" data-ajax="true" data-confirm="确定删除?">删除</a>
                             <if condition="$v['status'] eq 1">
                                 <a class="btn btn-xs btn-default" href="{:U('Admin/Level/disable',array('id'=>$v['id']))}">禁用</a>
                             <else />

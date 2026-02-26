@@ -61,7 +61,7 @@
                                 <td>
                                     <div class="action-group">
                                         <a class="btn btn-xs btn-info" href="{:U('Admin/Device/detail',array('id'=>$v['id']))}">详情</a>
-                                        <a class="btn btn-xs btn-danger" onclick="return confirm('确定删除该记录?');" href="{:U('Admin/Device/del',array('id'=>$v['id']))}">删除</a>
+                                        <a class="btn btn-xs btn-danger" data-ajax="true" data-confirm="确定删除该记录?" href="{:U('Admin/Device/del',array('id'=>$v['id']))}">删除</a>
                                     </div>
                                 </td>
                             </tr>
@@ -82,7 +82,7 @@
                         <div class="card-row"><span class="label">最后活跃</span><span class="value">{$v['last_seen_fmt']}</span></div>
                         <div class="card-actions">
                             <a class="btn btn-info" href="{:U('Admin/Device/detail',array('id'=>$v['id']))}">详情</a>
-                            <a class="btn btn-danger" onclick="return confirm('确定删除该记录?');" href="{:U('Admin/Device/del',array('id'=>$v['id']))}">删除</a>
+                            <a class="btn btn-danger" data-ajax="true" data-confirm="确定删除该记录?" href="{:U('Admin/Device/del',array('id'=>$v['id']))}">删除</a>
                         </div>
                     </div>
                     </foreach>

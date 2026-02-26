@@ -267,17 +267,21 @@
                 url: '{:U("Admin/Customer/edit")}',
                 type: 'POST',
                 data: formData,
+                dataType: 'json',
                 success: function(response) {
-                    showSuccessMessage('修改成功！');
-                    setTimeout(function() {
-                        window.location.href = '{:U("Admin/Customer/list")}';
-                    }, 1000);
+                    if (response && response.code === 0) {
+                        showSuccessMessage(response.msg || '修改成功！');
+                        setTimeout(function() {
+                            window.location.href = '{:U("Admin/Customer/list")}';
+                        }, 1000);
+                    } else {
+                        alert(response.msg || '修改失败');
+                        submitBtn.prop('disabled', false).val(originalText);
+                    }
                 },
                 error: function() {
-                    showSuccessMessage('修改成功！');
-                    setTimeout(function() {
-                        window.location.href = '{:U("Admin/Customer/list")}';
-                    }, 1000);
+                    alert('网络错误，请重试');
+                    submitBtn.prop('disabled', false).val(originalText);
                 },
                 complete: function() {
                     // 恢复提交按钮
@@ -285,33 +289,37 @@
                 }
             });
         });
-        
+
         // 手机端表单提交
         $('#mobileEditForm').on('submit', function(e) {
             e.preventDefault();
-            
+
             var formData = $(this).serialize();
             var submitBtn = $('#mobileSubmitBtn');
             var originalText = submitBtn.val();
-            
+
             // 禁用提交按钮
             submitBtn.prop('disabled', true).val('修改中...');
-            
+
             $.ajax({
                 url: '{:U("Admin/Customer/edit")}',
                 type: 'POST',
                 data: formData,
+                dataType: 'json',
                 success: function(response) {
-                    showSuccessMessage('修改成功！');
-                    setTimeout(function() {
-                        window.location.href = '{:U("Admin/Customer/list")}';
-                    }, 1000);
+                    if (response && response.code === 0) {
+                        showSuccessMessage(response.msg || '修改成功！');
+                        setTimeout(function() {
+                            window.location.href = '{:U("Admin/Customer/list")}';
+                        }, 1000);
+                    } else {
+                        alert(response.msg || '修改失败');
+                        submitBtn.prop('disabled', false).val(originalText);
+                    }
                 },
                 error: function() {
-                    showSuccessMessage('修改成功！');
-                    setTimeout(function() {
-                        window.location.href = '{:U("Admin/Customer/list")}';
-                    }, 1000);
+                    alert('网络错误，请重试');
+                    submitBtn.prop('disabled', false).val(originalText);
                 },
                 complete: function() {
                     // 恢复提交按钮
