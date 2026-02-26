@@ -1,0 +1,460 @@
+/**
+ * 后台表单页共享样式
+ * 适用于所有 add/edit/detail 页面
+ * 依赖：design-tokens.css, admin-components.css
+ */
+
+/* ---------- 桌面端表单 ---------- */
+@media (min-width: 769px) {
+    .form-horizontal {
+        background: #fff;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        border: 1px solid #f1f5f9;
+    }
+
+    .form-horizontal .form-group {
+        margin-bottom: 20px !important;
+        display: flex !important;
+        align-items: flex-start !important;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .form-horizontal .control-label {
+        text-align: left !important;
+        width: 150px !important;
+        min-width: 150px !important;
+        padding: 15px 20px !important;
+        background: #f8f9fa !important;
+        border: 1px solid #dee2e6 !important;
+        font-weight: 600 !important;
+        color: #495057 !important;
+        font-size: 14px !important;
+        margin: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        border-radius: 0 !important;
+        flex-shrink: 0 !important;
+    }
+
+    .form-horizontal .form-group > div:last-child {
+        flex: 1 !important;
+        border: 1px solid #dee2e6 !important;
+        border-left: none !important;
+        background: white !important;
+        padding: 10px 15px !important;
+    }
+
+    .form-horizontal input[type="text"],
+    .form-horizontal input[type="password"],
+    .form-horizontal input[type="number"],
+    .form-horizontal input[type="email"],
+    .form-horizontal input[type="url"],
+    .form-horizontal textarea,
+    .form-horizontal select {
+        padding: 0.75rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        background: #fff;
+        color: #1e293b;
+        transition: all 0.2s ease-in-out;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .form-horizontal input[type="text"]:focus,
+    .form-horizontal input[type="password"]:focus,
+    .form-horizontal input[type="number"]:focus,
+    .form-horizontal input[type="email"]:focus,
+    .form-horizontal textarea:focus,
+    .form-horizontal select:focus {
+        outline: none;
+        border-color: var(--color-primary, #1677ff);
+        box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+    }
+
+    .form-horizontal .btn {
+        padding: 12px 24px !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        border-radius: 6px !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .form-horizontal .btn-info {
+        background: var(--color-primary, #1677ff) !important;
+        border-color: var(--color-primary, #1677ff) !important;
+        color: white !important;
+    }
+
+    .form-horizontal .btn-info:hover {
+        background: var(--color-primary-active, #0958d9) !important;
+        border-color: var(--color-primary-active, #0958d9) !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(22, 119, 255, 0.3);
+    }
+
+    .form-horizontal .radio { margin-bottom: 10px; }
+    .form-horizontal .radio label { font-size: 14px; color: #495057; font-weight: 500; }
+
+    .help-inline .middle {
+        font-size: 12px;
+        color: #6c757d;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .widget-box {
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    .widget-header {
+        background: #fff;
+        border-bottom: 1px solid #f1f5f9;
+        border-radius: 0.75rem 0.75rem 0 0;
+    }
+
+    .widget-title {
+        color: #1e293b;
+        font-weight: 600;
+    }
+}
+
+/* ---------- 移动端：隐藏桌面表单，显示移动表单 ---------- */
+@media (max-width: 768px) {
+    .page-header h1 { font-size: 1.1rem; padding: 10px 0; }
+    .tabbable { padding: 0 5px; }
+    .form-horizontal { display: none; }
+    .tab-pane { display: none; }
+    .widget-box { display: none; }
+    .col-xs-12 { padding: 0 10px; }
+
+    .form-horizontal .col-sm-3,
+    .form-horizontal .col-sm-9 { width: 100%; max-width: 100%; }
+    .form-horizontal .form-group { display: block; }
+    .form-horizontal .clearfix.form-actions .col-md-offset-3 { margin-left: 0; }
+    .form-horizontal .clearfix.form-actions .col-md-9 { width: 100%; }
+
+    /* 移动端 nav-tabs */
+    .nav-tabs {
+        display: flex;
+        background: #fff;
+        border-bottom: 2px solid #e9ecef;
+        margin-bottom: 20px;
+        border-radius: 8px 8px 0 0;
+        overflow: hidden;
+    }
+    .nav-tabs li { flex: 1; margin: 0; }
+    .nav-tabs li a {
+        display: block;
+        padding: 15px 10px;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 500;
+        color: #666;
+        background: #f8f9fa;
+        border: none;
+        border-radius: 0;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border-bottom: 3px solid transparent;
+    }
+    .nav-tabs li.active a {
+        background: #42a5f5;
+        color: #fff;
+        border-bottom-color: #1976d2;
+    }
+    .nav-tabs li a:hover {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+}
+
+/* ---------- 移动端表单组件 ---------- */
+.mobile-form {
+    display: none;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+@media (max-width: 768px) {
+    .mobile-form { display: block; }
+}
+
+.mobile-form-group { margin-bottom: 20px; }
+
+.mobile-form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.mobile-form-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 14px;
+    background: #fff;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.mobile-form-input:focus {
+    outline: none;
+    border-color: #42a5f5;
+    box-shadow: 0 0 0 2px rgba(66, 165, 245, 0.2);
+}
+
+.mobile-form-help {
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+}
+
+.mobile-form-radio-group {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.mobile-form-radio {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.mobile-form-radio input[type="radio"] { transform: scale(1.2); }
+
+.mobile-form-submit {
+    width: 100%;
+    padding: 15px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: none;
+    background: #28a745;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 10px;
+}
+
+.mobile-form-submit:hover { background: #218838; }
+.mobile-form-submit:active { transform: scale(0.98); }
+
+.mobile-form-back {
+    width: 100%;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    background: #fff;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    text-align: center;
+    display: block;
+}
+
+.mobile-form-back:hover { background: #f8f9fa; color: #333; }
+
+/* ---------- 移动端帮助信息 ---------- */
+.mobile-help {
+    display: none;
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid #e9ecef;
+}
+
+@media (max-width: 768px) {
+    .mobile-help { display: block; }
+}
+
+.mobile-help-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mobile-help-section { margin-bottom: 15px; }
+
+.mobile-help-section-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mobile-help-list { list-style: none; padding: 0; margin: 0; }
+
+.mobile-help-list li {
+    padding: 5px 0;
+    color: #666;
+    font-size: 14px;
+    position: relative;
+    padding-left: 20px;
+}
+
+.mobile-help-list li:before {
+    content: "•";
+    color: #42a5f5;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+/* ---------- 移动端select样式 ---------- */
+.mobile-form-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 14px;
+    background: #fff;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+.mobile-form-select:focus {
+    outline: none;
+    border-color: #42a5f5;
+    box-shadow: 0 0 0 2px rgba(66, 165, 245, 0.2);
+}
+
+/* ---------- 移动端textarea ---------- */
+.mobile-form-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 14px;
+    background: #fff;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    min-height: 100px;
+    resize: vertical;
+}
+
+.mobile-form-textarea:focus {
+    outline: none;
+    border-color: #42a5f5;
+    box-shadow: 0 0 0 2px rgba(66, 165, 245, 0.2);
+}
+
+/* ---------- 简单表格表单（add/edit公告、优惠券等） ---------- */
+.form-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.form-table th {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 15px 20px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    width: 150px;
+    vertical-align: top;
+    font-size: 14px;
+}
+
+.form-table td {
+    border: 1px solid #dee2e6;
+    padding: 15px 20px;
+    vertical-align: top;
+    background: white;
+}
+
+.input-medium {
+    width: 100%;
+    min-width: 500px;
+    padding: 12px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.5;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background: #fafafa;
+    box-sizing: border-box;
+}
+
+.input-medium:focus {
+    outline: none;
+    border-color: var(--color-primary, #1677ff);
+    box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+    background: white;
+}
+
+select.input-medium { appearance: auto; }
+textarea.input-medium { min-height: 200px; resize: vertical; }
+
+.inputword {
+    font-size: 14px;
+    margin-right: 10px;
+    color: #495057;
+    font-weight: 500;
+}
+
+.btn-success {
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    background: #28a745;
+    border: 1px solid #28a745;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+    background: #218838;
+    border-color: #1e7e34;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+@media (max-width: 768px) {
+    .input-medium { min-width: 100%; font-size: 16px; padding: 12px; }
+    .btn-success { width: 100%; padding: 15px; font-size: 16px; }
+    .form-table th { width: 120px; padding: 12px 15px; font-size: 13px; }
+    .form-table td { padding: 12px 15px; }
+}
+
+@media (min-width: 769px) {
+    .mobile-only { display: none !important; }
+}
