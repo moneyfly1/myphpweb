@@ -230,21 +230,20 @@ class EmailQueueProcessor {
      * 获取待发送的邮件
      */
     private function getPendingEmails($limit = 10) {
-        $sql = "SELECT * FROM {$this->prefix}email_queue
-                WHERE status = 'pending' 
-                AND scheduled_at <= ? 
-                AND retry_count < max_retries 
-                ORDER BY priority ASC, created_at ASC 
-                LIMIT ?";
-        
-        $stmt = $this->mysqli->prepare($sql);
-        $stmt->bind_param('ii', $time, $limit);
         $time = time();
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $emails = $result->fetch_all(MYSQLI_ASSOC);
-        $stmt->close();
-        return $emails;
+        $sql = "SELECT * FROM {$this->prefix}email_queue
+                WHERE status = 'pending'
+                AND scheduled_at <= {$time}
+                AND retry_count < max_retries
+                ORDER BY priority ASC, created_at ASC
+                LIMIT {$limit}";
+
+        $result = $this->mysqli->query($sql);
+        if (!$result) {
+            $this->log("getPendingEmails SQL错误: " . $this->mysqli->error);
+            return [];
+        }
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
     
     /**
@@ -294,13 +293,14 @@ class EmailQueueProcessor {
         
         if ($status === 'pending') {
             $delay = pow(2, $retryCount) * 60; // 2^n 分钟后重试
+            $scheduledAt = $time + $delay;
             $sql = "UPDATE {$this->prefix}email_queue SET status = ?, retry_count = ?, error_message = ?, updated_at = ?, scheduled_at = ? WHERE id = ?";
             $stmt = $this->mysqli->prepare($sql);
-            $stmt->bind_param('isssii', $status, $retryCount, $error, $time, $time + $delay, $id);
+            $stmt->bind_param('sissii', $status, $retryCount, $error, $time, $scheduledAt, $id);
         } else {
             $sql = "UPDATE {$this->prefix}email_queue SET status = ?, retry_count = ?, error_message = ?, updated_at = ? WHERE id = ?";
             $stmt = $this->mysqli->prepare($sql);
-            $stmt->bind_param('isssi', $status, $retryCount, $error, $time, $id);
+            $stmt->bind_param('sisii', $status, $retryCount, $error, $time, $id);
         }
         
         $stmt->execute();
@@ -552,9 +552,9 @@ private function tableExists($tableName) {
     private function log($message) {
         $timestamp = date('Y-m-d H:i:s');
         $logMessage = "[{$timestamp}] {$message}\n";
-        // 写入日志文件（已关闭）
-        // file_put_contents($this->logFile, $logMessage, FILE_APPEND | LOCK_EX);
-        // 仅输出到控制台
+        // 写入日志文件
+        file_put_contents($this->logFile, $logMessage, FILE_APPEND | LOCK_EX);
+        // 输出到控制台
         echo $logMessage;
     }
 }

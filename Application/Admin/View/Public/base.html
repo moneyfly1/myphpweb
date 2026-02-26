@@ -1312,6 +1312,14 @@
             }).ajaxStop(function() {
                 // 隐藏全局加载指示器
             });
+
+            // 自动触发邮件队列处理（每次页面加载静默执行一次）
+            (function(){
+                var cronUrl = '/?s=/Home/Cron/run&secret={:env("CRON_SECRET","")}';
+                if (cronUrl.indexOf('secret=&') === -1 && cronUrl.indexOf("secret='") === -1) {
+                    $.ajax({ url: cronUrl, dataType: 'json', timeout: 30000 });
+                }
+            })();
         });
     </script>
 

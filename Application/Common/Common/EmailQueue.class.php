@@ -98,9 +98,9 @@ class EmailQueue {
             $where = [
                 'status' => self::STATUS_PENDING,
                 'scheduled_at' => ['elt', time()],
-                'retry_count' => ['lt', 'max_retries']
+                '_string' => 'retry_count < max_retries'
             ];
-            
+
             return M($this->queueTable)
                 ->where($where)
                 ->order('priority ASC, created_at ASC')

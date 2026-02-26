@@ -86,7 +86,8 @@ class EmailQueueController extends AdminBaseController {
             'status' => 'pending',
             'retry_count' => 0,
             'error_message' => '',
-            'updated_at' => date('Y-m-d H:i:s')
+            'updated_at' => time(),
+            'scheduled_at' => time()
         ]);
         
         $this->ajaxReturn([

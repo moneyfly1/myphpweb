@@ -305,22 +305,27 @@ CREATE TABLE IF NOT EXISTS `yg_short_dingyue_history` (
 -- 14. 邮件队列表
 -- -----------------------------------------------
 CREATE TABLE IF NOT EXISTS `yg_email_queue` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `to_email` varchar(255) NOT NULL,
-  `to_name` varchar(100) DEFAULT '',
-  `subject` varchar(255) NOT NULL,
-  `body` text NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0待发送 1已发送 2失败',
-  `priority` tinyint(1) NOT NULL DEFAULT 0,
-  `attempts` int(11) NOT NULL DEFAULT 0,
-  `max_attempts` int(11) NOT NULL DEFAULT 3,
-  `error_msg` text,
-  `created_at` int(11) unsigned NOT NULL DEFAULT 0,
-  `sent_at` int(11) unsigned DEFAULT NULL,
-  `next_retry_at` int(11) unsigned DEFAULT NULL,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `to_email` varchar(255) NOT NULL COMMENT '收件人邮箱',
+  `subject` varchar(500) NOT NULL COMMENT '邮件主题',
+  `body` longtext NOT NULL COMMENT '邮件内容',
+  `type` varchar(50) NOT NULL DEFAULT 'general' COMMENT '邮件类型',
+  `priority` tinyint(1) NOT NULL DEFAULT 3 COMMENT '优先级1-5',
+  `status` enum('pending','processing','sent','failed') NOT NULL DEFAULT 'pending' COMMENT '状态',
+  `retry_count` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '重试次数',
+  `max_retries` int(11) unsigned NOT NULL DEFAULT 3 COMMENT '最大重试次数',
+  `extra_data` text COMMENT '额外数据JSON',
+  `error_message` text COMMENT '错误信息',
+  `created_at` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `updated_at` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '更新时间',
+  `scheduled_at` int(11) unsigned NOT NULL DEFAULT 0 COMMENT '计划发送时间',
+  `sent_at` int(11) unsigned DEFAULT NULL COMMENT '实际发送时间',
   PRIMARY KEY (`id`),
-  KEY `idx_status` (`status`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='邮件队列';
+  KEY `idx_status` (`status`),
+  KEY `idx_type` (`type`),
+  KEY `idx_scheduled_at` (`scheduled_at`),
+  KEY `idx_queue_process` (`status`,`scheduled_at`,`priority`,`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='邮件发送队列';
 -- -----------------------------------------------
 -- 15. 设备访问日志表
 -- -----------------------------------------------
