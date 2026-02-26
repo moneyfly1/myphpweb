@@ -2,35 +2,24 @@
 <block name="title">工单管理</block>
 <block name="content">
     <style>
-        .ticket-tabs { display: flex; gap: 0; margin-bottom: 24px; border-bottom: 2px solid var(--border-light); }
-        .ticket-tabs a {
-            padding: 12px 24px; text-decoration: none; color: var(--text-secondary);
-            font-weight: 500; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .2s;
-        }
-        .ticket-tabs a:hover { color: var(--primary); }
-        .ticket-tabs a.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
-        .ticket-tabs .badge {
-            display: inline-block; min-width: 20px; padding: 2px 8px; border-radius: 10px;
-            font-size: 12px; font-weight: 600; text-align: center; margin-left: 6px;
-        }
-        .badge-orange { background: rgba(237,137,54,.15); color: #ed8936; }
-        .badge-blue   { background: rgba(66,153,225,.15); color: #4299e1; }
-        .badge-green  { background: rgba(72,187,120,.15); color: #48bb78; }
-        .badge-gray   { background: rgba(160,174,192,.15); color: #a0aec0; }
-        .status-tag {
-            display: inline-block; padding: 4px 12px; border-radius: 9999px;
-            font-size: 12px; font-weight: 500;
-        }
-        .status-0 { background: rgba(237,137,54,.12); color: #ed8936; }
-        .status-1 { background: rgba(66,153,225,.12); color: #4299e1; }
-        .status-2 { background: rgba(72,187,120,.12); color: #48bb78; }
-        .status-3 { background: rgba(160,174,192,.12); color: #a0aec0; }
-        .priority-tag { display: inline-block; padding: 3px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
-        .priority-0 { background: rgba(160,174,192,.12); color: #a0aec0; }
-        .priority-1 { background: rgba(66,153,225,.12); color: #4299e1; }
-        .priority-2 { background: rgba(245,101,101,.12); color: #f56565; }
-        .btn-sm { padding: 6px 14px; font-size: 13px; }
-        .action-group { display: flex; gap: 6px; align-items: center; }
+        .ticket-tabs { display:flex; gap:0; margin-bottom:0; border-bottom:none; }
+        .ticket-tabs a { padding:12px 24px; text-decoration:none; color:var(--text-secondary,#64748b); font-weight:500; border-bottom:2px solid transparent; margin-bottom:-2px; transition:all .2s; }
+        .ticket-tabs a:hover { color:var(--primary,#3b82f6); }
+        .ticket-tabs a.active { color:var(--primary,#3b82f6); border-bottom-color:var(--primary,#3b82f6); font-weight:600; }
+        .ticket-tabs .badge { display:inline-block; min-width:20px; padding:2px 8px; border-radius:10px; font-size:12px; font-weight:600; text-align:center; margin-left:6px; }
+        .badge-orange { background:rgba(237,137,54,.15); color:#ed8936; }
+        .badge-blue { background:rgba(66,153,225,.15); color:#4299e1; }
+        .badge-green { background:rgba(72,187,120,.15); color:#48bb78; }
+        .badge-gray { background:rgba(160,174,192,.15); color:#a0aec0; }
+        .status-tag { display:inline-block; padding:4px 12px; border-radius:9999px; font-size:12px; font-weight:500; }
+        .status-0 { background:rgba(237,137,54,.12); color:#ed8936; }
+        .status-1 { background:rgba(66,153,225,.12); color:#4299e1; }
+        .status-2 { background:rgba(72,187,120,.12); color:#48bb78; }
+        .status-3 { background:rgba(160,174,192,.12); color:#a0aec0; }
+        .priority-tag { display:inline-block; padding:3px 10px; border-radius:9999px; font-size:12px; font-weight:500; }
+        .priority-0 { background:rgba(160,174,192,.12); color:#a0aec0; }
+        .priority-1 { background:rgba(66,153,225,.12); color:#4299e1; }
+        .priority-2 { background:rgba(245,101,101,.12); color:#f56565; }
     </style>
 
     <nav aria-label="breadcrumb">
@@ -39,6 +28,7 @@
             <li class="breadcrumb-item active">工单管理</li>
         </ol>
     </nav>
+
     <div class="page-content">
         <div class="card">
             <div class="card-header">
@@ -51,8 +41,8 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped">
+                <div class="desktop-table">
+                    <table class="table table-hover">
                         <thead>
                             <tr>
                                 <th>工单号</th>
@@ -104,11 +94,67 @@
                             </tr>
                             </foreach>
                             <if condition="empty($list)">
-                            <tr><td colspan="8" class="text-center" style="padding:40px;color:#999;">暂无工单数据</td></tr>
+                            <tr><td colspan="8" class="text-center">暂无工单数据</td></tr>
                             </if>
                         </tbody>
                     </table>
                 </div>
+                <div class="mobile-card-list">
+                    <foreach name="list" item="v">
+                    <div class="mobile-card">
+                        <div class="card-header-row">
+                            <span class="card-title"><code>{$v['ticket_no']}</code></span>
+                            <if condition="$v['status'] eq 0"><span class="status-tag status-0">待处理</span>
+                            <elseif condition="$v['status'] eq 1" /><span class="status-tag status-1">处理中</span>
+                            <elseif condition="$v['status'] eq 2" /><span class="status-tag status-2">已回复</span>
+                            <else /><span class="status-tag status-3">已关闭</span>
+                            </if>
+                        </div>
+                        <div class="card-row">
+                            <span class="label">用户</span>
+                            <span class="value">{$v['username']}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="label">标题</span>
+                            <span class="value"><a href="{:U('Admin/Ticket/detail', array('id'=>$v['id']))}">{$v['title']}</a></span>
+                        </div>
+                        <div class="card-row">
+                            <span class="label">类型</span>
+                            <span class="value">
+                                <if condition="$v['type'] eq 0">咨询
+                                <elseif condition="$v['type'] eq 1" />故障
+                                <elseif condition="$v['type'] eq 2" />建议
+                                <else />其他
+                                </if>
+                            </span>
+                        </div>
+                        <div class="card-row">
+                            <span class="label">优先级</span>
+                            <span class="value">
+                                <if condition="$v['priority'] eq 0"><span class="priority-tag priority-0">低</span>
+                                <elseif condition="$v['priority'] eq 1" /><span class="priority-tag priority-1">中</span>
+                                <else /><span class="priority-tag priority-2">高</span>
+                                </if>
+                            </span>
+                        </div>
+                        <div class="card-row">
+                            <span class="label">创建时间</span>
+                            <span class="value">{$v['created_at']|date='Y-m-d H:i',###}</span>
+                        </div>
+                        <div class="card-actions">
+                            <a href="{:U('Admin/Ticket/detail', array('id'=>$v['id']))}" class="btn btn-info btn-sm">查看</a>
+                            <if condition="$v['status'] neq 3">
+                            <a href="{:U('Admin/Ticket/close', array('id'=>$v['id']))}" class="btn btn-warning btn-sm" onclick="return confirm('确定关闭该工单？')">关闭</a>
+                            </if>
+                            <a href="{:U('Admin/Ticket/del', array('id'=>$v['id']))}" class="btn btn-danger btn-sm" onclick="return confirm('确定删除该工单及所有回复？')">删除</a>
+                        </div>
+                    </div>
+                    </foreach>
+                    <if condition="empty($list)">
+                    <div class="mobile-empty">暂无工单数据</div>
+                    </if>
+                </div>
+
                 <div class="page-footer">
                     <div class="pagination-info"></div>
                     <div class="pagination-container">

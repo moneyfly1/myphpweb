@@ -3,103 +3,133 @@
 <block name="content">
     <style>
         .badge-type { display:inline-block; padding:2px 10px; border-radius:4px; color:#fff; font-size:12px; }
-        .badge-blue { background:#1677ff; }
-        .badge-orange { background:#fa8c16; }
-        .badge-green { background:#52c41a; }
-        .badge-red { background:#f5222d; }
-        .toggle-btn { cursor:pointer; }
-        @media (max-width:768px) {
-            .page-header h1 { font-size:1.2rem!important; padding:10px 0!important; }
-            .table { font-size:14px!important; }
-            .table th,.table td { padding:8px 6px!important; word-break:break-word!important; }
-            .btn { font-size:14px!important; padding:8px 12px!important; border-radius:6px!important; margin:2px!important; }
-            .nav-tabs { display:flex!important; overflow:hidden!important; }
-            .nav-tabs li { flex:1!important; }
-            .nav-tabs li a { font-size:14px!important; padding:12px 8px!important; text-align:center!important; }
-        }
-        @media (min-width:769px) { .mobile-only { display:none!important; } }
+        .badge-blue { background:#3b82f6; }
+        .badge-orange { background:#f59e0b; }
+        .badge-green { background:#10b981; }
+        .badge-red { background:#ef4444; }
     </style>
-    <!-- 面包屑导航 -->
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{:U('Admin/Index/index')}"><i class="fa fa-home"></i> 首页</a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{:U('Admin/Index/index')}">后台管理</a>
-            </li>
-            <li class="breadcrumb-item active">公告管理</li>
-        </ol>
+
+    <nav class="breadcrumb">
+        <a href="{:U('Admin/Index/index')}"><i class="fa fa-home"></i> 首页</a>
+        <span class="breadcrumb-separator">/</span>
+        <a href="{:U('Admin/Index/index')}">后台管理</a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current">公告管理</span>
     </nav>
-    <!-- 页面导航路径 -->
-    <div class="page-navigation">
-        <a href="{:U('Admin/Index/index')}" class="nav-item"><i class="fa fa-home"></i> 首页</a>
-        <div class="nav-separator">/</div>
-        <a href="{:U('Admin/Index/index')}" class="nav-item">后台管理</a>
-        <div class="nav-separator">/</div>
-        <div class="nav-item active">公告管理</div>
-    </div>
+
     <div class="page-content">
         <div class="card">
             <div class="card-header">
-                <div class="d-flex justify-content-start">
-                    <ul class="nav nav-tabs border-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="{:U('Admin/Announcement/index')}">公告列表</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{:U('Admin/Announcement/add')}">添加公告</a>
-                        </li>
-                    </ul>
-                </div>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{:U('Admin/Announcement/index')}">公告列表</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{:U('Admin/Announcement/add')}">添加公告</a>
+                    </li>
+                </ul>
             </div>
             <div class="card-body">
-            <div class="tab-content">
-                <table class="table table-striped table-bordered table-hover table-condensed">
-                    <tr>
-                        <th width="5%">ID</th>
-                        <th>标题</th>
-                        <th width="8%">类型</th>
-                        <th width="6%">弹窗</th>
-                        <th width="12%">开始时间</th>
-                        <th width="12%">结束时间</th>
-                        <th width="6%">排序</th>
-                        <th width="6%">状态</th>
-                        <th width="18%">操作</th>
-                    </tr>
+                <!-- Desktop Table -->
+                <div class="desktop-table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="5%">ID</th>
+                                <th>标题</th>
+                                <th width="8%">类型</th>
+                                <th width="6%">弹窗</th>
+                                <th width="12%">开始时间</th>
+                                <th width="12%">结束时间</th>
+                                <th width="6%">排序</th>
+                                <th width="6%">状态</th>
+                                <th width="18%">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <foreach name="list" item="v">
+                            <tr>
+                                <td>{$v['id']}</td>
+                                <td>{$v['title']}</td>
+                                <td>
+                                    <if condition="$v['type'] eq 0"><span class="badge-type badge-blue">通知</span></if>
+                                    <if condition="$v['type'] eq 1"><span class="badge-type badge-orange">维护</span></if>
+                                    <if condition="$v['type'] eq 2"><span class="badge-type badge-green">促销</span></if>
+                                    <if condition="$v['type'] eq 3"><span class="badge-type badge-red">紧急</span></if>
+                                </td>
+                                <td>
+                                    <if condition="$v['is_popup'] eq 1"><span class="text-success">是</span><else /><span class="text-muted">否</span></if>
+                                </td>
+                                <td>{$v['start_time_fmt']}</td>
+                                <td>{$v['end_time_fmt']}</td>
+                                <td>{$v['sort_order']}</td>
+                                <td>{$v['status_text']}</td>
+                                <td>
+                                    <a class="btn btn-xs btn-warning" href="{:U('Admin/Announcement/edit',array('id'=>$v['id']))}">编辑</a>
+                                    <a class="btn btn-xs btn-danger" onClick="return confirm('确定删除该公告?');" href="{:U('Admin/Announcement/del',array('id'=>$v['id']))}">删除</a>
+                                    <button class="btn btn-xs toggle-btn {$v['is_active']?'btn-success':'btn-default'}" data-id="{$v['id']}">{$v['is_active']?'已启用':'已禁用'}</button>
+                                </td>
+                            </tr>
+                            </foreach>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Mobile Cards -->
+                <div class="mobile-card-list">
                     <foreach name="list" item="v">
-                        <tr>
-                            <td>{$v['id']}</td>
-                            <td>{$v['title']}</td>
-                            <td>
+                    <div class="mobile-card">
+                        <div class="card-title">{$v['title']}</div>
+                        <div class="card-row">
+                            <span class="card-label">类型</span>
+                            <span class="card-value">
                                 <if condition="$v['type'] eq 0"><span class="badge-type badge-blue">通知</span></if>
                                 <if condition="$v['type'] eq 1"><span class="badge-type badge-orange">维护</span></if>
                                 <if condition="$v['type'] eq 2"><span class="badge-type badge-green">促销</span></if>
                                 <if condition="$v['type'] eq 3"><span class="badge-type badge-red">紧急</span></if>
-                            </td>
-                            <td>
-                                <if condition="$v['is_popup'] eq 1"><span style="color:#52c41a">是</span><else /><span style="color:#999">否</span></if>
-                            </td>
-                            <td>{$v['start_time_fmt']}</td>
-                            <td>{$v['end_time_fmt']}</td>
-                            <td>{$v['sort_order']}</td>
-                            <td>{$v['status_text']}</td>
-                            <td style="min-width:160px;">
-                                <div style="display:flex; gap:4px; flex-wrap:wrap;">
-                                    <a class="btn btn-xs btn-warning" href="{:U('Admin/Announcement/edit',array('id'=>$v['id']))}">编辑</a>
-                                    <a class="btn btn-xs btn-danger" onClick="return confirm('确定删除该公告?');" href="{:U('Admin/Announcement/del',array('id'=>$v['id']))}">删除</a>
-                                    <button class="btn btn-xs toggle-btn {$v['is_active']?'btn-success':'btn-default'}" data-id="{$v['id']}">{$v['is_active']?'已启用':'已禁用'}</button>
-                                </div>
-                            </td>
-                        </tr>
+                            </span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">弹窗</span>
+                            <span class="card-value">
+                                <if condition="$v['is_popup'] eq 1"><span class="text-success">是</span><else /><span class="text-muted">否</span></if>
+                            </span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">开始时间</span>
+                            <span class="card-value">{$v['start_time_fmt']}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">结束时间</span>
+                            <span class="card-value">{$v['end_time_fmt']}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">排序</span>
+                            <span class="card-value">{$v['sort_order']}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="card-label">状态</span>
+                            <span class="card-value">{$v['status_text']}</span>
+                        </div>
+                        <div class="card-actions">
+                            <a class="btn btn-xs btn-warning" href="{:U('Admin/Announcement/edit',array('id'=>$v['id']))}">编辑</a>
+                            <a class="btn btn-xs btn-danger" onClick="return confirm('确定删除该公告?');" href="{:U('Admin/Announcement/del',array('id'=>$v['id']))}">删除</a>
+                            <button class="btn btn-xs toggle-btn {$v['is_active']?'btn-success':'btn-default'}" data-id="{$v['id']}">{$v['is_active']?'已启用':'已禁用'}</button>
+                        </div>
+                    </div>
                     </foreach>
-                </table>
-            </div>
+                </div>
+                <!-- Pagination -->
+                <div class="page-footer">
+                    <div class="pagination-wrapper">
+                        {$page|default=''}
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
-    <script src="__PUBLIC__/statics/js/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript">
+
+    <script>
     $(function(){
         $('.toggle-btn').click(function(){
             var btn = $(this);

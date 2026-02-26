@@ -1,1164 +1,258 @@
 <extend name="Public:base" />
 <block name="title">邮件队列管理</block>
 <block name="content">
-    <!-- 面包屑导航 -->
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{:U('Admin/Index/index')}">
-                    <i class="fa fa-home"></i>
-                    首页
-                </a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{:U('Admin/Index/index')}">
-                    后台管理
-                </a>
-            </li>
-            <li class="breadcrumb-item active">
-                邮件队列管理
-            </li>
-        </ol>
+    <nav class="breadcrumb">
+        <a href="{:U('Admin/Index/index')}"><i class="fa fa-home"></i> 首页</a>
+        <span class="breadcrumb-separator">/</span>
+        <a href="{:U('Admin/Index/index')}">后台管理</a>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-current">邮件队列管理</span>
     </nav>
-    
-    <!-- 页面导航路径 -->
-    <div class="page-navigation">
-        <a href="{:U('Admin/Index/index')}" class="nav-item">
-            <i class="fa fa-home"></i>
-            首页
-        </a>
-        <div class="nav-separator">/</div>
-        <a href="{:U('Admin/Index/index')}" class="nav-item">
-            后台管理
-        </a>
-        <div class="nav-separator">/</div>
-        <div class="nav-item active">
-            邮件队列管理
-        </div>
-    </div>
-    
+
     <style>
-        /* 面包屑导航设计 - 电脑端显示 */
-        .breadcrumb {
-            background: transparent;
-            padding: 0;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            position: relative;
-            z-index: 10;
-        }
-        
-        .breadcrumb-item {
-            display: flex;
-            align-items: center;
-        }
-        
-        .breadcrumb-item a {
-            color: #1677ff;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: color 0.3s ease;
-        }
-        
-        .breadcrumb-item a:hover {
-            color: #0958d9;
-            text-decoration: none;
-        }
-        
-        .breadcrumb-item.active {
-            color: #8c8c8c;
-        }
-        
-        .breadcrumb-item i {
-            font-size: 14px;
-        }
-        
-        .breadcrumb-item:not(:last-child)::after {
-            content: '/';
-            color: #d9d9d9;
-            margin-left: 8px;
-            font-size: 12px;
-        }
-        
-        /* 页面导航路径 - 电脑端隐藏，移动端显示 */
-        .page-navigation {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 12px 16px;
-            margin-bottom: 20px;
-            display: none;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            position: relative;
-            z-index: 10;
-        }
-        
-        .page-navigation .nav-item {
-            display: flex;
-            align-items: center;
-            color: #6c757d;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        
-        .page-navigation .nav-item:hover {
-            color: #1677ff;
-            text-decoration: none;
-        }
-        
-        .page-navigation .nav-item.active {
-            color: #1677ff;
-            font-weight: 500;
-        }
-        
-        .page-navigation .nav-separator {
-            color: #dee2e6;
-            margin: 0 4px;
-        }
-        
-
-        
-
-        
-        /* 选项卡样式 - 并排排列 */
-        .nav-tabs {
-            border-bottom: none;
-            margin-bottom: 20px;
-            background: transparent;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-        }
-        
-        .nav-tabs .nav-item {
-            margin-right: 8px;
-        }
-        
-        .nav-tabs .nav-link {
-            border: none;
-            color: #595959;
-            padding: 12px 20px;
-            border-radius: 6px;
-            background: #f5f5f5;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-        
-        .nav-tabs .nav-link.active {
-            background: #1677ff;
-            color: white;
-            border: none;
-            box-shadow: 0 2px 8px rgba(22, 119, 255, 0.3);
-        }
-        
-        .nav-tabs .nav-link:hover {
-            background: #e6f7ff;
-            color: #1677ff;
-            transform: translateY(-1px);
-        }
-        
-        /* 卡片样式 */
-        .card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-            margin-bottom: 20px;
-        }
-        
-        .card-header {
-            background: #fafafa;
-            border-bottom: 1px solid #f0f0f0;
-            padding: 16px 20px;
-            font-weight: 500;
-        }
-        
-        .card-body {
-            padding: 20px;
-        }
-        
-        /* 统计卡片样式 - 修改为横向排列 */
-        .stats-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .stat-card {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 15px 10px;
-            border-radius: 4px;
-            color: #fff;
-            text-decoration: none !important;
-            transition: all 0.25s ease-in-out;
-            position: relative;
-            overflow: hidden;
-            min-height: 90px;
-            min-width: 120px;
-            flex: 1;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .stat-card.pending {
-            background-color: #337ab7;
-        }
-        
-        .stat-card.processing {
-            background-color: #f0ad4e;
-        }
-        
-        .stat-card.sent {
-            background-color: #5cb85c;
-        }
-        
-        .stat-card.failed {
-            background-color: #d9534f;
-        }
-        
-        .stat-card.total {
-            background-color: #777;
-        }
-        
-        .stat-card.refresh {
-            background-color: #5bc0de;
-        }
-        
-        .stat-card .stat-icon {
-            font-size: 22px;
-            margin-bottom: 8px;
-        }
-        
-        .stat-card .stat-number {
-            font-size: 20px;
-            font-weight: 500;
-            line-height: 1;
-        }
-        
-        .stat-card .stat-label {
-            font-size: 13px;
-            margin-top: 5px;
-        }
-        
-        /* 表格样式 */
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        .table {
-            margin: 0;
-            font-size: 14px;
-            width: 100%;
-            background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .table th {
-            background-color: #fafafa;
-            font-weight: 500;
-            padding: 16px;
-            border-bottom: 1px solid #f0f0f0;
-            color: #495057;
-        }
-        
-        .table td {
-            padding: 16px;
-            vertical-align: middle;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        
-        .table-hover tbody tr:hover {
-            background-color: rgba(22, 119, 255, 0.05);
-        }
-        
-        /* 状态标签 */
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .status-pending {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
-        }
-        
-        .status-processing {
-            background: rgba(245, 87, 108, 0.1);
-            color: #f5576c;
-        }
-        
-        .status-sent {
-            background: rgba(79, 172, 254, 0.1);
-            color: #4facfe;
-        }
-        
-        .status-failed {
-            background: rgba(250, 112, 154, 0.1);
-            color: #fa709a;
-        }
-        
-        /* 类型标签 */
-        .type-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 500;
-        }
-        
-        .type-activation {
-            background: #e3f2fd;
-            color: #1976d2;
-        }
-        
-        .type-password_reset {
-            background: #fff3e0;
-            color: #f57c00;
-        }
-        
-        .type-subscription {
-            background: #e8f5e8;
-            color: #388e3c;
-        }
-        
-        .type-expiring {
-            background: #fff8e1;
-            color: #fbc02d;
-        }
-        
-        .type-expired {
-            background: #ffebee;
-            color: #d32f2f;
-        }
-        
-        .type-order {
-            background: #f3e5f5;
-            color: #7b1fa2;
-        }
-        
-        /* 操作按钮 - 加大并添加文字 */
-        .table-actions {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .table-actions .btn {
-            padding: 6px 10px;
-            font-size: 12px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .table-actions .btn-info {
-            background-color: #5bc0de;
-            border-color: #46b8da;
-            color: white;
-        }
-        
-        .table-actions .btn-warning {
-            background-color: #f0ad4e;
-            border-color: #eea236;
-            color: white;
-        }
-        
-        .table-actions .btn-danger {
-            background-color: #d9534f;
-            border-color: #d43f3a;
-            color: white;
-        }
-        
-        /* 批量操作和分页组合区域样式 */
-        .batch-actions-with-pagination {
-            background: #f8f9fa;
-            border-top: 1px solid #e9ecef;
-            padding: 20px;
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            border-radius: 0 0 8px 8px;
-        }
-        
-        .batch-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .pagination-info {
-            color: #6c757d;
-            font-size: 14px;
-        }
-        
-        .pagination-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        
-        /* 统一分页元素高度和样式 */
-        .pagination {
-            display: flex !important;
-            flex-direction: row !important;
-            align-items: center;
-            gap: 4px;
-            margin: 0;
-            flex-wrap: wrap;
-            text-align: center !important;
-        }
-        
-        /* 确保分页容器内的所有元素都是水平排列 */
-        .pagination > * {
-            display: inline-block !important;
-            float: none !important;
-        }
-        
-        /* 覆盖Bootstrap分页样式，确保水平排列 */
-        .pagination > li {
-            display: inline-block !important;
-            float: none !important;
-        }
-        
-        .pagination > li > a,
-        .pagination > li > span {
-            float: none !important;
-            display: inline-block !important;
-        }
-        
-        /* 确保所有分页相关元素都是水平排列 */
-        .pagination,
-        .pagination *,
-        .pagination > *,
-        .pagination > li,
-        .pagination > li > *,
-        .pagination a,
-        .pagination span,
-        .pagination .prev,
-        .pagination .next,
-        .pagination .first,
-        .pagination .end,
-        .pagination .num,
-        .pagination .current {
-            display: inline-block !important;
-            float: none !important;
-            vertical-align: middle !important;
-        }
-        
-        /* 确保分页容器本身也是水平排列 */
-        #pagination-container {
-            display: flex !important;
-            flex-direction: row !important;
-            justify-content: center !important;
-            align-items: center !important;
-            flex-wrap: wrap !important;
-            gap: 4px !important;
-        }
-        
-        .pagination a, .pagination span {
-            height: 36px;
-            min-width: 36px;
-            line-height: 36px;
-            text-align: center;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            margin: 0 2px;
-            text-decoration: none;
-            color: #1677ff;
-            background: #fff;
-            transition: all 0.3s ease;
-        }
-        
-        .pagination a:hover,
-        .pagination span:hover {
-            background: #e6f7ff;
-            border-color: #1677ff;
-            color: #1677ff;
-        }
-        
-        .pagination .current,
-        .pagination .active {
-            background: #1677ff;
-            border-color: #1677ff;
-            color: #fff;
-        }
-        
-        /* 分页跳转输入框和按钮样式 */
-        .pagination-jump {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: #fff;
-            padding: 8px 12px;
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        
-        .jump-label {
-            font-size: 14px;
-            color: #6c757d;
-            white-space: nowrap;
-        }
-        
-        .pagination-jump input {
-            width: 60px;
-            height: 32px;
-            text-align: center;
-            padding: 0 8px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            font-size: 14px;
-            background: #fff;
-            transition: all 0.2s ease;
-        }
-        
-        .pagination-jump input:focus {
-            outline: none;
-            border-color: #1677ff;
-            box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.25);
-        }
-        
-        .pagination-jump button {
-            height: 32px;
-            padding: 0 16px;
-            font-size: 14px;
-            border-radius: 4px;
-            border: 1px solid #1677ff;
-            background: linear-gradient(135deg, #1677ff, #0958d9);
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 500;
-        }
-        
-        .pagination-jump button:hover {
-            background: linear-gradient(135deg, #0958d9, #004085);
-            border-color: #004085;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(22, 119, 255, 0.3);
-        }
-        
-        /* 模态框样式 */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1050;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-        
-        .modal.show {
-            display: block;
-        }
-        
-        .modal.fade {
-            transition: opacity 0.15s linear;
-        }
-        
-        .modal.fade .modal-dialog {
-            transition: transform 0.3s ease-out;
-            transform: translate(0, -25%);
-        }
-        
-        .modal.show .modal-dialog {
-            transform: translate(0, 0);
-        }
-        
-        .modal-dialog {
-            margin: 30px auto;
-            max-width: 500px;
-        }
-        
-        .modal-content {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-        }
-        
-        .modal-header {
-            padding: 15px 20px;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        .modal-body {
-            padding: 20px;
-        }
-        
-        .modal-footer {
-            padding: 15px 20px;
-            border-top: 1px solid #e9ecef;
-            text-align: right;
-        }
-        
-        /* 筛选表单优化 */
-        .filter-form {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .filter-form .form-group {
-            margin-bottom: 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .filter-form label {
-            margin-bottom: 0;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-        
-        .filter-form select {
-            width: 120px;
-        }
-        
-        .filter-form button {
-            margin-bottom: 0;
-        }
-
-        /* 响应式设计 */
+        /* stat-card colored backgrounds */
+        .stat-card.pending { background-color: #337ab7; }
+        .stat-card.processing { background-color: #f0ad4e; }
+        .stat-card.sent { background-color: #5cb85c; }
+        .stat-card.failed { background-color: #d9534f; }
+        .stat-card.total { background-color: #777; }
+        .stat-card.refresh { background-color: #5bc0de; }
+        /* label styles */
+        .label { display: inline; padding: .2em .6em .3em; font-size: 75%; font-weight: 700; color: #fff; text-align: center; white-space: nowrap; vertical-align: baseline; border-radius: .25em; }
+        .label-info { background-color: #5bc0de; }
+        .label-warning { background-color: #f0ad4e; }
+        .label-primary { background-color: #337ab7; }
+        .label-danger { background-color: #d9534f; }
+        .label-success { background-color: #5cb85c; }
+        .label-default { background-color: #777; }
+        /* checkbox styles */
+        .ace, #selectAllCheckbox { display: inline-block; width: 16px; height: 16px; margin: 0; padding: 0; border: 1px solid #ccc; border-radius: 3px; background: #fff; cursor: pointer; position: relative; vertical-align: middle; }
+        .ace:checked, #selectAllCheckbox:checked { background: #337ab7; border-color: #337ab7; }
+        .ace:checked::after, #selectAllCheckbox:checked::after { content: '\2713'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 12px; font-weight: bold; }
+        .lbl { display: inline-block; margin-left: 5px; cursor: pointer; }
+        .pos-rel { position: relative; }
+        /* filter form */
+        .filter-form { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .filter-form .form-group { margin-bottom: 0; display: flex; align-items: center; gap: 8px; }
+        .filter-form label { margin-bottom: 0; font-weight: 500; white-space: nowrap; }
+        .filter-form select { width: 120px; }
+        /* table selected row */
+        .table tbody tr.selected > td { background-color: #f5f8fc !important; }
         @media (max-width: 768px) {
-            .select-all-container {
-                flex-direction: column !important;
-                gap: 10px !important;
-                text-align: center !important;
-                padding: 15px !important;
-            }
-            
-            .select-all-container > div:last-child {
-                flex-direction: column !important;
-                gap: 10px !important;
-            }
-            
-            .breadcrumb {
-                display: none !important;
-            }
-            
-            .page-navigation {
-                display: flex !important;
-                font-size: 12px;
-                padding: 8px 12px;
-                margin-top: 15px;
-                margin-bottom: 15px;
-            }
-            
-            /* 统计卡片优化 */
-            .stats-container {
-                flex-direction: column;
-            }
-            
-            .stat-card {
-                width: 100%;
-                min-width: auto;
-            }
-            
-            /* 筛选表单移动端优化 */
-            .filter-form {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            
-            .filter-form .form-group {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .filter-form select {
-                width: 150px;
-            }
-            
-            .filter-form button {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            /* 表单元素优化 */
-            .form-inline {
-                display: flex !important;
-                flex-direction: column !important;
-                gap: 10px !important;
-                margin-bottom: 20px !important;
-            }
-            
-            .form-inline .form-group {
-                margin-bottom: 0 !important;
-            }
-            
-            .form-inline .form-control {
-                font-size: 16px !important;
-                padding: 12px !important;
-                border-radius: 8px !important;
-            }
-            
-            .form-inline .btn {
-                font-size: 16px !important;
-                padding: 12px 20px !important;
-                border-radius: 8px !important;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
-            
-            /* 操作按钮优化 */
-            .btn-group {
-                display: flex !important;
-                flex-direction: column !important;
-                gap: 8px !important;
-                margin-bottom: 15px !important;
-            }
-            
-            .btn-group .btn {
-                width: 100% !important;
-                font-size: 14px !important;
-                padding: 12px !important;
-                border-radius: 8px !important;
-            }
-            
-            /* 分页优化 */
-            .batch-actions-with-pagination {
-                flex-direction: column !important;
-                align-items: stretch !important;
-                gap: 15px !important;
-            }
-            
-            .pagination-wrapper {
-                flex-direction: column !important;
-                gap: 15px !important;
-            }
-            
-            .pagination-info {
-                text-align: center !important;
-                order: -1 !important;
-            }
-            
-            .pagination-jump {
-                justify-content: center !important;
-                padding: 12px !important;
-            }
-            
-            .pagination-jump input {
-                width: 80px !important;
-                height: 36px !important;
-                font-size: 16px !important;
-            }
-            
-            .pagination-jump button {
-                height: 36px !important;
-                padding: 0 20px !important;
-                font-size: 16px !important;
-            }
-            
-            .pagination a, .pagination span {
-                height: 40px !important;
-                min-width: 40px !important;
-                line-height: 40px !important;
-                font-size: 16px !important;
-            }
-        }
-        
-        /* 空状态样式 */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #6c757d;
-        }
-        
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-        
-        .empty-state p {
-            font-size: 16px;
-            margin: 0;
-        }
-        
-        /* 全选功能样式 */
-        .table tbody tr.selected > td {
-            background-color: #f5f8fc !important;
-        }
-        
-        /* 复选框样式 */
-        .ace, #selectAllCheckbox {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            margin: 0;
-            padding: 0;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            background: #fff;
-            cursor: pointer;
-            position: relative;
-            vertical-align: middle;
-        }
-        
-        .ace:checked, #selectAllCheckbox:checked {
-            background: #337ab7;
-            border-color: #337ab7;
-        }
-        
-        .ace:checked::after, #selectAllCheckbox:checked::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .ace:indeterminate::after {
-            content: '−';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .lbl {
-            display: inline-block;
-            margin-left: 5px;
-            cursor: pointer;
-        }
-        
-        .pos-rel {
-            position: relative;
-        }
-        
-        #checkAll:indeterminate + .lbl::before {
-            content: '';
-            display: block;
-            width: 9px;
-            height: 1px;
-            border: none;
-            background-color: #337ab7;
-            margin-left: 3px;
-            margin-top: 7px;
-            transform: rotate(0deg);
-        }
-        
-        /* 原始标签样式 */
-        .label {
-            display: inline;
-            padding: 0.2em 0.6em 0.3em;
-            font-size: 75%;
-            font-weight: bold;
-            line-height: 1;
-            color: #fff;
-            text-align: center;
-            white-space: nowrap;
-            vertical-align: baseline;
-            border-radius: 0.25em;
-        }
-        
-        .label-info {
-            background-color: #5bc0de;
-        }
-        
-        .label-warning {
-            background-color: #f0ad4e;
-        }
-        
-        .label-primary {
-            background-color: #337ab7;
-        }
-        
-        .label-danger {
-            background-color: #d9534f;
-        }
-        
-        .label-success {
-            background-color: #5cb85c;
-        }
-        
-        .label-default {
-            background-color: #777;
-        }
-        
-        .arrowed-in {
-            position: relative;
-        }
-        
-        .arrowed-in:after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            right: -6px;
-            margin-top: -6px;
-            border: 6px solid transparent;
-            border-left-color: inherit;
+            .filter-form { flex-direction: column; align-items: stretch; }
+            .filter-form .form-group { width: 100%; }
+            .filter-form select { width: 100%; }
         }
     </style>
-    
-    <!-- 面包屑导航 -->
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{:U('Admin/Index/index')}">
-                    <i class="fa fa-home"></i>
-                    首页
-                </a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{:U('Admin/Index/index')}">
-                    后台管理
-                </a>
-            </li>
-            <li class="breadcrumb-item active">
-                邮件队列管理
-            </li>
-        </ol>
-    </nav>
-    
 
-    
     <div class="page-content">
         <div class="card">
             <div class="card-header">
-                <div class="d-flex justify-content-start">
-                    <ul class="nav nav-tabs border-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="{:U('Admin/EmailQueue/index')}">邮件队列</a>
-                        </li>
-                    </ul>
-                </div>
+                <ul class="nav nav-tabs border-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{:U('Admin/EmailQueue/index')}">邮件队列</a>
+                    </li>
+                </ul>
             </div>
             <div class="card-body">
-                <!-- 统计信息 - 修改为横向排列 -->
+                <!-- 统计信息 -->
                 <div class="stats-container">
                     <a href="{:U('EmailQueue/index', ['status' => 'pending'])}" class="stat-card pending">
-                        <div class="stat-icon">
-                            <i class="fa fa-clock-o"></i>
-                        </div>
-                        <div class="stat-number">{$stats.pending|default='0'}</div>
+                        <div class="stat-icon"><i class="fa fa-clock-o"></i></div>
+                        <div class="stat-num">{$stats.pending|default='0'}</div>
                         <div class="stat-label">待发送</div>
                     </a>
                     <a href="{:U('EmailQueue/index', ['status' => 'processing'])}" class="stat-card processing">
-                        <div class="stat-icon">
-                            <i class="fa fa-spinner"></i>
-                        </div>
-                        <div class="stat-number">{$stats.processing|default='0'}</div>
+                        <div class="stat-icon"><i class="fa fa-spinner"></i></div>
+                        <div class="stat-num">{$stats.processing|default='0'}</div>
                         <div class="stat-label">处理中</div>
                     </a>
                     <a href="{:U('EmailQueue/index', ['status' => 'sent'])}" class="stat-card sent">
-                        <div class="stat-icon">
-                            <i class="fa fa-check"></i>
-                        </div>
-                        <div class="stat-number">{$stats.sent|default='0'}</div>
+                        <div class="stat-icon"><i class="fa fa-check"></i></div>
+                        <div class="stat-num">{$stats.sent|default='0'}</div>
                         <div class="stat-label">已成功</div>
                     </a>
                     <a href="{:U('EmailQueue/index', ['status' => 'failed'])}" class="stat-card failed">
-                        <div class="stat-icon">
-                            <i class="fa fa-times"></i>
-                        </div>
-                        <div class="stat-number">{$stats.failed|default='0'}</div>
+                        <div class="stat-icon"><i class="fa fa-times"></i></div>
+                        <div class="stat-num">{$stats.failed|default='0'}</div>
                         <div class="stat-label">已失败</div>
                     </a>
                     <a href="{:U('EmailQueue/index')}" class="stat-card total">
-                        <div class="stat-icon">
-                            <i class="fa fa-list"></i>
-                        </div>
-                        <div class="stat-number">{$stats.total|default='0'}</div>
+                        <div class="stat-icon"><i class="fa fa-list"></i></div>
+                        <div class="stat-num">{$stats.total|default='0'}</div>
                         <div class="stat-label">总计</div>
                     </a>
                     <a href="javascript:refreshStats();" class="stat-card refresh">
-                        <div class="stat-icon">
-                            <i class="fa fa-refresh"></i>
-                        </div>
-                        <div class="stat-number">刷新</div>
+                        <div class="stat-icon"><i class="fa fa-refresh"></i></div>
+                        <div class="stat-num">刷新</div>
                         <div class="stat-label">获取最新</div>
                     </a>
                 </div>
 
                 <!-- 操作与筛选 -->
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="widget-box">
-                            <div class="widget-header widget-header-flat">
-                                <h4 class="widget-title">操作与筛选</h4>
-                            </div>
-                            <div class="widget-body">
-                                <div class="widget-main">
-                                    <div class="row">
-                                        <div class="col-sm-12" style="padding: 10px 15px; border-bottom: 1px solid #f0f0f0; margin-bottom: 15px;">
-                                            <button type="button" class="btn btn-sm btn-primary" onclick="processQueue()"><i class="ace-icon fa fa-play"></i> 手动处理队列</button>
-                                            <button type="button" class="btn btn-sm btn-info" onclick="testEmail()"><i class="ace-icon fa fa-envelope"></i> 测试邮件发送</button>
-                                            <button type="button" class="btn btn-sm btn-warning" onclick="cleanupEmails()"><i class="ace-icon fa fa-eraser"></i> 清理旧邮件</button>
-                                            <button type="button" class="btn btn-sm btn-success" onclick="checkConfig()"><i class="ace-icon fa fa-cog"></i> 检查邮件配置</button>
-                                        </div>
-                                        <div class="col-sm-12" style="padding: 0 15px 10px 15px;">
-                                            <form method="get" class="form-inline filter-form">
-                                                <div class="form-group">
-                                                    <label>状态：</label>
-                                                    <select name="status" class="form-control input-sm">
-                                                        <option value="">全部</option>
-                                                        <option value="pending" <if condition="$status eq 'pending'">selected</if>>待发送</option>
-                                                        <option value="processing" <if condition="$status eq 'processing'">selected</if>>处理中</option>
-                                                        <option value="sent" <if condition="$status eq 'sent'">selected</if>>已成功</option>
-                                                        <option value="failed" <if condition="$status eq 'failed'">selected</if>>已失败</option>
-                                                    </select>
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>类型：</label>
-                                                    <select name="email_type" class="form-control input-sm">
-                                                        <option value="">全部</option>
-                                                        <option value="activation" <if condition="$emailType eq 'activation'">selected</if>>账户激活</option>
-                                                        <option value="password_reset" <if condition="$emailType eq 'password_reset'">selected</if>>密码重置</option>
-                                                        <option value="subscription" <if condition="$emailType eq 'subscription'">selected</if>>订阅地址</option>
-                                                        <option value="expiring" <if condition="$emailType eq 'expiring'">selected</if>>即将到期</option>
-                                                        <option value="expired" <if condition="$emailType eq 'expired'">selected</if>>已到期</option>
-                                                        <option value="order" <if condition="$emailType eq 'order'">selected</if>>订单通知</option>
-                                                    </select>
-                                                </div>
-                                                <button type="submit" class="btn btn-sm btn-default"><i class="ace-icon fa fa-search"></i> 筛选</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="batch-toolbar">
+                    <div class="batch-left">
+                        <button type="button" class="btn btn-sm btn-primary" onclick="processQueue()"><i class="fa fa-play"></i> 手动处理队列</button>
+                        <button type="button" class="btn btn-sm btn-info" onclick="testEmail()"><i class="fa fa-envelope"></i> 测试邮件发送</button>
+                        <button type="button" class="btn btn-sm btn-warning" onclick="cleanupEmails()"><i class="fa fa-eraser"></i> 清理旧邮件</button>
+                        <button type="button" class="btn btn-sm btn-success" onclick="checkConfig()"><i class="fa fa-cog"></i> 检查邮件配置</button>
                     </div>
                 </div>
 
-                                <!-- 邮件列表 -->
-                <div class="row">
-                    <div class="col-xs-12">
+                <div class="batch-toolbar">
+                    <div class="batch-left">
+                        <form method="get" action="{:U('EmailQueue/index')}" class="filter-form">
+                            <div class="form-group">
+                                <label>状态：</label>
+                                <select name="status" class="form-control input-sm">
+                                    <option value="">全部</option>
+                                    <option value="pending" <if condition="$status eq 'pending'">selected</if>>待发送</option>
+                                    <option value="processing" <if condition="$status eq 'processing'">selected</if>>处理中</option>
+                                    <option value="sent" <if condition="$status eq 'sent'">selected</if>>已成功</option>
+                                    <option value="failed" <if condition="$status eq 'failed'">selected</if>>已失败</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>类型：</label>
+                                <select name="email_type" class="form-control input-sm">
+                                    <option value="">全部</option>
+                                    <option value="activation" <if condition="$emailType eq 'activation'">selected</if>>账户激活</option>
+                                    <option value="password_reset" <if condition="$emailType eq 'password_reset'">selected</if>>密码重置</option>
+                                    <option value="subscription" <if condition="$emailType eq 'subscription'">selected</if>>订阅地址</option>
+                                    <option value="expiring" <if condition="$emailType eq 'expiring'">selected</if>>即将到期</option>
+                                    <option value="expired" <if condition="$emailType eq 'expired'">selected</if>>已到期</option>
+                                    <option value="order" <if condition="$emailType eq 'order'">selected</if>>订单通知</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-default"><i class="fa fa-search"></i> 筛选</button>
+                        </form>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-success" onclick="selectAll()"><i class="fa fa-check-square"></i> 全选</button>
+                        <button type="button" class="btn btn-sm btn-warning" onclick="unselectAll()"><i class="fa fa-square-o"></i> 取消全选</button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="batchDelete()"><i class="fa fa-trash"></i> 批量删除</button>
+                    </div>
+                </div>
 
-                        
-                        <div class="widget-box">
-                                                    <div class="widget-header widget-header-flat">
-                            <h4 class="widget-title">邮件列表</h4>
-                            <div class="widget-toolbar">
-                                <button type="button" class="btn btn-success btn-xs" onclick="selectAll()" style="margin-right: 5px;">
-                                    <i class="ace-icon fa fa-check-square"></i> 全选
-                                </button>
-                                <button type="button" class="btn btn-warning btn-xs" onclick="unselectAll()" style="margin-right: 5px;">
-                                    <i class="ace-icon fa fa-square-o"></i> 取消全选
-                                </button>
-                                <button type="button" class="btn btn-danger btn-xs" onclick="batchDelete()">
-                                    <i class="ace-icon fa fa-trash"></i> 批量删除选中项
-                                </button>
-                            </div>
-                        </div>
-                            <div class="widget-body">
-                                <div class="widget-main no-padding">
-                                    <table class="table table-striped table-bordered table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th class="center" width="40">
-                                                    <label class="pos-rel">
-                                                        <input type="checkbox" class="ace" id="checkAll" title="点击强制全选所有邮件" />
-                                                        <span class="lbl"></span>
-                                                    </label>
-                                                </th>
-                                                <th>ID</th>
-                                                <th>收件人</th>
-                                                <th>主题</th>
-                                                <th>类型</th>
-                                                <th>状态</th>
-                                                <th>重试</th>
-                                                <th>创建时间</th>
-                                                <th width="180">操作</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <volist name="emails" id="email">
-                                            <tr <if condition="in_array($email['status'], ['failed', 'processing'])">class="warning"</if>>
-                                                <td class="center">
-                                                    <label class="pos-rel">
-                                                        <input type="checkbox" class="ace email-checkbox" name="ids[]" value="{$email.id}" />
-                                                        <span class="lbl"></span>
-                                                    </label>
-                                                </td>
-                                                <td>{$email.id}</td>
-                                                <td>{$email.to_email}</td>
-                                                <td><a href="{:U('EmailQueue/detail', array('id' => $email['id']))}" title="查看详情">{$email.subject|mb_substr=0,30,'utf-8'}<if condition="mb_strlen($email['subject'], 'utf-8') gt 30">...</if></a></td>
-                                                <td>
-                                                    <switch name="email.type">
-                                                        <case value="activation"><span class="label label-info">账户激活</span></case>
-                                                        <case value="password_reset"><span class="label label-warning">密码重置</span></case>
-                                                        <case value="subscription"><span class="label label-primary">订阅地址</span></case>
-                                                        <case value="expiring"><span class="label label-warning">即将到期</span></case>
-                                                        <case value="expired"><span class="label label-danger">已到期</span></case>
-                                                        <case value="order"><span class="label label-success">订单通知</span></case>
-                                                        <default /><span class="label label-default">{$email.type}</span>
-                                                    </switch>
-                                                </td>
-                                                <td>
-                                                    <switch name="email.status">
-                                                        <case value="pending"><span class="label label-info arrowed-in">待发送</span></case>
-                                                        <case value="processing"><span class="label label-warning arrowed-in">处理中</span></case>
-                                                        <case value="sent"><span class="label label-success arrowed-in">已成功</span></case>
-                                                        <case value="failed"><span class="label label-danger arrowed-in">已失败</span></case>
-                                                        <default /><span class="label label-default arrowed-in">{$email.status}</span>
-                                                    </switch>
-                                                </td>
-                                                <td>{$email.retry_count}</td>
-                                                <td>{$email.created_at|date='Y-m-d H:i:s',###}</td>
-                                                <td class="table-actions">
-                                                    <a href="{:U('EmailQueue/detail', array('id' => $email['id']))}" class="btn btn-xs btn-info" title="查看详情"><i class="ace-icon fa fa-eye"></i> 详情</a>
-                                                    <if condition="$email['status'] eq 'failed' or $email['status'] eq 'pending'">
-                                                    <button type="button" class="btn btn-xs btn-warning" onclick="resendEmail('{$email.id}')" title="重新发送"><i class="ace-icon fa fa-repeat"></i> 重发</button>
-                                                    </if>
-                                                    <button type="button" class="btn btn-xs btn-danger" onclick="deleteEmail('{$email.id}')" title="删除"><i class="ace-icon fa fa-trash"></i> 删除</button>
-                                                </td>
-                                            </tr>
-                                            </volist>
-                                            <if condition="empty($emails)">
-                                            <tr>
-                                                <td colspan="9" class="text-center" style="padding: 20px;">
-                                                    <i class="ace-icon fa fa-info-circle"></i> 暂无匹配的邮件记录
-                                                </td>
-                                            </tr>
+                <!-- 桌面端表格 -->
+                <div class="desktop-table">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th width="40" class="center">
+                                        <label class="pos-rel">
+                                            <input type="checkbox" class="ace" id="checkAll" title="全选" />
+                                            <span class="lbl"></span>
+                                        </label>
+                                    </th>
+                                    <th>ID</th>
+                                    <th>收件人</th>
+                                    <th>主题</th>
+                                    <th>类型</th>
+                                    <th>状态</th>
+                                    <th>重试</th>
+                                    <th>创建时间</th>
+                                    <th width="180">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <volist name="emails" id="email">
+                                <tr>
+                                    <td class="center">
+                                        <label class="pos-rel">
+                                            <input type="checkbox" class="ace email-checkbox" name="ids[]" value="{$email.id}" />
+                                            <span class="lbl"></span>
+                                        </label>
+                                    </td>
+                                    <td>{$email.id}</td>
+                                    <td>{$email.to_email}</td>
+                                    <td><a href="{:U('EmailQueue/detail', array('id' => $email['id']))}">{$email.subject|mb_substr=0,30,'utf-8'}<if condition="mb_strlen($email['subject'], 'utf-8') gt 30">...</if></a></td>
+                                    <td>
+                                        <switch name="email.type">
+                                            <case value="activation"><span class="label label-info">账户激活</span></case>
+                                            <case value="password_reset"><span class="label label-warning">密码重置</span></case>
+                                            <case value="subscription"><span class="label label-primary">订阅地址</span></case>
+                                            <case value="expiring"><span class="label label-warning">即将到期</span></case>
+                                            <case value="expired"><span class="label label-danger">已到期</span></case>
+                                            <case value="order"><span class="label label-success">订单通知</span></case>
+                                            <default /><span class="label label-default">{$email.type}</span>
+                                        </switch>
+                                    </td>
+                                    <td>
+                                        <switch name="email.status">
+                                            <case value="pending"><span class="label label-info">待发送</span></case>
+                                            <case value="processing"><span class="label label-warning">处理中</span></case>
+                                            <case value="sent"><span class="label label-success">已成功</span></case>
+                                            <case value="failed"><span class="label label-danger">已失败</span></case>
+                                            <default /><span class="label label-default">{$email.status}</span>
+                                        </switch>
+                                    </td>
+                                    <td>{$email.retry_count}</td>
+                                    <td>{$email.created_at|date='Y-m-d H:i:s',###}</td>
+                                    <td>
+                                        <div class="action-group">
+                                            <a href="{:U('EmailQueue/detail', array('id' => $email['id']))}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> 详情</a>
+                                            <if condition="$email['status'] eq 'failed' or $email['status'] eq 'pending'">
+                                            <button type="button" class="btn btn-xs btn-warning" onclick="resendEmail('{$email.id}')"><i class="fa fa-repeat"></i> 重发</button>
                                             </if>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                                            <button type="button" class="btn btn-xs btn-danger" onclick="deleteEmail('{$email.id}')"><i class="fa fa-trash"></i> 删除</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </volist>
+                                <if condition="empty($emails)">
+                                <tr>
+                                    <td colspan="9" class="text-center" style="padding: 20px;">
+                                        <i class="fa fa-info-circle"></i> 暂无匹配的邮件记录
+                                    </td>
+                                </tr>
+                                </if>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 移动端卡片列表 -->
+                <div class="mobile-card-list">
+                    <volist name="emails" id="email">
+                    <div class="mobile-card">
+                        <div class="card-header-row">
+                            <span class="card-title"><a href="{:U('EmailQueue/detail', array('id' => $email['id']))}">{$email.subject|mb_substr=0,20,'utf-8'}<if condition="mb_strlen($email['subject'], 'utf-8') gt 20">...</if></a></span>
+                            <switch name="email.status">
+                                <case value="pending"><span class="label label-info">待发送</span></case>
+                                <case value="processing"><span class="label label-warning">处理中</span></case>
+                                <case value="sent"><span class="label label-success">已成功</span></case>
+                                <case value="failed"><span class="label label-danger">已失败</span></case>
+                                <default /><span class="label label-default">{$email.status}</span>
+                            </switch>
+                        </div>
+                        <div class="card-row"><span class="card-label">收件人</span><span class="card-value">{$email.to_email}</span></div>
+                        <div class="card-row"><span class="card-label">类型</span><span class="card-value">
+                            <switch name="email.type">
+                                <case value="activation"><span class="label label-info">账户激活</span></case>
+                                <case value="password_reset"><span class="label label-warning">密码重置</span></case>
+                                <case value="subscription"><span class="label label-primary">订阅地址</span></case>
+                                <case value="expiring"><span class="label label-warning">即将到期</span></case>
+                                <case value="expired"><span class="label label-danger">已到期</span></case>
+                                <case value="order"><span class="label label-success">订单通知</span></case>
+                                <default /><span class="label label-default">{$email.type}</span>
+                            </switch>
+                        </span></div>
+                        <div class="card-row"><span class="card-label">重试次数</span><span class="card-value">{$email.retry_count}</span></div>
+                        <div class="card-row"><span class="card-label">创建时间</span><span class="card-value">{$email.created_at|date='Y-m-d H:i:s',###}</span></div>
+                        <div class="card-actions">
+                            <a href="{:U('EmailQueue/detail', array('id' => $email['id']))}" class="btn btn-xs btn-info"><i class="fa fa-eye"></i> 详情</a>
+                            <if condition="$email['status'] eq 'failed' or $email['status'] eq 'pending'">
+                            <button type="button" class="btn btn-xs btn-warning" onclick="resendEmail('{$email.id}')"><i class="fa fa-repeat"></i> 重发</button>
+                            </if>
+                            <button type="button" class="btn btn-xs btn-danger" onclick="deleteEmail('{$email.id}')"><i class="fa fa-trash"></i> 删除</button>
                         </div>
                     </div>
+                    </volist>
+                    <if condition="empty($emails)">
+                    <div class="mobile-empty"><i class="fa fa-info-circle"></i> 暂无匹配的邮件记录</div>
+                    </if>
                 </div>
 
                 <!-- 分页区域 -->
@@ -1170,7 +264,7 @@
                         <div class="pagination-jump">
                             <span>跳转到</span>
                             <input type="number" id="jumpPageEmail" min="1" placeholder="页码">
-                            <button id="jumpButtonEmail" class="btn btn-primary">确定</button>
+                            <button id="jumpButtonEmail" class="btn btn-primary btn-sm">确定</button>
                         </div>
                     </div>
                 </div>
@@ -1212,225 +306,102 @@
     </div>
 
     <script>
-        // 简化的全选功能 - 只保留表格头部的强制全选
-        console.log('=== 邮件队列页面JavaScript开始加载 ===');
-        
-        // 立即执行的初始化函数
         function initSelectAll() {
-            console.log('=== 立即初始化全选功能 ===');
-            
             var $checkAll = $('#checkAll');
             var $checkboxes = $('.email-checkbox');
-            
-            console.log('找到表格全选复选框:', $checkAll.length);
-            console.log('找到邮件复选框数量:', $checkboxes.length);
-            
-            if ($checkboxes.length === 0) {
-                console.log('没有找到邮件复选框，退出初始化');
-                return;
-            }
-            
-            // 移除现有事件监听器
+            if ($checkboxes.length === 0) return;
             $checkAll.off('change click');
             $checkboxes.off('change click');
-            
-                            // 表格头部全选复选框事件 - 强制全选功能
-                $checkAll.on('change', function() {
-                    console.log('表格全选复选框被点击，状态:', this.checked);
-                    var isChecked = this.checked;
-                    
-                    // 强制选中/取消选中所有复选框
-                    $checkboxes.prop('checked', isChecked);
-                    
-                    // 更新行样式
-                    $checkboxes.closest('tr').toggleClass('selected', isChecked);
-                    
-                    console.log('表格全选操作完成，选中数量:', $checkboxes.filter(':checked').length);
-                });
-            
-            // 单个复选框事件
+            $checkAll.on('change', function() {
+                var isChecked = this.checked;
+                $checkboxes.prop('checked', isChecked);
+                $checkboxes.closest('tr').toggleClass('selected', isChecked);
+            });
             $checkboxes.on('change', function() {
                 var checkedCount = $checkboxes.filter(':checked').length;
                 var totalCount = $checkboxes.length;
-                
-                console.log('单个复选框被点击，ID:', $(this).val(), '状态:', this.checked);
-                
-                // 更新表格头部全选复选框状态
-                if (checkedCount === 0) {
-                    $checkAll.prop('checked', false);
-                } else if (checkedCount === totalCount) {
-                    $checkAll.prop('checked', true);
-                } else {
-                    $checkAll.prop('checked', false);
-                }
-                
-                // 更新行样式
+                $checkAll.prop('checked', checkedCount === totalCount);
                 $(this).closest('tr').toggleClass('selected', this.checked);
-                
-                console.log('单个复选框操作，当前选中:', checkedCount, '/', totalCount);
             });
-            
-            console.log('全选功能初始化完成');
         }
-        
-        // 使用jQuery ready
+
         jQuery(function($) {
-            console.log('=== jQuery ready 开始执行 ===');
-            
-            // 立即初始化
             initSelectAll();
-            
-            // 页面加载完成后再次初始化
-            $(document).ready(function() {
-                console.log('DOM加载完成，再次初始化');
-                initSelectAll();
-            });
-            
-            // 延迟初始化，确保所有元素都已加载
-            setTimeout(function() {
-                console.log('延迟500ms初始化');
-                initSelectAll();
-            }, 500);
-            
-            setTimeout(function() {
-                console.log('延迟1000ms初始化');
-                initSelectAll();
-            }, 1000);
-            
-            setTimeout(function() {
-                console.log('延迟2000ms初始化');
-                initSelectAll();
-            }, 2000);
-            
-            // 页码跳转功能
+            setTimeout(initSelectAll, 500);
+            setTimeout(initSelectAll, 1000);
+
             $('#jumpButtonEmail').click(function() {
                 var page = parseInt($('#jumpPageEmail').val());
                 if (page > 0) {
                     var url = new URL(window.location.href);
                     url.searchParams.set('p', page);
-                    // 保持所有现有参数（包括筛选参数）
                     window.location.href = url.toString();
                 } else {
                     alert('请输入有效的页码');
                 }
             });
 
-            // 回车键跳转
             $('#jumpPageEmail').keypress(function(e) {
-                if (e.which == 13) {
-                    $('#jumpButtonEmail').click();
-                }
+                if (e.which == 13) $('#jumpButtonEmail').click();
             });
-            
-            // 确保模态框在页面加载时隐藏
-            $('#testEmailModal').modal('hide');
-            
-            // 测试模态框是否可用
-            console.log('Modal element exists:', $('#testEmailModal').length > 0);
-            console.log('Bootstrap modal method available:', typeof $('#testEmailModal').modal === 'function');
-            
-            // 模态框关闭事件
-            $('#testEmailModal').on('hidden.bs.modal', function () {
+
+            // 模态框兼容
+            $('#testEmailModal').on('hidden.bs.modal', function() {
                 $('body').removeClass('modal-open');
             });
-            
-            // 备用模态框关闭事件
             $('#testEmailModal').on('click', function(e) {
                 if (e.target === this) {
-                    if (typeof $(this).modal === 'function') {
-                        $(this).modal('hide');
-                    } else {
-                        $(this).removeClass('show').css('display', 'none');
-                    }
+                    if (typeof $(this).modal === 'function') { $(this).modal('hide'); }
+                    else { $(this).removeClass('show').css('display', 'none'); }
                     $('body').removeClass('modal-open');
                 }
             });
-            
-            // 模态框关闭按钮事件
             $('.modal .close, .modal .btn-default').click(function() {
-                if (typeof $('#testEmailModal').modal === 'function') {
-                    $('#testEmailModal').modal('hide');
-                } else {
-                    // 备用方法：直接隐藏模态框
-                    $('#testEmailModal').removeClass('show').css('display', 'none');
-                }
+                if (typeof $('#testEmailModal').modal === 'function') { $('#testEmailModal').modal('hide'); }
+                else { $('#testEmailModal').removeClass('show').css('display', 'none'); }
                 $('body').removeClass('modal-open');
             });
         });
 
-        // ---------------- 后台交互功能函数 ----------------
         function showLoading(message) {
-            $('body').append('<div id="loading-mask" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); color: white; display: flex; align-items: center; justify-content: center; z-index: 9999;"><h3><i class="fa fa-spinner fa-spin"></i> ' + (message || '正在处理中...') + '</h3></div>');
+            $('body').append('<div id="loading-mask" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);color:white;display:flex;align-items:center;justify-content:center;z-index:9999;"><h3><i class="fa fa-spinner fa-spin"></i> ' + (message || '正在处理中...') + '</h3></div>');
         }
-        
-        function hideLoading() {
-            $('#loading-mask').remove();
-        }
+        function hideLoading() { $('#loading-mask').remove(); }
 
-        // 按状态筛选
         function filterByStatus(status) {
             var url = new URL(window.location.href);
-            if (status) {
-                url.searchParams.set('status', status);
-            } else {
-                url.searchParams.delete('status');
-            }
+            if (status) { url.searchParams.set('status', status); } else { url.searchParams.delete('status'); }
             window.location.href = url.toString();
         }
 
-        // 刷新统计
-        function refreshStats() {
-            showLoading('正在刷新...');
-            location.reload();
-        }
+        function refreshStats() { showLoading('正在刷新...'); location.reload(); }
 
-        // 手动处理队列
         function processQueue() {
             if (confirm('确定要手动触发一次邮件队列处理吗？此操作可能需要一些时间。')) {
                 showLoading('正在处理邮件队列...');
                 $.post('{:U("EmailQueue/processQueue")}')
-                    .done(function(res) {
-                        alert(res.msg || '处理完成');
-                        if (res.status == 1) location.reload();
-                    })
+                    .done(function(res) { alert(res.msg || '处理完成'); if (res.status == 1) location.reload(); })
                     .fail(function() { alert('请求失败，请检查网络或后台日志'); })
                     .always(hideLoading);
             }
         }
 
-        // 测试邮件发送
         function testEmail() {
-            console.log('testEmail function called');
-            // 确保模态框显示
-            if (typeof $('#testEmailModal').modal === 'function') {
-                $('#testEmailModal').modal('show');
-            } else {
-                // 备用方法：直接显示模态框
-                $('#testEmailModal').addClass('show').css('display', 'block');
-            }
+            if (typeof $('#testEmailModal').modal === 'function') { $('#testEmailModal').modal('show'); }
+            else { $('#testEmailModal').addClass('show').css('display', 'block'); }
             $('body').addClass('modal-open');
-            console.log('Modal should be shown now');
         }
 
-        // 发送测试邮件
         function sendTestEmail() {
             var formData = $('#testEmailForm').serialize();
-            if (!$('#testEmailForm')[0].checkValidity()) {
-                alert('请填写完整的邮件信息');
-                return;
-            }
-            
+            if (!$('#testEmailForm')[0].checkValidity()) { alert('请填写完整的邮件信息'); return; }
             showLoading('正在发送测试邮件...');
             $.post('{:U("EmailQueue/testEmail")}', formData)
                 .done(function(res) {
                     alert(res.msg || '测试邮件已加入发送队列');
                     if (res.status == 1) {
-                        if (typeof $('#testEmailModal').modal === 'function') {
-                            $('#testEmailModal').modal('hide');
-                        } else {
-                            // 备用方法：直接隐藏模态框
-                            $('#testEmailModal').removeClass('show').css('display', 'none');
-                        }
+                        if (typeof $('#testEmailModal').modal === 'function') { $('#testEmailModal').modal('hide'); }
+                        else { $('#testEmailModal').removeClass('show').css('display', 'none'); }
                         $('body').removeClass('modal-open');
                         $('#testEmailForm')[0].reset();
                     }
@@ -1439,29 +410,19 @@
                 .always(hideLoading);
         }
 
-        // 清理旧邮件
         function cleanupEmails() {
             var days = prompt("此操作不可恢复！\n请输入要保留的最近多少天的邮件记录？\n（例如输入 7，将删除7天前的已发送和已失败邮件）", "7");
             if (days !== null && !isNaN(parseInt(days))) {
                 var daysInt = parseInt(days);
-                if (daysInt <= 0) {
-                    alert('保留天数必须大于0！');
-                    return;
-                }
+                if (daysInt <= 0) { alert('保留天数必须大于0！'); return; }
                 showLoading('正在清理旧邮件...');
                 $.post('{:U("EmailQueue/cleanup")}', { days: daysInt })
-                    .done(function(res) {
-                        alert(res.msg || '清理完成');
-                        if (res.status == 1) location.reload();
-                    })
+                    .done(function(res) { alert(res.msg || '清理完成'); if (res.status == 1) location.reload(); })
                     .fail(function() { alert('请求失败，请检查网络或后台日志'); })
                     .always(hideLoading);
-            } else if (days !== null) {
-                alert('请输入有效的数字！');
-            }
+            } else if (days !== null) { alert('请输入有效的数字！'); }
         }
 
-        // 检查邮件配置
         function checkConfig() {
             showLoading('正在检查配置...');
             $.get('{:U("EmailQueue/checkConfig")}')
@@ -1478,113 +439,79 @@
                             '发件人名称: ' + (config.EMAIL_FROM_NAME || '未配置') + '\n\n' +
                             '配置状态: ' + (res.isComplete ? '完整' : '不完整，请检查配置');
                         alert(message);
-                    } else {
-                        alert(res.msg || '获取配置失败');
-                    }
+                    } else { alert(res.msg || '获取配置失败'); }
                 })
                 .fail(function() { alert('请求失败，请检查网络或后台日志'); })
                 .always(hideLoading);
         }
 
-        // 重新发送邮件
         function resendEmail(id) {
             if (confirm('确定要重新发送邮件 ID: ' + id + ' 吗？')) {
                 showLoading('正在请求重发...');
                 $.post('{:U("EmailQueue/resend")}', { id: id })
-                    .done(function(res) {
-                        alert(res.msg || '操作完成');
-                        if (res.status == 1) location.reload();
-                    })
+                    .done(function(res) { alert(res.msg || '操作完成'); if (res.status == 1) location.reload(); })
                     .fail(function() { alert('请求失败，请检查网络或后台日志'); })
                     .always(hideLoading);
             }
         }
 
-        // 删除邮件
         function deleteEmail(id) {
             if (confirm('此操作不可恢复！确定要删除邮件 ID: ' + id + ' 吗？')) {
                 showLoading('正在删除...');
                 $.post('{:U("EmailQueue/delete")}', { id: id })
-                    .done(function(res) {
-                        alert(res.msg || '操作完成');
-                        if (res.status == 1) location.reload();
-                    })
+                    .done(function(res) { alert(res.msg || '操作完成'); if (res.status == 1) location.reload(); })
                     .fail(function() { alert('请求失败，请检查网络或后台日志'); })
                     .always(hideLoading);
             }
         }
 
-        // 批量删除
         function batchDelete() {
-            var ids = $('.email-checkbox:checked').map(function() {
-                return $(this).val();
-            }).get();
-            
-            if (ids.length === 0) {
-                alert('请至少选择一封邮件！');
-                return;
-            }
-            
+            var ids = $('.email-checkbox:checked').map(function() { return $(this).val(); }).get();
+            if (ids.length === 0) { alert('请至少选择一封邮件！'); return; }
             if (confirm('此操作不可恢复！确定要批量删除选中的 ' + ids.length + ' 封邮件吗？')) {
                 showLoading('正在批量删除...');
                 $.post('{:U("EmailQueue/batchDelete")}', { ids: ids.join(',') })
-                    .done(function(res) {
-                        alert(res.msg || '操作完成');
-                        if (res.status == 1) location.reload();
-                    })
+                    .done(function(res) { alert(res.msg || '操作完成'); if (res.status == 1) location.reload(); })
                     .fail(function() { alert('请求失败，请检查网络或后台日志'); })
                     .always(hideLoading);
             }
         }
-        
-        // 强制全选函数（保留给按钮使用）
+
         function forceSelectAll() {
             var $checkAll = $('#checkAll');
             var $checkboxes = $('.email-checkbox');
-            
             if ($checkboxes.length > 0) {
-                // 强制选中所有复选框
                 $checkboxes.prop('checked', true);
                 $checkAll.prop('checked', true);
-                
-                // 更新行样式
                 $checkboxes.closest('tr').addClass('selected');
-                
-                console.log('强制全选完成，选中数量:', $checkboxes.length);
             }
         }
-        
-        // 全选函数
+
         function selectAll() {
             var $checkAll = $('#checkAll');
             var $checkboxes = $('.email-checkbox');
-            
             if ($checkboxes.length > 0) {
-                // 选中所有复选框
                 $checkboxes.prop('checked', true);
                 $checkAll.prop('checked', true);
-                
-                // 更新行样式
                 $checkboxes.closest('tr').addClass('selected');
-                
-                console.log('全选完成，选中数量:', $checkboxes.length);
             }
         }
-        
-        // 取消全选函数
+
         function unselectAll() {
             var $checkAll = $('#checkAll');
             var $checkboxes = $('.email-checkbox');
-            
             if ($checkboxes.length > 0) {
-                // 取消选中所有复选框
                 $checkboxes.prop('checked', false);
                 $checkAll.prop('checked', false);
-                
-                // 更新行样式
                 $checkboxes.closest('tr').removeClass('selected');
-                
-                console.log('取消全选完成');
+            }
+        }
+
+        function jumpPage(page) {
+            if (page > 0) {
+                var url = new URL(window.location.href);
+                url.searchParams.set('p', page);
+                window.location.href = url.toString();
             }
         }
     </script>

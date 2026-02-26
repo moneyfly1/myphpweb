@@ -2,58 +2,28 @@
 <block name="title">设备管理</block>
 <block name="content">
     <style>
-        .stats-row { display:flex; gap:16px; margin-bottom:20px; flex-wrap:wrap; }
-        .stat-card { flex:1; min-width:150px; background:white; border-radius:10px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.08); text-align:center; }
-        .stat-card .stat-num { font-size:28px; font-weight:700; color:#1677ff; }
-        .stat-card .stat-label { font-size:13px; color:#8c8c8c; margin-top:4px; }
-        .stat-card:nth-child(2) .stat-num { color:#52c41a; }
-        .stat-card:nth-child(3) .stat-num { color:#722ed1; }
-        .stat-card:nth-child(4) .stat-num { color:#fa8c16; }
-        .search-bar { display:flex; gap:10px; margin-bottom:16px; align-items:center; flex-wrap:wrap; }
-        .search-bar input { padding:10px 15px; border:1px solid #d9d9d9; border-radius:6px; font-size:14px; min-width:280px; }
-        .search-bar input:focus { outline:none; border-color:#1677ff; box-shadow:0 0 0 3px rgba(22,119,255,0.1); }
-        .total-info { color:#8c8c8c; font-size:13px; }
         .fp-text { font-family:monospace; font-size:12px; color:#595959; }
-        @media (max-width:768px) {
-            .stats-row { gap:8px; }
-            .stat-card { min-width:calc(50% - 8px); padding:14px 10px; }
-            .stat-card .stat-num { font-size:22px; }
-            .search-bar input { min-width:100%; }
-            .table { font-size:13px!important; }
-            .table th,.table td { padding:8px 6px!important; }
-            .hide-mobile { display:none!important; }
-        }
+        .stat-card:nth-child(2) .stat-num { color:#10b981; }
+        .stat-card:nth-child(3) .stat-num { color:#7c3aed; }
+        .stat-card:nth-child(4) .stat-num { color:#f59e0b; }
     </style>
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{:U('Admin/Index/index')}"><i class="fa fa-home"></i> 首页</a></li>
-            <li class="breadcrumb-item"><a href="{:U('Admin/Index/index')}">后台管理</a></li>
-            <li class="breadcrumb-item active">设备管理</li>
-        </ol>
+    <nav class="breadcrumb">
+        <span class="breadcrumb-item"><a href="{:U('Admin/Index/index')}"><i class="fa fa-home"></i> 首页</a></span>
+        <span class="breadcrumb-item active">设备管理</span>
     </nav>
-    <div class="page-navigation">
-        <a href="{:U('Admin/Index/index')}" class="nav-item"><i class="fa fa-home"></i> 首页</a>
-        <div class="nav-separator">/</div>
-        <a href="{:U('Admin/Index/index')}" class="nav-item">后台管理</a>
-        <div class="nav-separator">/</div>
-        <div class="nav-item active">设备管理</div>
-    </div>
     <div class="page-content">
         <!-- Stats cards -->
         <div class="stats-row">
             <div class="stat-card"><div class="stat-num" id="stat-total">-</div><div class="stat-label">总设备数</div></div>
             <div class="stat-card"><div class="stat-num" id="stat-users">-</div><div class="stat-label">独立用户</div></div>
-<!-- PLACEHOLDER_STATS2 -->
             <div class="stat-card"><div class="stat-num" id="stat-devices">-</div><div class="stat-label">独立设备</div></div>
             <div class="stat-card"><div class="stat-num" id="stat-active">-</div><div class="stat-label">24h活跃</div></div>
         </div>
 
         <div class="card">
-            <div class="card-header">
-                <div class="d-flex justify-content-start" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-                    <span style="font-weight:600;">设备日志列表</span>
-                    <span class="total-info">共 {$total} 条记录</span>
-                </div>
+            <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-weight:600;">设备日志列表</span>
+                <span style="font-size:13px;color:#8c8c8c;">共 {$total} 条记录</span>
             </div>
             <div class="card-body">
                 <form method="get" action="{:U('Admin/Device/index')}" class="search-bar">
@@ -63,19 +33,23 @@
                         <a class="btn btn-default" href="{:U('Admin/Device/index')}">清除</a>
                     </if>
                 </form>
-                <div class="tab-content">
-                    <table class="table table-striped table-bordered table-hover table-condensed">
-                        <tr>
-                            <th width="4%">ID</th>
-                            <th width="10%">QQ号</th>
-                            <th width="10%">客户端</th>
-                            <th class="hide-mobile">设备指纹</th>
-                            <th width="12%">IP</th>
-                            <th width="7%">历史IP</th>
-                            <th width="14%">最后活跃</th>
-                            <th width="14%">操作</th>
-                        </tr>
-                        <foreach name="list" item="v">
+                <!-- 桌面端表格 -->
+                <div class="desktop-table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="4%">ID</th>
+                                <th width="10%">QQ号</th>
+                                <th width="10%">客户端</th>
+                                <th class="hide-mobile">设备指纹</th>
+                                <th width="12%">IP</th>
+                                <th width="7%">历史IP</th>
+                                <th width="14%">最后活跃</th>
+                                <th width="14%">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <foreach name="list" item="v">
                             <tr>
                                 <td>{$v['id']}</td>
                                 <td>{$v['qq']}</td>
@@ -84,30 +58,48 @@
                                 <td title="{$v['ip']}">{$v['ip_display']}</td>
                                 <td>{$v['ip_count']}</td>
                                 <td>{$v['last_seen_fmt']}</td>
-                                <td style="min-width:120px;">
-                                    <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                                <td>
+                                    <div class="action-group">
                                         <a class="btn btn-xs btn-info" href="{:U('Admin/Device/detail',array('id'=>$v['id']))}">详情</a>
                                         <a class="btn btn-xs btn-danger" onclick="return confirm('确定删除该记录?');" href="{:U('Admin/Device/del',array('id'=>$v['id']))}">删除</a>
                                     </div>
                                 </td>
                             </tr>
-                        </foreach>
+                            </foreach>
+                        </tbody>
                     </table>
-                    <div class="page-footer">
-                        <div class="pagination-info">共 {$total} 条记录</div>
-                        <div class="pagination-container">
-                            <div class="pagination">{$page}</div>
+                </div>
+                <!-- 移动端卡片 -->
+                <div class="mobile-card-list">
+                    <foreach name="list" item="v">
+                    <div class="mobile-card">
+                        <div class="card-header-row">
+                            <span class="card-title">{$v['qq']}</span>
                         </div>
+                        <div class="card-row"><span class="label">客户端</span><span class="value">{$v['client']}</span></div>
+                        <div class="card-row"><span class="label">IP</span><span class="value" title="{$v['ip']}">{$v['ip_display']}</span></div>
+                        <div class="card-row"><span class="label">历史IP</span><span class="value">{$v['ip_count']}</span></div>
+                        <div class="card-row"><span class="label">最后活跃</span><span class="value">{$v['last_seen_fmt']}</span></div>
+                        <div class="card-actions">
+                            <a class="btn btn-info" href="{:U('Admin/Device/detail',array('id'=>$v['id']))}">详情</a>
+                            <a class="btn btn-danger" onclick="return confirm('确定删除该记录?');" href="{:U('Admin/Device/del',array('id'=>$v['id']))}">删除</a>
+                        </div>
+                    </div>
+                    </foreach>
+                </div>
+                <!-- 分页 -->
+                <div class="page-footer">
+                    <div class="pagination-info">共 {$total} 条记录</div>
+                    <div class="pagination-container">
+                        <div class="pagination">{$page}</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-<!-- PLACEHOLDER_DEVICE_JS -->
     <script src="__PUBLIC__/statics/js/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
     $(function(){
-        // Load stats via AJAX
         $.ajax({
             url: "{:U('Admin/Device/stats')}",
             type: 'get',

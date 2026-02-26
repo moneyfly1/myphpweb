@@ -1,174 +1,110 @@
 <extend name="Public:base" />
 <block name="title">套餐列表</block>
 <block name="content">
-    <style>
-        /* 手机端响应式设计 */
-        @media (max-width: 768px) {
-            .page-header h1 {
-                font-size: 1.2rem !important;
-                padding: 10px 0 !important;
-            }
-
-            .page-header h1 small {
-                font-size: 0.9rem !important;
-                display: block !important;
-                margin-top: 5px !important;
-            }
-
-            /* 表格响应式处理 */
-            .table-responsive {
-                display: none !important;
-            }
-
-            /* 标签页优化 */
-            .tabbable {
-                padding: 0 5px !important;
-            }
-
-            .nav-tabs {
-                display: flex !important;
-                border-radius: 8px !important;
-                overflow: hidden !important;
-            }
-
-            .nav-tabs li {
-                flex: 1 !important;
-            }
-
-            .nav-tabs li a {
-                font-size: 14px !important;
-                padding: 12px 8px !important;
-                text-align: center !important;
-                border-radius: 0 !important;
-            }
-
-            /* 表格优化 */
-            .table {
-                font-size: 14px !important;
-            }
-
-            .table th, .table td {
-                padding: 8px 6px !important;
-                word-break: break-word !important;
-            }
-
-            /* 按钮优化 */
-            .btn {
-                font-size: 14px !important;
-                padding: 8px 12px !important;
-                border-radius: 6px !important;
-                margin: 2px !important;
-            }
-
-            /* 分页优化 */
-            .pagination {
-                justify-content: center !important;
-                flex-wrap: wrap !important;
-                gap: 5px !important;
-            }
-
-            .pagination li a {
-                font-size: 14px !important;
-                padding: 8px 12px !important;
-                border-radius: 6px !important;
-            }
-        }
-
-        /* 桌面端隐藏手机元素 */
-        @media (min-width: 769px) {
-            .mobile-only {
-                display: none !important;
-            }
-        }
-    </style>
-    <!-- 面包屑导航 -->
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{:U('Admin/Index/index')}">
-                    <i class="fa fa-home"></i>
-                    首页
-                </a>
-            </li>
-            <li class="breadcrumb-item">
-                <a href="{:U('Admin/Index/index')}">
-                    后台管理
-                </a>
-            </li>
-            <li class="breadcrumb-item active">
-                套餐列表
-            </li>
-        </ol>
+    <nav class="breadcrumb">
+        <a href="{:U('Admin/Index/index')}">首页</a>
+        <span class="separator">/</span>
+        <a href="{:U('Admin/Index/index')}">后台管理</a>
+        <span class="separator">/</span>
+        <span class="current">套餐列表</span>
     </nav>
-    
-    <!-- 页面导航路径 -->
-    <div class="page-navigation">
-        <a href="{:U('Admin/Index/index')}" class="nav-item">
-            <i class="fa fa-home"></i>
-            首页
-        </a>
-        <div class="nav-separator">/</div>
-        <a href="{:U('Admin/Index/index')}" class="nav-item">
-            后台管理
-        </a>
-        <div class="nav-separator">/</div>
-        <div class="nav-item active">
-            套餐列表
-        </div>
-    </div>
-    
+
     <div class="page-content">
         <div class="card">
             <div class="card-header">
-                <div class="d-flex justify-content-start">
-                    <ul class="nav nav-tabs border-0">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="{:U('Admin/Level/index')}">套餐列表</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{:U('Admin/Level/add')}">添加套餐</a>
-                        </li>
-                    </ul>
-                </div>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{:U('Admin/Level/index')}">套餐列表</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{:U('Admin/Level/add')}">添加套餐</a>
+                    </li>
+                </ul>
             </div>
             <div class="card-body">
-            <div class="tab-content">
-           
+                <!-- 桌面端表格 -->
+                <div class="desktop-table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="8%">id</th>
+                                <th>名称</th>
+                                <th>天数</th>
+                                <th>金额</th>
+                                <th>最大设备数</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <foreach name="list" item="v">
+                            <tr>
+                                <td>{$v['id']}</td>
+                                <td>{$v['name']}</td>
+                                <td>{$v['num']}</td>
+                                <td>{$v['price']}</td>
+                                <td>{$v['setdrivers']|default=5}</td>
+                                <td>
+                                    <if condition="$v['status'] eq 1">
+                                        <span class="status-badge status-active">启用</span>
+                                    <else />
+                                        <span class="status-badge status-disabled">禁用</span>
+                                    </if>
+                                </td>
+                                <td>
+                                    <div class="action-group">
+                                        <a class="btn btn-xs btn-warning" href="{:U('Admin/Level/edit',array('id'=>$v['id']))}">编辑</a>
+                                        <a class="btn btn-xs btn-danger" onClick="return confirm('确定删除?');" href="{:U('Admin/Level/del',array('id'=>$v['id']))}">删除</a>
+                                        <if condition="$v['status'] eq 1">
+                                            <a class="btn btn-xs btn-default" href="{:U('Admin/Level/disable',array('id'=>$v['id']))}">禁用</a>
+                                        <else />
+                                            <a class="btn btn-xs btn-success" href="{:U('Admin/Level/enable',array('id'=>$v['id']))}">启用</a>
+                                        </if>
+                                    </div>
+                                </td>
+                            </tr>
+                            </foreach>
+                        </tbody>
+                    </table>
+                </div>
 
-                <table class="table table-striped table-bordered table-hover table-condensed">
-                    <tr>
-                        <!-- <th></th> -->
-                        <th width="8%">id</th>
-                        <th>名称</th>
-                        <th>天数</th>
-                        <th>金额</th>
-                        <th>最大设备数</th>
-                        <th>状态</th>
-                        <th>操作</th>
-                    </tr>
+                <!-- 移动端卡片 -->
+                <div class="mobile-card-list">
                     <foreach name="list" item="v">
-                        <tr>
-                            <!-- <td><input type="checkbox" class="all" name="all" value="{$v['id']}"></td> -->
-                            <td width="8%">{$v['id']}</td>
-                            <td>{$v['name']}</td>
-                            <td>{$v['num']}</td>
-                            <td>{$v['price']}</td>
-                            <td>{$v['setdrivers']|default=5}</td>
-                            <td>{$v['status']}</td>
-                            <td style="min-width: 120px;">
-                                <div style="display: flex; gap: 4px; flex-wrap: wrap;">
-                                    <a class="btn btn-xs btn-warning" href="{:U('Admin/Level/edit',array('id'=>$v['id']))}">修改</a> 
-                                    <a class="btn btn-xs btn-danger" onClick="return confirm('确定删除?');" href="{:U('Admin/Level/del',array('id'=>$v['id']))}">删除</a>
-                                </div>
-                            </td>
-                        </tr>
+                    <div class="mobile-card">
+                        <div class="card-header-row">
+                            <div class="card-title">{$v['name']}</div>
+                            <if condition="$v['status'] eq 1">
+                                <span class="status-badge status-active">启用</span>
+                            <else />
+                                <span class="status-badge status-disabled">禁用</span>
+                            </if>
+                        </div>
+                        <div class="card-row">
+                            <span class="label">天数</span>
+                            <span class="value">{$v['num']}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="label">金额</span>
+                            <span class="value">{$v['price']}</span>
+                        </div>
+                        <div class="card-row">
+                            <span class="label">最大设备数</span>
+                            <span class="value">{$v['setdrivers']|default=5}</span>
+                        </div>
+                        <div class="card-actions">
+                            <a class="btn btn-xs btn-warning" href="{:U('Admin/Level/edit',array('id'=>$v['id']))}">编辑</a>
+                            <a class="btn btn-xs btn-danger" onClick="return confirm('确定删除?');" href="{:U('Admin/Level/del',array('id'=>$v['id']))}">删除</a>
+                            <if condition="$v['status'] eq 1">
+                                <a class="btn btn-xs btn-default" href="{:U('Admin/Level/disable',array('id'=>$v['id']))}">禁用</a>
+                            <else />
+                                <a class="btn btn-xs btn-success" href="{:U('Admin/Level/enable',array('id'=>$v['id']))}">启用</a>
+                            </if>
+                        </div>
+                    </div>
                     </foreach>
-                </table>
-<!--                 <span class="inputword">全选</span> <input type="checkbox" class="alls">
-                <div onClick="return confirm('确定全部删除?');" id="allDel" class="btn btn-success">全部删除</div>
-                <div onClick="return confirm('确定全部发送?');" id="allPush" class="btn btn-success">全部发送</div>
-                <div onClick="return confirm('确定全部禁用?');" id="allDisable" class="btn btn-success">全部禁用</div>
-                <div onClick="return confirm('确定全部启用?');" id="allEnable" class="btn btn-success">全部启用</div> -->
+                </div>
+
             </div>
             <div class="page-footer">
                 <div class="pagination-info">共 {$totalCount} 条记录</div>
@@ -183,16 +119,18 @@
             </div>
         </div>
     </div>
+
     <script src="__PUBLIC__/statics/js/jquery-3.6.0.min.js"></script>
-<script type="text/javascript">
+    <script type="text/javascript">
     $(function () {
         $('.alls').change(function(){
             var check = $(this).prop('checked');
             $('.all').prop('checked',check);
         })
+
         //删除
         $('#allDel').click(function () {
-            var chk_value =[];//定义一个数组
+            var chk_value = [];
             $('input[name="all"]:checked').each(function(){
                 chk_value.push($(this).val());
             })
@@ -209,9 +147,10 @@
                 }
             })
         })
+
         //发邮件
         $('#allPush').click(function () {
-            var chk_value =[];//定义一个数组
+            var chk_value = [];
             $('input[name="all"]:checked').each(function(){
                 chk_value.push($(this).val());
             })
@@ -229,9 +168,10 @@
                 }
             })
         })
+
         //禁用
         $('#allDisable').click(function () {
-            var chk_value =[];//定义一个数组
+            var chk_value = [];
             $('input[name="all"]:checked').each(function(){
                 chk_value.push($(this).val());
             })
@@ -252,7 +192,7 @@
 
         //启用
         $('#allEnable').click(function () {
-            var chk_value =[];//定义一个数组
+            var chk_value = [];
             $('input[name="all"]:checked').each(function(){
                 chk_value.push($(this).val());
             })
@@ -277,7 +217,6 @@
             if (page) {
                 var url = new URL(window.location.href);
                 url.searchParams.set('p', page);
-                // 保持所有现有参数（包括排序参数）
                 window.location.href = url.toString();
             }
         });
@@ -290,13 +229,10 @@
                 type:'post',
                 data:{id:id,endtime:vals},
                 success:function(e){
-                   
                 }
             })
-            // alert($(this).val());
         });
 
-
     })
-</script>
+    </script>
 </block>

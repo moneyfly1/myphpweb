@@ -388,11 +388,251 @@
     border-color: var(--color-primary, #1677ff);
 }
 
+/* ---------- 搜索栏 ---------- */
+.list-toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.search-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.search-bar input,
+.search-bar select {
+    padding: 8px 14px;
+    border: 1px solid var(--color-border, #e2e8f0);
+    border-radius: var(--radius-sm, 6px);
+    font-size: 14px;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-bar input:focus,
+.search-bar select:focus {
+    outline: none;
+    border-color: var(--color-primary, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* ---------- 状态徽章 ---------- */
+.status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: var(--radius-full, 9999px);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.status-active { background: var(--color-success-bg, #d1fae5); color: #059669; }
+.status-disabled { background: var(--color-danger-bg, #fee2e2); color: #dc2626; }
+.status-pending { background: var(--color-warning-bg, #fef3c7); color: #d97706; }
+.status-info { background: rgba(14, 165, 233, 0.1); color: #0284c7; }
+.status-gray { background: rgba(100, 116, 139, 0.1); color: #64748b; }
+.status-purple { background: rgba(139, 92, 246, 0.1); color: #7c3aed; }
+
+/* ---------- 统计卡片 ---------- */
+.stats-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    flex: 1;
+    min-width: 140px;
+    background: #fff;
+    border-radius: var(--radius-lg, 12px);
+    padding: 20px;
+    box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.05));
+    text-align: center;
+}
+
+.stat-card .stat-num {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--color-primary, #3b82f6);
+}
+
+.stat-card .stat-label {
+    font-size: 13px;
+    color: var(--color-text-secondary, #64748b);
+    margin-top: 4px;
+}
+
+/* ---------- 操作按钮组 ---------- */
+.action-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.btn-xs {
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+/* ---------- 桌面/移动端切换 ---------- */
+.desktop-table {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 769px) {
+    .mobile-card-list { display: none !important; }
+}
+
+@media (max-width: 768px) {
+    .desktop-table { display: none !important; }
+    .mobile-card-list { display: block !important; }
+}
+
+/* ---------- 移动端卡片（参考老项目 mobile-cards.css） ---------- */
+.mobile-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.mobile-card {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #e0e7ff;
+    box-shadow: 0 4px 12px rgba(66, 165, 245, 0.1);
+    padding: 18px;
+    transition: all 0.2s ease;
+}
+
+.mobile-card:nth-child(odd) {
+    background: linear-gradient(135deg, #fff 0%, #f8faff 100%);
+    border-color: #dbeafe;
+}
+
+.mobile-card:nth-child(even) {
+    background: linear-gradient(135deg, #fff 0%, #fef3ff 100%);
+    border-color: #f3e8ff;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.mobile-card:active {
+    transform: scale(0.98);
+}
+
+.mobile-card .card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 8px;
+}
+
+.mobile-card .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e293b;
+    flex: 1;
+}
+
+.mobile-card .card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(224, 231, 255, 0.5);
+    gap: 12px;
+}
+
+.mobile-card .card-row:last-child {
+    border-bottom: none;
+}
+
+.mobile-card .card-row .label {
+    font-weight: 600;
+    color: #64748b;
+    min-width: 80px;
+    flex-shrink: 0;
+    font-size: 13px;
+    padding: 4px 8px;
+    background: linear-gradient(135deg, rgba(66, 165, 245, 0.08), rgba(102, 126, 234, 0.08));
+    border-radius: 6px;
+    border: 1px solid rgba(66, 165, 245, 0.12);
+    text-align: center;
+}
+
+.mobile-card .card-row .value {
+    flex: 1;
+    text-align: right;
+    word-break: break-word;
+    font-size: 14px;
+    color: #1e293b;
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+.mobile-card .card-actions {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 2px solid rgba(224, 231, 255, 0.4);
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
+.mobile-card .card-actions .btn {
+    flex: 1;
+    min-height: 40px;
+    font-size: 13px;
+    border-radius: 8px !important;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+.mobile-card .card-actions .btn:active {
+    transform: scale(0.96);
+}
+
+/* 移动端空状态 */
+.mobile-empty {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #94a3b8;
+    background: linear-gradient(135deg, #fff 0%, #f8faff 100%);
+    border-radius: 12px;
+    border: 2px dashed #cbd5e1;
+    font-size: 14px;
+}
+
 /* ---------- 响应式 ---------- */
 @media (max-width: 768px) {
     .table th, .table td { padding: 10px 8px; font-size: 13px; }
     .nav-tabs { flex-wrap: wrap; gap: 4px; }
     .nav-tabs .nav-link { padding: 8px 14px; font-size: 13px; }
-    .breadcrumb { font-size: 13px; flex-wrap: wrap; }
+    .breadcrumb { display: none !important; }
+    .page-navigation { font-size: 12px; padding: 8px 12px; margin-bottom: 12px; }
     .pagination-container { gap: 8px; }
+    .search-bar { flex-direction: column; }
+    .search-bar input, .search-bar select { width: 100%; font-size: 16px; padding: 10px 14px; }
+    .stats-row { gap: 8px; }
+    .stat-card { min-width: calc(50% - 4px); padding: 14px 10px; }
+    .stat-card .stat-num { font-size: 22px; }
+    .card-header { padding: 12px 16px; }
+    .card-body { padding: 12px 16px; }
+    .hide-mobile { display: none !important; }
+    .action-group { gap: 4px; }
+    .btn-xs { padding: 4px 8px; font-size: 11px; }
 }
