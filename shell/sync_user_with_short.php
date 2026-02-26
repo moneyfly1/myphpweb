@@ -37,15 +37,15 @@ try {
         $shortQq[] = $row['qq'];
     }
 
-    // 2. 获取admin所有username
-    $stmt = $pdo->query("SELECT id, username FROM {$dbPrefix}admin");
+    // 2. 获取user所有username
+    $stmt = $pdo->query("SELECT id, username FROM {$dbPrefix}user");
     $deleteCount = 0;
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $id = $row['id'];
         $username = $row['username'];
         if (!in_array($username, $shortQq)) {
             // 3. 删除不在short表中的用户
-            $pdo->exec("DELETE FROM {$dbPrefix}admin WHERE id = $id");
+            $pdo->exec("DELETE FROM {$dbPrefix}user WHERE id = $id");
             echo "已删除用户：$username (id=$id)\n";
             $deleteCount++;
         }

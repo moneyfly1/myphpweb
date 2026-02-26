@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="utf-8" />
-    <title><block name="title"></block> - 管理后台</title>
+    <title>
+        <block name="title"></block> - 管理后台
+    </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
     <link rel="stylesheet" href="__PUBLIC__/design-tokens.css">
     <link rel="stylesheet" href="__PUBLIC__/css/admin-components.css">
     <link rel="stylesheet" href="__PUBLIC__/css/admin-forms.css">
-    <!-- 暂时注释掉外部样式，测试间距问题 -->
-    <!-- <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.8.2/css/all.min.css"> -->
-    <!-- <link href="__ADMIN_ACEADMIN__/css/bootstrap.min.css" rel="stylesheet" /> -->
-    <!-- <link rel="stylesheet" href="__PUBLIC__/statics/font-awesome-4.4.0/css/font-awesome.min.css" /> -->
+    <!-- 恢复外部基础样式，修复布局折叠和图标丢失问题 -->
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.8.2/css/all.min.css">
+    <link href="__ADMIN_ACEADMIN__/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="__PUBLIC__/statics/font-awesome-4.4.0/css/font-awesome.min.css" />
+    <!-- 旧版 ace.min.css 和 base.css 保持注释，避免冲突 -->
     <!-- <link rel="stylesheet" href="__ADMIN_ACEADMIN__/css/ace.min.css" /> -->
     <!-- <link rel="stylesheet" href="__ADMIN_CSS__/base.css" /> -->
-    
+
     <style>
         /* 设计令牌已移至 __PUBLIC__/design-tokens.css，此处仅保留后台布局用变量别名 */
         :root {
@@ -39,7 +43,9 @@
             --header-height: 70px;
         }
 
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         /* 基本图标样式 - 替代FontAwesome */
         .icon {
@@ -52,22 +58,69 @@
             background-position: center;
         }
 
-        .icon-home::before { content: "🏠"; }
-        .icon-logout::before { content: "🚪"; }
-        .icon-menu::before { content: "☰"; }
-        .icon-dashboard::before { content: "📊"; }
-        .icon-subscription::before { content: "📋"; }
-        .icon-users::before { content: "👥"; }
-        .icon-package::before { content: "📦"; }
-        .icon-order::before { content: "🛒"; }
-        .icon-email::before { content: "📧"; }
-        .icon-notification::before { content: "🔔"; }
-        .icon-menu-manage::before { content: "📝"; }
-        .icon-permission::before { content: "🔒"; }
-        .icon-settings::before { content: "⚙️"; }
-        .icon-search::before { content: "🔍"; }
-        .icon-arrow::before { content: "▶"; }
-        .icon-arrow-down::before { content: "▼"; }
+        .icon-home::before {
+            content: "🏠";
+        }
+
+        .icon-logout::before {
+            content: "🚪";
+        }
+
+        .icon-menu::before {
+            content: "☰";
+        }
+
+        .icon-dashboard::before {
+            content: "📊";
+        }
+
+        .icon-subscription::before {
+            content: "📋";
+        }
+
+        .icon-users::before {
+            content: "👥";
+        }
+
+        .icon-package::before {
+            content: "📦";
+        }
+
+        .icon-order::before {
+            content: "🛒";
+        }
+
+        .icon-email::before {
+            content: "📧";
+        }
+
+        .icon-notification::before {
+            content: "🔔";
+        }
+
+        .icon-menu-manage::before {
+            content: "📝";
+        }
+
+        .icon-permission::before {
+            content: "🔒";
+        }
+
+        .icon-settings::before {
+            content: "⚙️";
+        }
+
+        .icon-search::before {
+            content: "🔍";
+        }
+
+        .icon-arrow::before {
+            content: "▶";
+        }
+
+        .icon-arrow-down::before {
+            content: "▼";
+        }
 
         body {
             font-family: var(--font-sans);
@@ -171,7 +224,7 @@
         .sidebar {
             background: #fff;
             border-right: 1px solid #e8e8e8;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.04);
             position: fixed;
             top: 0;
             left: 0;
@@ -272,7 +325,7 @@
             position: relative;
         }
 
-        .has-submenu > .nav-link {
+        .has-submenu>.nav-link {
             color: #333;
         }
 
@@ -283,12 +336,12 @@
             font-size: 12px;
         }
 
-        .has-submenu.active > .nav-link .submenu-arrow {
+        .has-submenu.active>.nav-link .submenu-arrow {
             transform: rotate(180deg);
             color: var(--primary);
         }
 
-        .has-submenu.active > .nav-link {
+        .has-submenu.active>.nav-link {
             color: var(--primary);
         }
 
@@ -410,7 +463,7 @@
             width: 100%;
         }
 
-        .sidebar.collapsed ~ .main-container {
+        .sidebar.collapsed~.main-container {
             margin-left: var(--sidebar-collapsed-width);
             width: calc(100% - var(--sidebar-collapsed-width));
         }
@@ -806,7 +859,7 @@
                 box-shadow: var(--shadow-sm);
                 padding: 0 0.75rem;
             }
-            
+
             .mobile-menu-toggle .menu-text {
                 font-size: 0.875rem;
                 font-weight: 500;
@@ -947,7 +1000,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .alert {
@@ -994,21 +1049,21 @@
                 <button class="mobile-menu-toggle" id="mobile-menu-toggle">
                     <span class="menu-text">菜单</span>
                 </button>
-                
+
                 <!-- 品牌标识 -->
                 <a href="{:U('Admin/Index/index')}" class="navbar-brand">
                     <i class="fa fa-rocket"></i>
                     管理后台
                 </a>
             </div>
-            
+
             <div class="navbar-right">
                 <!-- 首页按钮 -->
                 <a href="{:U('Admin/Index/index')}" class="nav-btn" title="回到首页">
                     <i class="fa fa-home"></i>
                     <span class="desktop-only">首页</span>
                 </a>
-                
+
                 <!-- 退出按钮 -->
                 <a href="{:U('Admin/Admin/logout')}" class="nav-btn" title="退出登录">
                     <i class="fa fa-sign-out"></i>
@@ -1028,39 +1083,59 @@
         <ul class="nav-list">
             <!-- 仪表盘 -->
             <li class="nav-item">
-                <a href="{:U('Admin/Index/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"Index\"'}active{/if}">
+                <a href="{:U('Admin/Index/index')}" class="nav-link {if condition='$Think.CONTROLLER_NAME eq \"
+                    Index\"'}active{/if}">
                     <i class="fa fa-dashboard"></i>
                     <span class="menu-text">仪表盘</span>
                 </a>
             </li>
 
             <!-- 用户与订阅 -->
-            <li class="has-submenu <?php if(in_array(CONTROLLER_NAME,array('Customer','Admin','Dingyue'))) echo 'active'; ?>">
+            <li
+                class="has-submenu <?php if(in_array(CONTROLLER_NAME,array('Customer','Admin','Dingyue'))) echo 'active'; ?>">
                 <a href="javascript:;" class="nav-link">
                     <i class="fa fa-users"></i>
                     <span class="menu-text">用户与订阅</span>
                     <i class="fa fa-angle-down submenu-arrow"></i>
                 </a>
                 <ul class="submenu">
-                    <li><a href="{:U('Admin/Customer/list')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Customer\"'}active{/if}"><i class="fa fa-user"></i> 用户管理</a></li>
-                    <li><a href="{:U('Admin/Admin/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Admin\" and $Think.ACTION_NAME eq \"index\"'}active{/if}"><i class="fa fa-user-secret"></i> 管理员</a></li>
-                    <li><a href="{:U('Admin/Dingyue/list')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Dingyue\"'}active{/if}"><i class="fa fa-list"></i> 订阅管理</a></li>
+                    <li><a href="{:U('Admin/Customer/list')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \" Customer\"'}active{/if}"><i
+                                class="fa fa-user"></i> 用户管理</a></li>
+                    <li><a href="{:U('Admin/Admin/index')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \" Admin\" and
+                            $Think.ACTION_NAME eq \"index\"'}active{/if}"><i class="fa fa-user-secret"></i> 管理员</a></li>
+                    <li><a href="{:U('Admin/Dingyue/list')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \" Dingyue\"'}active{/if}"><i
+                                class="fa fa-list"></i> 订阅管理</a></li>
                 </ul>
             </li>
 
             <!-- 商品与订单 -->
-            <li class="has-submenu <?php if(in_array(CONTROLLER_NAME,array('Level','Order','UserLevel','Coupon','Invite'))) echo 'active'; ?>">
+            <li
+                class="has-submenu <?php if(in_array(CONTROLLER_NAME,array('Level','Order','UserLevel','Coupon','Invite'))) echo 'active'; ?>">
                 <a href="javascript:;" class="nav-link">
                     <i class="fa fa-shopping-cart"></i>
                     <span class="menu-text">商品与订单</span>
                     <i class="fa fa-angle-down submenu-arrow"></i>
                 </a>
                 <ul class="submenu">
-                    <li><a href="{:U('Admin/Level/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Level\"'}active{/if}"><i class="fa fa-cube"></i> 套餐管理</a></li>
-                    <li><a href="{:U('Admin/UserLevel/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"UserLevel\"'}active{/if}"><i class="fa fa-star"></i> VIP等级</a></li>
-                    <li><a href="{:U('Admin/Order/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Order\" and $Think.ACTION_NAME eq \"index\"'}active{/if}"><i class="fa fa-shopping-cart"></i> 订单列表</a></li>
-                    <li><a href="{:U('Admin/Coupon/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Coupon\"'}active{/if}"><i class="fa fa-tag"></i> 优惠券</a></li>
-                    <li><a href="{:U('Admin/Invite/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Invite\"'}active{/if}"><i class="fa fa-share-alt"></i> 邀请管理</a></li>
+                    <li><a href="{:U('Admin/Level/index')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \" Level\"'}active{/if}"><i
+                                class="fa fa-cube"></i> 套餐管理</a></li>
+                    <li><a href="{:U('Admin/UserLevel/index')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \" UserLevel\"'}active{/if}"><i
+                                class="fa fa-star"></i> VIP等级</a></li>
+                    <li><a href="{:U('Admin/Order/index')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \" Order\" and
+                            $Think.ACTION_NAME eq \"index\"'}active{/if}"><i class="fa fa-shopping-cart"></i> 订单列表</a>
+                    </li>
+                    <li><a href="{:U('Admin/Coupon/index')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \" Coupon\"'}active{/if}"><i
+                                class="fa fa-tag"></i> 优惠券</a></li>
+                    <li><a href="{:U('Admin/Invite/index')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \" Invite\"'}active{/if}"><i
+                                class="fa fa-share-alt"></i> 邀请管理</a></li>
                 </ul>
             </li>
 
@@ -1072,45 +1147,74 @@
                     <i class="fa fa-angle-down submenu-arrow"></i>
                 </a>
                 <ul class="submenu">
-                    <li><a href="{:U('Admin/NodeMgr/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"NodeMgr\"'}active{/if}"><i class="fa fa-server"></i> 节点管理</a></li>
-                    <li><a href="{:U('Admin/Device/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Device\"'}active{/if}"><i class="fa fa-mobile"></i> 设备管理</a></li>
+                    <li><a href="{:U('Admin/NodeMgr/index')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \" NodeMgr\"'}active{/if}"><i
+                                class="fa fa-server"></i> 节点管理</a></li>
+                    <li><a href="{:U('Admin/Device/index')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \" Device\"'}active{/if}"><i
+                                class="fa fa-mobile"></i> 设备管理</a></li>
                 </ul>
             </li>
 
             <!-- 消息与通知 -->
-            <li class="has-submenu <?php if(in_array(CONTROLLER_NAME,array('Ticket','Announcement','EmailQueue','EmailTemplate','Notification'))) echo 'active'; ?>">
+            <li
+                class="has-submenu <?php if(in_array(CONTROLLER_NAME,array('Ticket','Announcement','EmailQueue','EmailTemplate','Notification'))) echo 'active'; ?>">
                 <a href="javascript:;" class="nav-link">
                     <i class="fa fa-envelope"></i>
                     <span class="menu-text">消息与通知</span>
                     <i class="fa fa-angle-down submenu-arrow"></i>
                 </a>
                 <ul class="submenu">
-                    <li><a href="{:U('Admin/Ticket/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Ticket\"'}active{/if}"><i class="fa fa-ticket"></i> 工单管理</a></li>
-                    <li><a href="{:U('Admin/Announcement/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Announcement\"'}active{/if}"><i class="fa fa-bullhorn"></i> 公告管理</a></li>
-                    <li><a href="{:U('Admin/EmailQueue/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"EmailQueue\"'}active{/if}"><i class="fa fa-envelope"></i> 邮件队列</a></li>
-                    <li><a href="{:U('Admin/EmailTemplate/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"EmailTemplate\"'}active{/if}"><i class="fa fa-file-text"></i> 邮件模板</a></li>
-                    <li><a href="{:U('Admin/Notification/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Notification\"'}active{/if}"><i class="fa fa-bell"></i> 通知设置</a></li>
+                    <li><a href="{:U('Admin/Ticket/index')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \" Ticket\"'}active{/if}"><i
+                                class="fa fa-ticket"></i> 工单管理</a></li>
+                    <li><a href="{:U('Admin/Announcement/index')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"
+                            Announcement\"'}active{/if}"><i class="fa fa-bullhorn"></i> 公告管理</a></li>
+                    <li><a href="{:U('Admin/EmailQueue/index')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"
+                            EmailQueue\"'}active{/if}"><i class="fa fa-envelope"></i> 邮件队列</a></li>
+                    <li><a href="{:U('Admin/EmailTemplate/index')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"
+                            EmailTemplate\"'}active{/if}"><i class="fa fa-file-text"></i> 邮件模板</a></li>
+                    <li><a href="{:U('Admin/Notification/index')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"
+                            Notification\"'}active{/if}"><i class="fa fa-bell"></i> 通知设置</a></li>
                 </ul>
             </li>
 
             <!-- 系统管理 -->
-            <li class="has-submenu <?php if(in_array(CONTROLLER_NAME,array('ConfigFile','Nav','Rule','Backup','Cron')) || (CONTROLLER_NAME=='Order' && ACTION_NAME=='paysite')) echo 'active'; ?>">
+            <li
+                class="has-submenu <?php if(in_array(CONTROLLER_NAME,array('ConfigFile','Nav','Rule','Backup','Cron')) || (CONTROLLER_NAME=='Order' && ACTION_NAME=='paysite')) echo 'active'; ?>">
                 <a href="javascript:;" class="nav-link">
                     <i class="fa fa-cog"></i>
                     <span class="menu-text">系统管理</span>
                     <i class="fa fa-angle-down submenu-arrow"></i>
                 </a>
                 <ul class="submenu">
-                    <li><a href="{:U('Admin/ConfigFile/edit')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"ConfigFile\"'}active{/if}"><i class="fa fa-cog"></i> 系统设置</a></li>
-                    <li><a href="{:U('Admin/Order/paysite')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Order\" and $Think.ACTION_NAME eq \"paysite\"'}active{/if}"><i class="fa fa-credit-card"></i> 支付宝配置</a></li>
-                    <li><a href="{:U('Admin/Nav/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Nav\"'}active{/if}"><i class="fa fa-bars"></i> 菜单管理</a></li>
-                    <li><a href="{:U('Admin/Rule/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Rule\"'}active{/if}"><i class="fa fa-shield"></i> 权限管理</a></li>
-                    <li><a href="{:U('Admin/Backup/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Backup\"'}active{/if}"><i class="fa fa-database"></i> 数据备份</a></li>
-                    <li><a href="{:U('Admin/Cron/index')}" class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"Cron\"'}active{/if}"><i class="fa fa-clock-o"></i> 定时任务</a></li>
+                    <li><a href="{:U('Admin/ConfigFile/edit')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \"
+                            ConfigFile\"'}active{/if}"><i class="fa fa-cog"></i> 系统设置</a></li>
+                    <li><a href="{:U('Admin/Order/paysite')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \" Order\" and
+                            $Think.ACTION_NAME eq \"paysite\"'}active{/if}"><i class="fa fa-credit-card"></i> 支付宝配置</a>
+                    </li>
+                    <li><a href="{:U('Admin/Nav/index')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \" Nav\"'}active{/if}"><i
+                                class="fa fa-bars"></i> 菜单管理</a></li>
+                    <li><a href="{:U('Admin/Rule/index')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \" Rule\"'}active{/if}"><i
+                                class="fa fa-shield"></i> 权限管理</a></li>
+                    <li><a href="{:U('Admin/Backup/index')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \" Backup\"'}active{/if}"><i
+                                class="fa fa-database"></i> 数据备份</a></li>
+                    <li><a href="{:U('Admin/Cron/index')}"
+                            class="submenu-link {if condition='$Think.CONTROLLER_NAME eq \" Cron\"'}active{/if}"><i
+                                class="fa fa-clock-o"></i> 定时任务</a></li>
                 </ul>
             </li>
         </ul>
-        
+
         <!-- 侧边栏切换按钮 - 移到下方 -->
         <div class="sidebar-toggle-container">
             <button class="sidebar-toggle" id="sidebar-toggle" title="折叠/展开侧边栏">
@@ -1140,36 +1244,36 @@
     <!-- END: Theme JS-->
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // 手机端菜单切换
-            $('#mobile-menu-toggle').click(function() {
+            $('#mobile-menu-toggle').click(function () {
                 $('.sidebar').toggleClass('show');
                 $('.sidebar-overlay').toggleClass('show');
             });
 
             // 点击遮罩层关闭菜单
-            $('#sidebar-overlay').click(function() {
+            $('#sidebar-overlay').click(function () {
                 $('.sidebar').removeClass('show');
                 $('.sidebar-overlay').removeClass('show');
             });
 
             // 子菜单切换
-            $('.has-submenu > .nav-link').click(function(e) {
+            $('.has-submenu > .nav-link').click(function (e) {
                 e.preventDefault();
                 var $parent = $(this).parent();
                 var $submenu = $parent.find('.submenu');
-                
+
                 // 关闭其他子菜单
                 $('.has-submenu').not($parent).removeClass('active');
-                
+
                 // 切换当前子菜单
                 $parent.toggleClass('active');
             });
 
             // 桌面端侧边栏折叠
-            $('#sidebar-toggle').click(function() {
+            $('#sidebar-toggle').click(function () {
                 $('.sidebar').toggleClass('collapsed');
-                
+
                 if ($('.sidebar').hasClass('collapsed')) {
                     $('.navbar').css({
                         'left': 'var(--sidebar-collapsed-width)',
@@ -1221,33 +1325,33 @@
             handleResize();
 
             // 窗口大小改变时重新计算
-            $(window).resize(function() {
+            $(window).resize(function () {
                 handleResize();
             });
 
             // 自动隐藏成功消息
-            setTimeout(function() {
+            setTimeout(function () {
                 $('.alert').fadeOut();
             }, 5000);
 
             // 全局 toast 提示函数
-            window.showToast = function(msg, type) {
+            window.showToast = function (msg, type) {
                 type = type || 'success';
                 var bg = type === 'success' ? '#28a745' : type === 'warning' ? '#ffc107' : '#dc3545';
                 var color = type === 'warning' ? '#333' : '#fff';
                 var $t = $('<div>').css({
-                    position:'fixed',top:'-60px',left:'50%',transform:'translateX(-50%)',
-                    background:bg,color:color,padding:'12px 28px',borderRadius:'8px',
-                    fontSize:'14px',fontWeight:'500',zIndex:99999,
-                    boxShadow:'0 4px 16px rgba(0,0,0,0.15)',whiteSpace:'nowrap',
-                    transition:'top 0.3s ease'
+                    position: 'fixed', top: '-60px', left: '50%', transform: 'translateX(-50%)',
+                    background: bg, color: color, padding: '12px 28px', borderRadius: '8px',
+                    fontSize: '14px', fontWeight: '500', zIndex: 99999,
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.15)', whiteSpace: 'nowrap',
+                    transition: 'top 0.3s ease'
                 }).text(msg).appendTo('body');
-                setTimeout(function(){ $t.css('top','24px'); },10);
-                setTimeout(function(){ $t.css('top','-60px'); setTimeout(function(){ $t.remove(); },400); },2500);
+                setTimeout(function () { $t.css('top', '24px'); }, 10);
+                setTimeout(function () { $t.css('top', '-60px'); setTimeout(function () { $t.remove(); }, 400); }, 2500);
             };
 
             // 全局 AJAX 表单提交（给 form 加 data-ajax="true" 即可）
-            $(document).on('submit', 'form[data-ajax="true"]', function(e) {
+            $(document).on('submit', 'form[data-ajax="true"]', function (e) {
                 e.preventDefault();
                 var $form = $(this);
                 var submitBtn = $form.find('button[type="submit"], input[type="submit"]').first();
@@ -1260,14 +1364,14 @@
                     type: $form.attr('method') || 'POST',
                     data: $form.serialize(),
                     dataType: 'json',
-                    success: function(res) {
+                    success: function (res) {
                         if (res.code == 0 || res.status == 1 || res.success) {
                             showToast(res.msg || res.info || '操作成功');
                             var redirect = $form.data('redirect');
                             if (redirect === 'reload') {
-                                setTimeout(function(){ location.reload(); }, 800);
+                                setTimeout(function () { location.reload(); }, 800);
                             } else if (redirect) {
-                                setTimeout(function(){ location.href = redirect; }, 800);
+                                setTimeout(function () { location.href = redirect; }, 800);
                             }
                         } else {
                             showToast(res.msg || res.info || '操作失败', 'error');
@@ -1276,7 +1380,7 @@
                             else submitBtn.html(origHtml);
                         }
                     },
-                    error: function() {
+                    error: function () {
                         showToast('网络错误，请重试', 'error');
                         submitBtn.prop('disabled', false);
                         if (submitBtn.is('input')) submitBtn.val(origHtml);
@@ -1286,7 +1390,7 @@
             });
 
             // 全局 AJAX 链接点击（给 a 加 data-ajax="true" 即可）
-            $(document).on('click', 'a[data-ajax="true"]', function(e) {
+            $(document).on('click', 'a[data-ajax="true"]', function (e) {
                 e.preventDefault();
                 var $a = $(this);
                 var confirmMsg = $a.data('confirm');
@@ -1294,27 +1398,27 @@
                 $.ajax({
                     url: $a.attr('href'),
                     dataType: 'json',
-                    success: function(res) {
+                    success: function (res) {
                         if (res.code == 0 || res.status == 1 || res.success) {
                             showToast(res.msg || res.info || '操作成功');
-                            setTimeout(function(){ location.reload(); }, 800);
+                            setTimeout(function () { location.reload(); }, 800);
                         } else {
                             showToast(res.msg || res.info || '操作失败', 'error');
                         }
                     },
-                    error: function() { showToast('网络错误，请重试', 'error'); }
+                    error: function () { showToast('网络错误，请重试', 'error'); }
                 });
             });
 
             // AJAX 请求处理
-            $(document).ajaxStart(function() {
+            $(document).ajaxStart(function () {
                 // 显示全局加载指示器
-            }).ajaxStop(function() {
+            }).ajaxStop(function () {
                 // 隐藏全局加载指示器
             });
 
             // 自动触发邮件队列处理（每次页面加载静默执行一次）
-            (function(){
+            (function () {
                 var cronUrl = '/?s=/Home/Cron/run&secret={:env("CRON_SECRET","")}';
                 if (cronUrl.indexOf('secret=&') === -1 && cronUrl.indexOf("secret='") === -1) {
                     $.ajax({ url: cronUrl, dataType: 'json', timeout: 30000 });
@@ -1324,36 +1428,37 @@
     </script>
 
     <block name="js"></block>
-<script type="text/javascript">
-$(function() {
-    $('#checkAll').on('click', function() {
-        $('.check-item').prop('checked', this.checked);
-    });
-    $('.check-item').on('change', function() {
-        if($('.check-item:checked').length == $('.check-item').length) {
-            $('#checkAll').prop('checked', true);
-        } else {
-            $('#checkAll').prop('checked', false);
-        }
-    });
-});
-</script>
-<script>
-// 全选功能逻辑
-window.addEventListener('DOMContentLoaded', () => {
-  const masterCheck = document.getElementById('checkAll');
-  const checkItems = document.querySelectorAll('.check-item');
+    <script type="text/javascript">
+        $(function () {
+            $('#checkAll').on('click', function () {
+                $('.check-item').prop('checked', this.checked);
+            });
+            $('.check-item').on('change', function () {
+                if ($('.check-item:checked').length == $('.check-item').length) {
+                    $('#checkAll').prop('checked', true);
+                } else {
+                    $('#checkAll').prop('checked', false);
+                }
+            });
+        });
+    </script>
+    <script>
+        // 全选功能逻辑
+        window.addEventListener('DOMContentLoaded', () => {
+            const masterCheck = document.getElementById('checkAll');
+            const checkItems = document.querySelectorAll('.check-item');
 
-  masterCheck?.addEventListener('change', (e) => {
-    checkItems.forEach(item => item.checked = e.target.checked);
-  });
+            masterCheck?.addEventListener('change', (e) => {
+                checkItems.forEach(item => item.checked = e.target.checked);
+            });
 
-  checkItems.forEach(item => {
-    item.addEventListener('change', () => {
-      masterCheck.checked = [...checkItems].every(i => i.checked);
-    });
-  });
-});
-</script>
+            checkItems.forEach(item => {
+                item.addEventListener('change', () => {
+                    masterCheck.checked = [...checkItems].every(i => i.checked);
+                });
+            });
+        });
+    </script>
 </body>
+
 </html>
