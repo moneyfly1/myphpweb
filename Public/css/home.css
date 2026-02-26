@@ -178,3 +178,172 @@
     color: var(--color-primary);
     text-decoration: none;
 }
+
+/* ---------- 前台列表页通用 ---------- */
+.home-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
+
+.home-page .page-header {
+    margin-bottom: 24px;
+}
+
+.home-page .page-header h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0 0 6px;
+}
+
+.home-page .page-header p {
+    color: var(--color-text-secondary);
+    margin: 0;
+    font-size: 14px;
+}
+
+.home-card {
+    background: var(--color-bg);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    margin-bottom: 16px;
+    padding: 20px 24px;
+    border: 1px solid rgba(0,0,0,.06);
+}
+
+.home-card h3 {
+    margin: 0 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+}
+
+/* 前台表格 */
+.home-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.home-table th {
+    text-align: left;
+    padding: 10px 14px;
+    background: var(--color-bg-page);
+    font-weight: 600;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.85rem;
+}
+
+.home-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.home-table tbody tr:hover {
+    background: rgba(22,119,255,.03);
+}
+
+/* 前台移动端卡片 */
+@media (min-width: 768px) {
+    .home-mobile-cards { display: none !important; }
+}
+
+@media (max-width: 767px) {
+    .home-desktop-table { display: none !important; }
+    .home-mobile-cards { display: block !important; }
+
+    .home-page { padding: 16px 12px; }
+    .home-card { padding: 14px 16px; }
+}
+
+.home-mobile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.home-m-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e0e7ff;
+    box-shadow: 0 2px 8px rgba(66,165,245,0.08);
+    padding: 16px;
+}
+
+.home-m-card:nth-child(odd) {
+    background: linear-gradient(135deg, #fff 0%, #f8faff 100%);
+}
+
+.home-m-card:nth-child(even) {
+    background: linear-gradient(135deg, #fff 0%, #fef3ff 100%);
+    border-color: #f3e8ff;
+}
+
+.home-m-card .m-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 8px;
+}
+
+.home-m-card .m-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.home-m-card .m-card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(224,231,255,0.5);
+    gap: 10px;
+}
+
+.home-m-card .m-card-row:last-child {
+    border-bottom: none;
+}
+
+.home-m-card .m-label {
+    font-weight: 600;
+    color: #64748b;
+    font-size: 12px;
+    padding: 3px 8px;
+    background: rgba(66,165,245,0.08);
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.home-m-card .m-value {
+    flex: 1;
+    text-align: right;
+    font-size: 13px;
+    color: #1e293b;
+    word-break: break-word;
+}
+
+/* 通用徽章 */
+.home-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* 空状态 */
+.home-empty {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--color-text-placeholder);
+}
+
+.home-empty i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: block;
+    color: var(--color-border);
+}

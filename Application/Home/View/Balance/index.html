@@ -1,96 +1,103 @@
 <extend name="Public:layout" />
 <block name="title">我的余额</block>
-<block name="head">
-    <style>
-        .balance-page .container { max-width: 900px; margin: 0 auto; padding: var(--space-4); }
-        .balance-page .page-header { margin-bottom: var(--space-6); }
-        .balance-page .page-header h1 { margin: 0 0 var(--space-2); font-size: var(--font-size-lg); }
-        .balance-card { background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow); margin-bottom: var(--space-4); padding: var(--space-4); }
-        .balance-card h3 { margin: 0 0 var(--space-3); display: flex; align-items: center; gap: var(--space-2); font-size: 1.1rem; }
-        .balance-hero { background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%); border-radius: var(--radius-lg); padding: var(--space-6); color: #fff; text-align: center; margin-bottom: var(--space-4); }
-        .balance-hero .amount { font-size: 2.5rem; font-weight: 700; margin: var(--space-2) 0; letter-spacing: -1px; }
-        .balance-hero .label { font-size: 0.95rem; opacity: 0.85; }
-        .btn-recharge { display: inline-block; margin-top: var(--space-3); padding: var(--space-2) var(--space-6); background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); border-radius: var(--radius); font-size: 1rem; font-weight: 500; text-decoration: none; transition: all 0.2s; cursor: pointer; }
-        .btn-recharge:hover { background: rgba(255,255,255,0.35); color: #fff; text-decoration: none; }
-        .record-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        .record-table th { text-align: left; padding: var(--space-2) var(--space-3); background: var(--color-bg-page); font-weight: 600; border-bottom: 1px solid var(--color-border); }
-        .record-table td { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-border); }
-        .record-table tr:hover { background: rgba(22,119,255,.03); }
-        .amount-plus { color: #38a169; font-weight: 600; }
-        .amount-minus { color: #e53e3e; font-weight: 600; }
-        .type-badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; }
-        .type-recharge { background: rgba(22,119,255,.12); color: #1677ff; }
-        .type-consume { background: rgba(245,108,108,.12); color: #e53e3e; }
-        .type-refund { background: rgba(250,173,20,.12); color: #d48806; }
-        .type-adjust { background: rgba(114,46,209,.12); color: #722ed1; }
-        .type-invite { background: rgba(72,199,142,.12); color: #38a169; }
-        .empty-tip { text-align: center; padding: var(--space-6); color: var(--color-text-secondary); }
-        @media (max-width: 767px) {
-            .balance-page .container { padding: var(--space-3); }
-            .balance-hero .amount { font-size: 2rem; }
-            .record-table { font-size: 0.8rem; }
-        }
-    </style>
-</block>
 <block name="content">
-<div class="balance-page">
-    <div class="container" style="padding-top:0;">
-        <div class="page-header">
-            <h1>我的余额</h1>
-            <p>查看账户余额和交易记录</p>
-        </div>
+<div class="home-page">
+    <div class="page-header">
+        <h2>我的余额</h2>
+        <p>查看账户余额和交易记录</p>
+    </div>
 
-        <div class="balance-hero">
-            <div class="label">账户余额 (元)</div>
-            <div class="amount">{$balance}</div>
-            <a href="{:U('Home/Balance/recharge')}" class="btn-recharge"><i class="fas fa-plus-circle"></i> 充值</a>
-        </div>
+    <div style="background:linear-gradient(135deg,#1677ff 0%,#0958d9 100%);border-radius:12px;padding:32px;color:#fff;text-align:center;margin-bottom:20px;">
+        <div style="font-size:0.95rem;opacity:0.85;">账户余额 (元)</div>
+        <div style="font-size:2.5rem;font-weight:700;margin:8px 0;letter-spacing:-1px;">{$balance}</div>
+        <a href="{:U('Home/Balance/recharge')}" style="display:inline-block;margin-top:12px;padding:8px 28px;background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.4);border-radius:8px;font-size:1rem;font-weight:500;text-decoration:none;transition:all .2s;"><i class="fas fa-plus-circle"></i> 充值</a>
+    </div>
 
-        <div class="balance-card">
-            <h3><i class="fas fa-list"></i> 交易记录</h3>
-            <notempty name="records">
-            <div style="overflow-x:auto;">
-                <table class="record-table">
-                    <thead>
-                        <tr>
-                            <th>时间</th>
-                            <th>类型</th>
-                            <th>金额</th>
-                            <th>余额</th>
-                            <th>备注</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <volist name="records" id="vo">
-                        <tr>
-                            <td>{$vo.create_time_fmt}</td>
-                            <td>
-                                <if condition="$vo['type'] eq 1"><span class="type-badge type-recharge">充值</span></if>
-                                <if condition="$vo['type'] eq 2"><span class="type-badge type-consume">消费</span></if>
-                                <if condition="$vo['type'] eq 3"><span class="type-badge type-refund">退款</span></if>
-                                <if condition="$vo['type'] eq 4"><span class="type-badge type-adjust">调整</span></if>
-                                <if condition="$vo['type'] eq 5"><span class="type-badge type-invite">邀请奖励</span></if>
-                            </td>
-                            <td>
-                                <if condition="$vo['type'] eq 2">
-                                    <span class="amount-minus">{$vo.amount_fmt}</span>
-                                <else />
-                                    <span class="amount-plus">{$vo.amount_fmt}</span>
-                                </if>
-                            </td>
-                            <td>{$vo.balance_after}</td>
-                            <td>{$vo.remark|default='-'}</td>
-                        </tr>
-                        </volist>
-                    </tbody>
-                </table>
+    <div class="home-card">
+        <h3><i class="fas fa-list"></i> 交易记录</h3>
+        <notempty name="records">
+        <!-- 桌面端表格 -->
+        <div class="home-desktop-table" style="overflow-x:auto;">
+            <table class="home-table">
+                <thead>
+                    <tr>
+                        <th>时间</th>
+                        <th>类型</th>
+                        <th>金额</th>
+                        <th>余额</th>
+                        <th>备注</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <volist name="records" id="vo">
+                    <tr>
+                        <td>{$vo.create_time_fmt}</td>
+                        <td>
+                            <?php
+                            $typeMap = [1=>'充值',2=>'消费',3=>'退款',4=>'调整',5=>'邀请奖励'];
+                            $classMap = [1=>'type-recharge',2=>'type-consume',3=>'type-refund',4=>'type-adjust',5=>'type-invite'];
+                            $t = $vo['type'];
+                            ?>
+                            <span class="home-badge <?php echo isset($classMap[$t])?$classMap[$t]:''; ?>"><?php echo isset($typeMap[$t])?$typeMap[$t]:'其他'; ?></span>
+                        </td>
+                        <td>
+                            <if condition="$vo['type'] eq 2">
+                                <span style="color:#e53e3e;font-weight:600;">{$vo.amount_fmt}</span>
+                            <else />
+                                <span style="color:#38a169;font-weight:600;">{$vo.amount_fmt}</span>
+                            </if>
+                        </td>
+                        <td>{$vo.balance_after}</td>
+                        <td>{$vo.remark|default='-'}</td>
+                    </tr>
+                    </volist>
+                </tbody>
+            </table>
+        </div>
+        <!-- 移动端卡片 -->
+        <div class="home-mobile-cards">
+            <volist name="records" id="vo">
+            <div class="home-m-card">
+                <div class="m-card-header">
+                    <span class="m-card-title">{$vo.create_time_fmt}</span>
+                    <?php
+                    $t = $vo['type'];
+                    ?>
+                    <span class="home-badge <?php echo isset($classMap[$t])?$classMap[$t]:''; ?>"><?php echo isset($typeMap[$t])?$typeMap[$t]:'其他'; ?></span>
+                </div>
+                <div class="m-card-row">
+                    <span class="m-label">金额</span>
+                    <span class="m-value">
+                        <if condition="$vo['type'] eq 2">
+                            <span style="color:#e53e3e;font-weight:600;">{$vo.amount_fmt}</span>
+                        <else />
+                            <span style="color:#38a169;font-weight:600;">{$vo.amount_fmt}</span>
+                        </if>
+                    </span>
+                </div>
+                <div class="m-card-row">
+                    <span class="m-label">余额</span>
+                    <span class="m-value">{$vo.balance_after}</span>
+                </div>
+                <div class="m-card-row">
+                    <span class="m-label">备注</span>
+                    <span class="m-value">{$vo.remark|default='-'}</span>
+                </div>
             </div>
-            <else />
-            <div class="empty-tip">暂无交易记录</div>
-            </notempty>
+            </volist>
         </div>
+        <else />
+        <div class="home-empty">暂无交易记录</div>
+        </notempty>
     </div>
 </div>
 </block>
-<block name="footer">
+<block name="head">
+<style>
+    .type-recharge { background:rgba(22,119,255,.12); color:#1677ff; }
+    .type-consume { background:rgba(245,108,108,.12); color:#e53e3e; }
+    .type-refund { background:rgba(250,173,20,.12); color:#d48806; }
+    .type-adjust { background:rgba(114,46,209,.12); color:#722ed1; }
+    .type-invite { background:rgba(72,199,142,.12); color:#38a169; }
+</style>
 </block>

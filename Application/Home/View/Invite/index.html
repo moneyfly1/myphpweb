@@ -2,11 +2,6 @@
 <block name="title">我的邀请</block>
 <block name="head">
     <style>
-        .invite-page .container { max-width: 900px; margin: 0 auto; padding: var(--space-4); }
-        .invite-page .page-header { margin-bottom: var(--space-6); }
-        .invite-page .page-header h1 { margin: 0 0 var(--space-2); font-size: var(--font-size-lg); }
-        .invite-card { background: var(--color-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow); margin-bottom: var(--space-4); padding: var(--space-4); }
-        .invite-card h3 { margin: 0 0 var(--space-3); display: flex; align-items: center; gap: var(--space-2); font-size: 1.1rem; }
         .code-list { display: flex; flex-direction: column; gap: var(--space-3); }
         .code-item { display: flex; align-items: center; justify-content: space-between; padding: var(--space-3); background: var(--color-bg-page); border-radius: var(--radius); flex-wrap: wrap; gap: var(--space-2); }
         .code-item .code-text { font-family: monospace; font-size: 1.1rem; font-weight: 600; color: var(--color-primary); letter-spacing: 1px; }
@@ -17,98 +12,98 @@
         .btn-copy:hover { opacity: 0.85; }
         .btn-generate { background: var(--color-success, #48c78e); color: #fff; margin-top: var(--space-3); }
         .btn-generate:hover { opacity: 0.85; }
-        .record-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-        .record-table th { text-align: left; padding: var(--space-2) var(--space-3); background: var(--color-bg-page); font-weight: 600; border-bottom: 1px solid var(--color-border); }
-        .record-table td { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--color-border); }
-        .record-table tr:hover { background: rgba(22,119,255,.03); }
-        .empty-tip { text-align: center; padding: var(--space-6); color: var(--color-text-secondary); }
-        .badge-active { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; background: rgba(72,199,142,.15); color: var(--color-success); }
-        .badge-inactive { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; background: rgba(245,108,108,.15); color: var(--color-danger); }
         .info-card { background: var(--color-bg-page); border-radius: var(--radius); padding: var(--space-3); }
         .info-card p { margin: var(--space-1) 0; color: var(--color-text-secondary); font-size: 0.9rem; line-height: 1.7; }
         .info-card .highlight { color: var(--color-primary); font-weight: 600; }
         @media (max-width: 767px) {
-            .invite-page .container { padding: var(--space-3); }
             .code-item { flex-direction: column; align-items: flex-start; }
             .btn-copy, .btn-generate { padding: 10px 16px; min-height: 44px; font-size: 14px; }
-            .badge-active, .badge-inactive { font-size: 12px; }
         }
     </style>
 </block>
 <block name="content">
-<div class="invite-page">
-    <div class="container" style="padding-top:0;">
-        <div class="page-header">
-            <h1>我的邀请</h1>
-            <p>邀请好友注册，双方均可获得奖励</p>
-        </div>
+<div class="home-page">
+    <div class="page-header">
+        <h2>我的邀请</h2>
+        <p>邀请好友注册，双方均可获得奖励</p>
+    </div>
 
-        <!-- 我的邀请码 -->
-        <div class="invite-card">
-            <h3>我的邀请码</h3>
-            <div class="code-list">
-                <volist name="codes" id="vo">
-                <div class="code-item">
-                    <div>
-                        <span class="code-text">{$vo.code}</span>
-                        <span class="code-meta" style="margin-left:8px;">已用 {$vo.used_count}/{$vo.max_uses}</span>
-                        <if condition="$vo['is_active'] eq 1">
-                            <span class="badge-active">有效</span>
-                        <else />
-                            <span class="badge-inactive">已禁用</span>
-                        </if>
-                    </div>
-                    <div class="code-actions">
-                        <button class="btn-copy" onclick="copyCode('{$vo.code}')">复制</button>
-                    </div>
+    <!-- 我的邀请码 -->
+    <div class="home-card">
+        <h3>我的邀请码</h3>
+        <div class="code-list">
+            <volist name="codes" id="vo">
+            <div class="code-item">
+                <div>
+                    <span class="code-text">{$vo.code}</span>
+                    <span class="code-meta" style="margin-left:8px;">已用 {$vo.used_count}/{$vo.max_uses}</span>
+                    <if condition="$vo['is_active'] eq 1">
+                        <span class="home-badge" style="background: rgba(72,199,142,.15); color: var(--color-success);">有效</span>
+                    <else />
+                        <span class="home-badge" style="background: rgba(245,108,108,.15); color: var(--color-danger);">已禁用</span>
+                    </if>
                 </div>
-                </volist>
-                <empty name="codes">
-                <div class="empty-tip">暂无邀请码，点击下方按钮生成</div>
-                </empty>
+                <div class="code-actions">
+                    <button class="btn-copy" onclick="copyCode('{$vo.code}')">复制</button>
+                </div>
             </div>
-            <button class="btn-generate" id="btnGenerate" onclick="generateCode()">生成邀请码</button>
+            </volist>
+            <empty name="codes">
+            <div class="home-empty">暂无邀请码，点击下方按钮生成</div>
+            </empty>
         </div>
+        <button class="btn-generate" id="btnGenerate" onclick="generateCode()">生成邀请码</button>
+    </div>
 
-        <!-- 邀请记录 -->
-        <div class="invite-card">
-            <h3>邀请记录</h3>
-            <notempty name="relations">
-            <div style="overflow-x:auto;">
-                <table class="record-table">
-                    <thead>
-                        <tr>
-                            <th>被邀请人</th>
-                            <th>邀请奖励</th>
-                            <th>时间</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <volist name="relations" id="rel">
-                        <tr>
-                            <td>{$rel.invitee_name|default='未知用户'}</td>
-                            <td>+{$rel.inviter_reward_amount}</td>
-                            <td>{$rel.created_at|date='Y-m-d H:i',###}</td>
-                        </tr>
-                        </volist>
-                    </tbody>
-                </table>
-            </div>
-            <else />
-            <div class="empty-tip">暂无邀请记录</div>
-            </notempty>
+    <!-- 邀请记录 -->
+    <div class="home-card">
+        <h3>邀请记录</h3>
+        <notempty name="relations">
+        <div class="home-desktop-table" style="overflow-x:auto;">
+            <table class="home-table">
+                <thead>
+                    <tr>
+                        <th>被邀请人</th>
+                        <th>邀请奖励</th>
+                        <th>时间</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <volist name="relations" id="rel">
+                    <tr>
+                        <td>{$rel.invitee_name|default='未知用户'}</td>
+                        <td>+{$rel.inviter_reward_amount}</td>
+                        <td>{$rel.created_at|date='Y-m-d H:i',###}</td>
+                    </tr>
+                    </volist>
+                </tbody>
+            </table>
         </div>
-        <!-- 邀请说明 -->
-        <div class="invite-card">
-            <h3>邀请说明</h3>
-            <div class="info-card">
-                <p>1. 点击「生成邀请码」获取您的专属邀请码</p>
-                <p>2. 将邀请码分享给好友，好友注册时填写即可</p>
-                <p>3. 好友成功注册后，您将获得 <span class="highlight">5 元余额奖励</span></p>
-                <p>4. 被邀请人也将获得 <span class="highlight">2 元余额奖励</span></p>
-                <p>5. 每个邀请码默认可使用 <span class="highlight">5 次</span></p>
-                <p>6. 不可使用自己的邀请码</p>
+        <div class="home-mobile-cards">
+            <volist name="relations" id="rel">
+            <div class="home-m-card">
+                <div class="m-card-header">
+                    <span class="m-card-title">{$rel.invitee_name|default='未知用户'}</span>
+                </div>
+                <div class="m-card-row"><span class="m-label">奖励</span><span class="m-value">+{$rel.inviter_reward_amount}</span></div>
+                <div class="m-card-row"><span class="m-label">时间</span><span class="m-value">{$rel.created_at|date='Y-m-d H:i',###}</span></div>
             </div>
+            </volist>
+        </div>
+        <else />
+        <div class="home-empty">暂无邀请记录</div>
+        </notempty>
+    </div>
+    <!-- 邀请说明 -->
+    <div class="home-card">
+        <h3>邀请说明</h3>
+        <div class="info-card">
+            <p>1. 点击「生成邀请码」获取您的专属邀请码</p>
+            <p>2. 将邀请码分享给好友，好友注册时填写即可</p>
+            <p>3. 好友成功注册后，您将获得 <span class="highlight">5 元余额奖励</span></p>
+            <p>4. 被邀请人也将获得 <span class="highlight">2 元余额奖励</span></p>
+            <p>5. 每个邀请码默认可使用 <span class="highlight">5 次</span></p>
+            <p>6. 不可使用自己的邀请码</p>
         </div>
     </div>
 </div>
