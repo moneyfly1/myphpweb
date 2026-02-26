@@ -176,10 +176,14 @@ fi
 log_message "开始处理邮件队列"
 
 # 执行邮件队列处理
-if "$PHP_PATH" -f shell/process_email_queue.php process 2>>"$ERROR_LOG"; then
+log_message ">> 正在调用 PHP 处理邮件..."
+if "$PHP_PATH" -f "$PROJECT_PATH/shell/process_email_queue.php" process >>"$LOG_FILE" 2>>"$ERROR_LOG"; then
     log_message "邮件队列处理完成"
     exit 0
 else
-    log_error "邮件队列处理失败，退出码: $?"
-    exit 1
+    exit_code=$?
+    log_error "邮件队列处理失败，退出码: $exit_code"
+    # 如果失败，打印最后几行错误给调用者看
+    tail -n 5 "$ERROR_LOG" >> "$LOG_FILE"
+    exit $exit_code
 fi

@@ -141,24 +141,36 @@ class CronController extends AdminBaseController
 
     private function doEmailQueue()
     {
-        require_once APP_PATH . 'Common/Common/EmailQueue.class.php';
-        $queue = new \EmailQueue();
-        $emails = $queue->getPendingEmails(10);
-        $success = 0;
-        $fail = 0;
-        foreach ($emails as $email) {
-            $queue->markAsProcessing($email['id']);
-            $ok = send_mail_direct($email['to_email'], $email['subject'], $email['body']);
-            if ($ok) {
-                $queue->markAsSent($email['id']);
-                $success++;
-            } else {
-                $queue->markAsFailed($email['id'], '发送失败');
-                $fail++;
+        try {
+            require_once APP_PATH . 'Common/Common/EmailQueue.class.php';
+            $queue = new \EmailQueue();
+            $emails = $queue->getPendingEmails(10);
+
+            // 可能是由于环境丢失或者是无法连接，加一个明确的验证
+            if (!is_array($emails)) {
+                return array('code' => 1, 'msg' => '获取待发邮件失败，可能数据库配置异常。');
             }
-            usleep(100000);
+
+            $success = 0;
+            $fail = 0;
+            foreach ($emails as $email) {
+                $queue->markAsProcessing($email['id']);
+                $ok = send_mail_direct($email['to_email'], $email['subject'], $email['body']);
+                if ($ok) {
+                    $queue->markAsSent($email['id']);
+                    $success++;
+                } else {
+                    $queue->markAsFailed($email['id'], '发送失败');
+                    $fail++;
+                }
+                usleep(100000); // 防刷间隔
+            }
+            return array('code' => 0, 'msg' => "成功{$success}, 失败{$fail}, 共" . count($emails) . "封");
+        } catch (\Exception $e) {
+            return array('code' => 1, 'msg' => '致命错误: ' . $e->getMessage());
+        } catch (\Error $err) {
+            return array('code' => 1, 'msg' => '代码错误: ' . $err->getMessage());
         }
-        return array('code' => 0, 'msg' => "成功{$success}, 失败{$fail}, 共" . count($emails) . "封");
     }
 
     private function doCleanEmail()
@@ -300,23 +312,38 @@ class CronController extends AdminBaseController
             if (!file_exists($scriptPath)) {
                 $this->ajaxReturn(array('code' => 1, 'msg' => '守护脚本文件丢失'));
             }
-            // 使用 nohup 后台静默运行脚本，守护模式会自动循环执行 (如果 php 脚本支持守护，否则可用 shell 脚本启动)
-            // 更推荐指向 process_email_queue.sh 确保它可以正确找到环境
+
+            // 使用 nohup 后台运行脚本，守护模式
             $shPath = dirname(APP_PATH) . '/shell/process_email_queue.sh';
+            $logPath = RUNTIME_PATH . 'Logs/daemon_error.log';
+            if (!is_dir(dirname($logPath))) {
+                @mkdir(dirname($logPath), 0755, true);
+            }
+
+            // 确保脚本有可执行权限
             if (file_exists($shPath)) {
-                exec("nohup bash {$shPath} > /dev/null 2>&1 &");
+                @chmod($shPath, 0755);
+                exec("nohup bash {$shPath} > /dev/null 2>> {$logPath} &");
             } else {
-                exec("nohup php {$scriptPath} daemon > /dev/null 2>&1 &");
+                exec("nohup php {$scriptPath} daemon > /dev/null 2>> {$logPath} &");
             }
 
             sleep(1);
             $runningNow = $this->checkDaemonStatus();
-            if ($runningNow) {
-                $this->ajaxReturn(array('code' => 0, 'msg' => '守护进程已成功启动', 'data' => array('running' => true)));
-            } else {
-                // 有时候进程启动慢，返回一个乐观响应
-                $this->ajaxReturn(array('code' => 0, 'msg' => '守护进程启动指令已发送', 'data' => array('running' => true)));
+
+            // 如果拉起失败，尝试读取错误日志返回前台
+            if (!$runningNow) {
+                $errMsg = '进程启动后立即退出，可能没有执行权限或环境异常';
+                if (file_exists($logPath)) {
+                    $errLog = file_get_contents($logPath);
+                    if ($errLog) {
+                        $errMsg .= " - [日志]: " . substr($errLog, -100);
+                    }
+                }
+                $this->ajaxReturn(array('code' => 1, 'msg' => $errMsg, 'data' => array('running' => false)));
             }
+
+            $this->ajaxReturn(array('code' => 0, 'msg' => '守护进程已成功启动', 'data' => array('running' => true)));
         }
     }
 
@@ -393,7 +420,8 @@ class CronController extends AdminBaseController
             }
         }
         usort($result, function ($a, $b) {
-            return strcmp($b['time'], $a['time']); });
+            return strcmp($b['time'], $a['time']);
+        });
         $this->ajaxReturn(array('code' => 0, 'data' => array_slice($result, 0, 100)));
     }
 
